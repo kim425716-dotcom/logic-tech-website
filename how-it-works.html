@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How It Works &amp; Engineering Process – Logic Tech</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" alt="Logic Tech Logo" />
+        <span>Logic<span class="accent">Tech</span></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="case-studies.html">Case Studies</a>
+        <a href="how-it-works.html" class="active">How It Works</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="themeToggle" class="icon-btn" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started &rarr;</a>
+        <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars" id="menuIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="services.html" class="mobile-link">Services</a>
+      <a href="case-studies.html" class="mobile-link">Case Studies</a>
+      <a href="how-it-works.html" class="mobile-link active">How It Works</a>
+      <a href="faq.html" class="mobile-link">FAQ</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <div class="mobile-auth">
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== PAGE HERO ========== -->
+  <section class="page-hero-section">
+    <div class="container">
+      <div class="page-hero-content animate-in">
+        <div class="badge-outline blue"><i class="fa-solid fa-diagram-project"></i> Engineering Lifecycle</div>
+        <h1>A Rigorous, Transparent <span class="gradient-text">Delivery Methodology</span></h1>
+        <p>From initial architecture scoping to automated CI/CD deployment and long-term SLA support, we deliver complex enterprise IT projects on time and with zero ambiguity.</p>
+        <div class="hero-trust" style="margin-top: 1.5rem;">
+          <span><i class="fa-solid fa-arrows-rotate green"></i> 2-Week Agile Sprints</span>
+          <span class="divider"></span>
+          <span><i class="fa-solid fa-shield-halved amber"></i> Strict Non-Disclosure (NDA)</span>
+          <span class="divider"></span>
+          <span><i class="fa-solid fa-chart-line blue"></i> Full Jira/Slack Transparency</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== COMPLETE 6-PHASE ENGINEERING LIFECYCLE ========== -->
+  <section id="how-it-works" class="how-section" style="padding-top: 2rem;">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="badge-outline">End-to-End Workflow</div>
+        <h2>The 6-Phase Engineering Lifecycle</h2>
+        <p>We combine agile flexibility with enterprise engineering discipline to ensure every milestone is predictable and auditable.</p>
+      </div>
+
+      <div class="lifecycle-timeline">
+        <!-- Phase 1 -->
+        <div class="lifecycle-item animate-on-scroll">
+          <div class="lifecycle-num">01</div>
+          <div class="lifecycle-card">
+            <h3>
+              <span>Discovery, Scoping &amp; Architecture Design</span>
+              <span class="lifecycle-tag">Week 1</span>
+            </h3>
+            <p>
+              We deep-dive into your business goals, user personas, technical requirements, and existing infrastructure. Our principal architects produce a comprehensive Software Requirements Specification (SRS), database schema, and system architecture blueprint before a single line of code is written.
+            </p>
+            <div class="lifecycle-deliverables">
+              <span><i class="fa-solid fa-check green"></i> System Architecture Diagram</span>
+              <span><i class="fa-solid fa-check green"></i> Database ERD &amp; API Specs</span>
+              <span><i class="fa-solid fa-check green"></i> Sprint Roadmap &amp; Cost Breakdown</span>
+              <span><i class="fa-solid fa-check green"></i> Signed Mutual NDA &amp; IP Agreement</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="lifecycle-item animate-on-scroll">
+          <div class="lifecycle-num">02</div>
+          <div class="lifecycle-card">
+            <h3>
+              <span>UI/UX Prototyping &amp; Technical Foundation</span>
+              <span class="lifecycle-tag">Weeks 1 – 2</span>
+            </h3>
+            <p>
+              Our design team creates interactive Figma wireframes and high-fidelity design systems. Concurrently, our DevOps leads initialize your secure cloud infrastructure, automated staging environments, repository branches, and linting/code-quality enforcement tooling.
+            </p>
+            <div class="lifecycle-deliverables">
+              <span><i class="fa-solid fa-check green"></i> Interactive Figma Prototypes</span>
+              <span><i class="fa-solid fa-check green"></i> Design Token System</span>
+              <span><i class="fa-solid fa-check green"></i> GitHub/GitLab Repo Setup</span>
+              <span><i class="fa-solid fa-check green"></i> Cloud Staging Sandbox</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="lifecycle-item animate-on-scroll">
+          <div class="lifecycle-num">03</div>
+          <div class="lifecycle-card">
+            <h3>
+              <span>Agile Sprints &amp; Test-Driven Engineering</span>
+              <span class="lifecycle-tag">Weeks 2 – 8+</span>
+            </h3>
+            <p>
+              We work in rapid 2-week sprints with defined sprint goals and backlog prioritization. Every feature undergoes rigorous unit testing, integration tests, and peer code reviews before merging into the main branch. You have live visibility through our staging sandbox at all times.
+            </p>
+            <div class="lifecycle-deliverables">
+              <span><i class="fa-solid fa-check green"></i> 2-Week Sprint Cadence</span>
+              <span><i class="fa-solid fa-check green"></i> Bi-Weekly Video Demo Calls</span>
+              <span><i class="fa-solid fa-check green"></i> Unit &amp; Integration Tests (>85% Coverage)</span>
+              <span><i class="fa-solid fa-check green"></i> Direct Slack / Jira Collaboration</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="lifecycle-item animate-on-scroll">
+          <div class="lifecycle-num">04</div>
+          <div class="lifecycle-card">
+            <h3>
+              <span>Security Audits &amp; Automated CI/CD QA</span>
+              <span class="lifecycle-tag">Pre-Launch</span>
+            </h3>
+            <p>
+              Before launching to production, our security specialists perform automated vulnerability scans, static code analysis (SAST), penetration testing, and load testing simulating up to 100,000 concurrent users to identify bottlenecks and security vulnerabilities.
+            </p>
+            <div class="lifecycle-deliverables">
+              <span><i class="fa-solid fa-check green"></i> OWASP Top 10 Security Audit</span>
+              <span><i class="fa-solid fa-check green"></i> High-Load Stress Testing Report</span>
+              <span><i class="fa-solid fa-check green"></i> Cross-Browser &amp; Multi-Device QA</span>
+              <span><i class="fa-solid fa-check green"></i> Compliance Vulnerability Remediation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 5 -->
+        <div class="lifecycle-item animate-on-scroll">
+          <div class="lifecycle-num">05</div>
+          <div class="lifecycle-card">
+            <h3>
+              <span>Production Deployment &amp; Zero-Downtime Cutover</span>
+              <span class="lifecycle-tag">Launch Day</span>
+            </h3>
+            <p>
+              We execute a seamless production release using blue/green or canary deployment strategies. DNS records, SSL certificates, CDN distribution, and automated database migrations are handled smoothly with zero disruption to active business operations.
+            </p>
+            <div class="lifecycle-deliverables">
+              <span><i class="fa-solid fa-check green"></i> Blue/Green Zero-Downtime Rollout</span>
+              <span><i class="fa-solid fa-check green"></i> Global CDN Caching &amp; SSL</span>
+              <span><i class="fa-solid fa-check green"></i> Datadog / Prometheus Monitoring</span>
+              <span><i class="fa-solid fa-check green"></i> Automated Disaster Recovery Backup</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 6 -->
+        <div class="lifecycle-item animate-on-scroll">
+          <div class="lifecycle-num">06</div>
+          <div class="lifecycle-card">
+            <h3>
+              <span>Handover, 100% IP Transfer &amp; SLA Support</span>
+              <span class="lifecycle-tag">Post-Launch</span>
+            </h3>
+            <p>
+              Upon successful launch, we complete a full handover of all source repositories, cloud keys, architectural documentation, and administrative access. Every project includes a 60-day warranty, with flexible ongoing 24/7 SLA maintenance tiers available.
+            </p>
+            <div class="lifecycle-deliverables">
+              <span><i class="fa-solid fa-check green"></i> 100% Intellectual Property Assignment</span>
+              <span><i class="fa-solid fa-check green"></i> Full Technical Handover Documentation</span>
+              <span><i class="fa-solid fa-check green"></i> 60-Day Comprehensive Warranty</span>
+              <span><i class="fa-solid fa-check green"></i> Internal Team Knowledge Transfer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== OUR CORE ENGINEERING GUARANTEES ========== -->
+  <section class="services-section" style="background: var(--bg-900); padding: 5rem 0;">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="badge-outline amber">Quality Commitments</div>
+        <h2>Our 5 Ironclad Guarantees</h2>
+        <p>Enterprise clients trust us because we eliminate the risks commonly associated with outsourced engineering.</p>
+      </div>
+
+      <div class="services-grid animate-on-scroll">
+        <div class="service-card" style="--card-color: #10b981;">
+          <div class="service-icon" style="background: linear-gradient(135deg,#059669,#10b981);">
+            <i class="fa-solid fa-file-contract"></i>
+          </div>
+          <h3>100% IP &amp; Code Ownership</h3>
+          <p>You own every single line of code, design file, and asset created during the engagement from day one. No hidden royalties, no proprietary lock-ins.</p>
+        </div>
+
+        <div class="service-card" style="--card-color: #7c3aed;">
+          <div class="service-icon" style="background: linear-gradient(135deg,#7c3aed,#6366f1);">
+            <i class="fa-solid fa-code-branch"></i>
+          </div>
+          <h3>Top 5% Engineering Talent</h3>
+          <p>Our engineers undergo rigorous 4-stage algorithmic and architectural evaluations. You work with senior practitioners who have shipped systems for Fortune 500s.</p>
+        </div>
+
+        <div class="service-card" style="--card-color: #06b6d4;">
+          <div class="service-icon" style="background: linear-gradient(135deg,#0891b2,#06b6d4);">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <h3>Milestone-Tied Payments</h3>
+          <p>You only pay when verifiable milestones and acceptance criteria are met. We use escrow or phased milestone invoicing for complete financial transparency.</p>
+        </div>
+
+        <div class="service-card" style="--card-color: #f59e0b;">
+          <div class="service-icon" style="background: linear-gradient(135deg,#d97706,#f59e0b);">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h3>Radical Communication</h3>
+          <p>Direct access to your developers and dedicated project manager on Slack. Weekly video demos, daily standup summaries, and real-time Jira/Linear tracking.</p>
+        </div>
+
+        <div class="service-card" style="--card-color: #ec4899;">
+          <div class="service-icon" style="background: linear-gradient(135deg,#db2777,#ec4899);">
+            <i class="fa-solid fa-shield-heart"></i>
+          </div>
+          <h3>60-Day Free Bug Warranty</h3>
+          <p>After deployment, we provide 60 days of complimentary bug fixing and performance tuning to ensure your production rollout is completely stable.</p>
+        </div>
+
+        <div class="service-card" style="--card-color: #3b82f6;">
+          <div class="service-icon" style="background: linear-gradient(135deg,#2563eb,#3b82f6);">
+            <i class="fa-solid fa-user-lock"></i>
+          </div>
+          <h3>Strict NDA &amp; Security</h3>
+          <p>All developers are bound by comprehensive NDAs and follow SOC 2 compliant data privacy policies with multi-factor authentication on all tools.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DEDICATED SQUAD STRUCTURE ========== -->
+  <section class="services-section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="badge-outline blue">Team Composition</div>
+        <h2>Inside Your Dedicated Squad</h2>
+        <p>A balanced multidisciplinary team structured specifically to execute your technical roadmap.</p>
+      </div>
+
+      <div class="tech-matrix-grid animate-on-scroll">
+        <div class="tech-matrix-card">
+          <h3><i class="fa-solid fa-compass" style="color:#f59e0b;"></i> Solutions Architect</h3>
+          <p>Designs system blueprints, selects optimal database technologies, audits security, and ensures architectural integrity.</p>
+        </div>
+        <div class="tech-matrix-card">
+          <h3><i class="fa-solid fa-code" style="color:#60a5fa;"></i> Lead Full-Stack Engineers</h3>
+          <p>Senior developers focused on robust backend microservices, resilient APIs, and pixel-perfect responsive user interfaces.</p>
+        </div>
+        <div class="tech-matrix-card">
+          <h3><i class="fa-solid fa-cloud" style="color:#38bdf8;"></i> DevOps &amp; Cloud Specialist</h3>
+          <p>Configures Terraform IaC, Kubernetes clusters, auto-scaling rules, CI/CD pipelines, and real-time monitoring.</p>
+        </div>
+        <div class="tech-matrix-card">
+          <h3><i class="fa-solid fa-bug-slash" style="color:#34d399;"></i> QA Automation Engineer</h3>
+          <p>Builds end-to-end Cypress/Playwright testing suites, tests edge cases, and performs load/stress benchmarking.</p>
+        </div>
+        <div class="tech-matrix-card">
+          <h3><i class="fa-solid fa-list-check" style="color:#a78bfa;"></i> Agile Project Manager (Scrum Master)</h3>
+          <p>Facilitates daily standups, manages sprint backlogs, coordinates milestone demos, and serves as your single point of contact.</p>
+        </div>
+        <div class="tech-matrix-card">
+          <h3><i class="fa-solid fa-palette" style="color:#ec4899;"></i> UI/UX Product Designer</h3>
+          <p>Conducts user research, creates wireframes, prototypes in Figma, and ensures intuitive, accessible enterprise user flows.</p>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="section-cta animate-on-scroll">
+        <div>
+          <p>Ready to see how fast your project can ship?</p>
+          <span style="font-size: 0.875rem; color: var(--text-muted);">Book a 30-minute discovery call with our lead technical architect today.</span>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="contact.html" class="btn btn-primary btn-lg">Book Discovery Call <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="services.html" class="btn btn-outline btn-lg">Explore Services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo">
+            <img src="assets/logo.png" alt="Logic Tech Logo" />
+            <span>Logic<span class="accent">Tech</span></span>
+          </a>
+          <p>Enterprise IT solutions built for scale, security, and long-term success.</p>
+          <div class="social-links">
+            <a href="#" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="mailto:hello@logictech.io" class="social-btn"><i class="fa-solid fa-envelope"></i></a>
+            <a href="https://wa.me/254700000000" target="_blank" class="social-btn whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-links-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="services.html">Software Engineering</a></li>
+            <li><a href="services.html">Cloud Architecture</a></li>
+            <li><a href="services.html">Cybersecurity</a></li>
+            <li><a href="services.html">Data &amp; Analytics</a></li>
+            <li><a href="services.html">Mobile Development</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="register.html">Get Started</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p id="footerYear">© 2026 Logic Tech. All rights reserved.</p>
+        <p>Made with <i class="fa-solid fa-heart red"></i> in Nairobi, Kenya</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

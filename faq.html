@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions – Logic Tech</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" alt="Logic Tech Logo" />
+        <span>Logic<span class="accent">Tech</span></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="case-studies.html">Case Studies</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a href="faq.html" class="active">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="themeToggle" class="icon-btn" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started &rarr;</a>
+        <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars" id="menuIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="services.html" class="mobile-link">Services</a>
+      <a href="case-studies.html" class="mobile-link">Case Studies</a>
+      <a href="how-it-works.html" class="mobile-link">How It Works</a>
+      <a href="faq.html" class="mobile-link active">FAQ</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <div class="mobile-auth">
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== PAGE HERO ========== -->
+  <section class="page-hero-section">
+    <div class="container">
+      <div class="page-hero-content animate-in">
+        <div class="badge-outline"><i class="fa-solid fa-circle-question"></i> Knowledge Base &amp; FAQ</div>
+        <h1>Everything You Need to Know About <span class="gradient-text">Partnering with Logic Tech</span></h1>
+        <p>Find clear answers regarding our development process, intellectual property rights, engineering vetting, pricing models, and security standards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FAQ SECTION ========== -->
+  <section id="faq" class="faq-section" style="padding-top: 2rem;">
+    <div class="faq-glow"></div>
+    <div class="container faq-container">
+      
+      <!-- Live Search -->
+      <div class="faq-search animate-on-scroll">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="faqSearch" placeholder="Search questions (e.g., payments, IP rights, tech stacks, NDA, SLAs...)" />
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="faq-filter-nav animate-on-scroll" id="faqCategories">
+        <button class="faq-pill active" data-category="all">All Questions</button>
+        <button class="faq-pill" data-category="general">General &amp; Onboarding</button>
+        <button class="faq-pill" data-category="technical">Engineering &amp; Stack</button>
+        <button class="faq-pill" data-category="security">Security &amp; IP Rights</button>
+        <button class="faq-pill" data-category="pricing">Pricing &amp; Contracts</button>
+        <button class="faq-pill" data-category="support">Support &amp; SLAs</button>
+      </div>
+
+      <!-- FAQ List (Populated and Filtered by JS) -->
+      <div class="faq-list animate-on-scroll" id="faqList"></div>
+
+      <!-- Still Have Questions Card -->
+      <div class="section-cta animate-on-scroll" style="margin-top: 4rem;">
+        <div>
+          <p>Didn't find what you were looking for?</p>
+          <span style="font-size: 0.875rem; color: var(--text-muted);">Our solutions architects are available to answer your technical and commercial questions.</span>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="contact.html" class="btn btn-primary btn-lg">Ask an Engineer <i class="fa-solid fa-paper-plane"></i></a>
+          <a href="register.html" class="btn btn-outline btn-lg">Create Free Account</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo">
+            <img src="assets/logo.png" alt="Logic Tech Logo" />
+            <span>Logic<span class="accent">Tech</span></span>
+          </a>
+          <p>Enterprise IT solutions built for scale, security, and long-term success.</p>
+          <div class="social-links">
+            <a href="#" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="mailto:hello@logictech.io" class="social-btn"><i class="fa-solid fa-envelope"></i></a>
+            <a href="https://wa.me/254700000000" target="_blank" class="social-btn whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-links-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="services.html">Software Engineering</a></li>
+            <li><a href="services.html">Cloud Architecture</a></li>
+            <li><a href="services.html">Cybersecurity</a></li>
+            <li><a href="services.html">Data &amp; Analytics</a></li>
+            <li><a href="services.html">Mobile Development</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="register.html">Get Started</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p id="footerYear">© 2026 Logic Tech. All rights reserved.</p>
+        <p>Made with <i class="fa-solid fa-heart red"></i> in Nairobi, Kenya</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

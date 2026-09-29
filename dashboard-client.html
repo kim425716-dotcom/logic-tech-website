@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Dashboard – Logic Tech</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html">
+        <img src="assets/logo.png" alt="Logo" />
+        <span>Logic<span class="accent">Tech</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard-client.html" class="sidebar-link active"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="#" class="sidebar-link"><i class="fa-solid fa-folder-open"></i> My Projects</a>
+      <a href="#" class="sidebar-link"><i class="fa-solid fa-paper-plane"></i> Service Request</a>
+      <a href="#" class="sidebar-link"><i class="fa-solid fa-message"></i> Messages</a>
+      <a href="#" class="sidebar-link"><i class="fa-solid fa-credit-card"></i> Payments</a>
+      <a href="#" class="sidebar-link"><i class="fa-solid fa-gear"></i> Settings</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-link logout-btn" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Log Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="dash-main">
+    <!-- Top bar -->
+    <header class="dash-topbar">
+      <button class="icon-btn" onclick="document.getElementById('sidebar').classList.toggle('sidebar-open')">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1 class="dash-page-title">Dashboard</h1>
+      <div class="dash-topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="dash-user" id="dashUser">
+          <div class="dash-avatar" id="dashAvatar">JD</div>
+          <span id="dashName">Loading...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard body -->
+    <div class="dash-body">
+      <div class="dash-welcome animate-on-scroll">
+        <div>
+          <h2 id="welcomeMsg">Welcome back 👋</h2>
+          <p>Here's an overview of your projects and activity.</p>
+        </div>
+        <a href="#" class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Request</a>
+      </div>
+
+      <!-- Stats cards -->
+      <div class="dash-stats animate-on-scroll">
+        <div class="dstat-card">
+          <div class="dstat-icon" style="background:rgba(124,58,237,0.15);color:#a78bfa;"><i class="fa-solid fa-folder-open"></i></div>
+          <div>
+            <p class="dstat-value">4</p>
+            <p class="dstat-label">Active Projects</p>
+          </div>
+        </div>
+        <div class="dstat-card">
+          <div class="dstat-icon" style="background:rgba(16,185,129,0.15);color:#34d399;"><i class="fa-solid fa-circle-check"></i></div>
+          <div>
+            <p class="dstat-value">12</p>
+            <p class="dstat-label">Completed</p>
+          </div>
+        </div>
+        <div class="dstat-card">
+          <div class="dstat-icon" style="background:rgba(245,158,11,0.15);color:#fcd34d;"><i class="fa-solid fa-clock"></i></div>
+          <div>
+            <p class="dstat-value">2</p>
+            <p class="dstat-label">Pending Review</p>
+          </div>
+        </div>
+        <div class="dstat-card">
+          <div class="dstat-icon" style="background:rgba(59,130,246,0.15);color:#93c5fd;"><i class="fa-solid fa-message"></i></div>
+          <div>
+            <p class="dstat-value">5</p>
+            <p class="dstat-label">Unread Messages</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent projects table -->
+      <div class="dash-card animate-on-scroll">
+        <div class="dash-card-header">
+          <h3>Recent Projects</h3>
+          <a href="#" class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 0.8rem;">View All</a>
+        </div>
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="proj-name"><i class="fa-solid fa-code" style="color:#a78bfa;"></i> E-Commerce Platform</div>
+                  <div class="proj-sub">Full-stack React + Node.js</div>
+                </td>
+                <td><span class="status-badge in-progress">In Progress</span></td>
+                <td>
+                  <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#7c3aed;"></div></div>
+                  <span class="progress-label">65%</span>
+                </td>
+                <td>Oct 15, 2026</td>
+                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="proj-name"><i class="fa-solid fa-cloud" style="color:#06b6d4;"></i> AWS Migration</div>
+                  <div class="proj-sub">Cloud architecture & DevOps</div>
+                </td>
+                <td><span class="status-badge review">In Review</span></td>
+                <td>
+                  <div class="progress-bar"><div class="progress-fill" style="width:90%;background:#06b6d4;"></div></div>
+                  <span class="progress-label">90%</span>
+                </td>
+                <td>Sep 30, 2026</td>
+                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="proj-name"><i class="fa-solid fa-mobile-screen" style="color:#ec4899;"></i> Mobile App (iOS/Android)</div>
+                  <div class="proj-sub">React Native — v2.1</div>
+                </td>
+                <td><span class="status-badge completed">Completed</span></td>
+                <td>
+                  <div class="progress-bar"><div class="progress-fill" style="width:100%;background:#10b981;"></div></div>
+                  <span class="progress-label">100%</span>
+                </td>
+                <td>Aug 20, 2026</td>
+                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="proj-name"><i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> Security Audit</div>
+                  <div class="proj-sub">SOC 2 Compliance</div>
+                </td>
+                <td><span class="status-badge pending">Pending</span></td>
+                <td>
+                  <div class="progress-bar"><div class="progress-fill" style="width:10%;background:#f59e0b;"></div></div>
+                  <span class="progress-label">10%</span>
+                </td>
+                <td>Nov 01, 2026</td>
+                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Load user info
+    const user = JSON.parse(localStorage.getItem('lt-user') || 'null');
+    if (!user) { window.location.href = 'login.html'; }
+    else {
+      const initials = user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('dashAvatar').textContent = initials;
+      document.getElementById('dashName').textContent = user.name.split(' ')[0];
+      document.getElementById('welcomeMsg').textContent = `Welcome back, ${user.name.split(' ')[0]}! 👋`;
+    }
+
+    function logout() {
+      localStorage.removeItem('lt-user');
+      window.location.href = 'login.html';
+    }
+    window.logout = logout;
+  </script>
+</body>
+</html>
