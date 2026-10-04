@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal – Logic Tech</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html">
+        <img src="assets/logo.png" alt="Logo" />
+        <span>Logic<span class="accent">Tech</span> <small class="badge-pill badge-admin" style="font-size:0.65rem; margin-left:0.3rem;">ADMIN</small></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-link active" onclick="switchTab('overview')"><i class="fa-solid fa-chart-pie"></i> Overview</button>
+      <button class="sidebar-link" onclick="switchTab('inquiries')"><i class="fa-solid fa-inbox"></i> Inquiries <span id="inquiryCountBadge" class="badge-pill badge-nda hidden" style="margin-left:auto; font-size:0.7rem;">0</span></button>
+      <button class="sidebar-link" onclick="switchTab('projects')"><i class="fa-solid fa-cubes"></i> Projects</button>
+      <button class="sidebar-link" onclick="switchTab('faqs')"><i class="fa-solid fa-circle-question"></i> FAQ Manager</button>
+      <button class="sidebar-link" onclick="switchTab('users')"><i class="fa-solid fa-users"></i> Clients Directory</button>
+      <a href="dashboard-client.html" class="sidebar-link" style="margin-top:0.75rem; border-top:1px dashed var(--border); padding-top:0.75rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Client View</a>
+      <a href="index.html" class="sidebar-link"><i class="fa-solid fa-globe"></i> Main Website</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-link logout-btn" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="dash-main">
+    <!-- Top bar -->
+    <header class="dash-topbar">
+      <button class="icon-btn" onclick="document.getElementById('sidebar').classList.toggle('sidebar-open')">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1 class="dash-page-title" id="pageTitle">Admin Overview</h1>
+      <div class="dash-topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="dash-user">
+          <div class="dash-avatar admin-avatar" id="adminAvatar">AD</div>
+          <span id="adminName">Administrator</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard body -->
+    <div class="dash-body">
+      
+      <!-- Toast feedback -->
+      <div id="toastMessage" class="hidden" style="
+        position: fixed; top: 1.5rem; right: 1.5rem; z-index: 200;
+        background: var(--bg-900); border: 1px solid var(--amber); color: var(--text-primary);
+        padding: 0.85rem 1.25rem; border-radius: var(--radius-sm);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem;
+        font-size: 0.875rem; font-weight: 500;
+      ">
+        <i class="fa-solid fa-circle-check" style="color:var(--amber);"></i>
+        <span id="toastText">Action completed successfully</span>
+      </div>
+
+      <!-- Unauthorized / Loading Banner -->
+      <div id="authGateMsg" class="dash-card hidden" style="text-align:center; padding: 3rem 1.5rem;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #f87171; margin-bottom: 1rem;"></i>
+        <h2>Admin Access Required</h2>
+        <p style="color: var(--text-muted); margin: 0.5rem auto 1.5rem; max-width: 420px;">You must be logged in with an administrator account to access the Logic Tech backoffice.</p>
+        <a href="login.html" class="btn btn-primary">Sign in as Administrator</a>
+      </div>
+
+      <!-- MAIN ADMIN CONTENT -->
+      <div id="adminContent">
+
+        <!-- ── TAB: OVERVIEW ── -->
+        <section id="tab-overview">
+          <div class="dash-welcome">
+            <div>
+              <h2>Backoffice Control Center 👋</h2>
+              <p>Real-time analytics, client inquiries, projects delivery, and content management.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn btn-sm btn-outline" onclick="loadAdminStats()"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+              <button class="btn btn-sm btn-primary" onclick="openNewProjectModal()"><i class="fa-solid fa-plus"></i> New Project</button>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="dash-stats">
+            <div class="dstat-card">
+              <div class="dstat-icon" style="background:rgba(234,179,8,0.12); color:#facc15;">
+                <i class="fa-solid fa-inbox"></i>
+              </div>
+              <div>
+                <div class="dstat-value" id="statInquiries">0</div>
+                <div class="dstat-label">Total Inquiries</div>
+              </div>
+            </div>
+            <div class="dstat-card">
+              <div class="dstat-icon" style="background:rgba(99,102,241,0.12); color:#818cf8;">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <div>
+                <div class="dstat-value" id="statActiveProjects">0</div>
+                <div class="dstat-label">Active Projects</div>
+              </div>
+            </div>
+            <div class="dstat-card">
+              <div class="dstat-icon" style="background:rgba(16,185,129,0.12); color:#6ee7b7;">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <div>
+                <div class="dstat-value" id="statClients">0</div>
+                <div class="dstat-label">Registered Clients</div>
+              </div>
+            </div>
+            <div class="dstat-card">
+              <div class="dstat-icon" style="background:rgba(166,129,62,0.12); color:var(--amber);">
+                <i class="fa-solid fa-circle-question"></i>
+              </div>
+              <div>
+                <div class="dstat-value" id="statFaqs">0</div>
+                <div class="dstat-label">Live FAQs</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick view split -->
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+            <!-- Recent Inquiries -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <h3><i class="fa-solid fa-envelope-open-text" style="color:var(--amber); margin-right:0.5rem;"></i> Recent Inquiries</h3>
+                <button class="btn-sm btn-outline" onclick="switchTab('inquiries')">View All</button>
+              </div>
+              <div class="table-wrap">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Sender</th>
+                      <th>Subject</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentInquiriesBody">
+                    <tr><td colspan="3" style="text-align:center; padding:1.5rem;">Loading inquiries...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Active Projects -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <h3><i class="fa-solid fa-rocket" style="color:#818cf8; margin-right:0.5rem;"></i> Active Deliveries</h3>
+                <button class="btn-sm btn-outline" onclick="switchTab('projects')">Manage</button>
+              </div>
+              <div class="table-wrap">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Project / Client</th>
+                      <th>Status</th>
+                      <th>Progress</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentProjectsBody">
+                    <tr><td colspan="3" style="text-align:center; padding:1.5rem;">Loading projects...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB: INQUIRIES ── -->
+        <section id="tab-inquiries" class="hidden">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Client Inquiries & Contact Submissions</h3>
+              <button class="btn btn-sm btn-outline" onclick="loadInquiries()"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+            </div>
+            <div class="dash-toolbar">
+              <div class="dash-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="inquirySearch" placeholder="Search by name, email, company, subject..." oninput="filterInquiries()" />
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <select id="inquiryNdaFilter" class="btn-sm btn-outline" onchange="filterInquiries()" style="background:var(--bg-950); color:var(--text-primary);">
+                  <option value="all">All Inquiries</option>
+                  <option value="nda">NDA Requested Only</option>
+                  <option value="standard">Standard Inquiries</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Subject</th>
+                    <th>Company / Phone</th>
+                    <th>Budget</th>
+                    <th>NDA</th>
+                    <th>Date</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inquiriesTableBody">
+                  <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading inquiries...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB: PROJECTS ── -->
+        <section id="tab-projects" class="hidden">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Client Projects & Milestones</h3>
+              <button class="btn btn-sm btn-primary" onclick="openNewProjectModal()"><i class="fa-solid fa-plus"></i> Create Project</button>
+            </div>
+            <div class="dash-toolbar">
+              <div class="dash-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="projectSearch" placeholder="Search projects or clients..." oninput="filterProjects()" />
+              </div>
+              <select id="projectStatusFilter" class="btn-sm btn-outline" onchange="filterProjects()" style="background:var(--bg-950); color:var(--text-primary);">
+                <option value="all">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Review">Review</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Due Date</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="projectsTableBody">
+                  <tr><td colspan="6" style="text-align:center; padding:2rem;">Loading projects...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB: FAQS ── -->
+        <section id="tab-faqs" class="hidden">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Frequently Asked Questions Management</h3>
+              <button class="btn btn-sm btn-primary" onclick="openFaqModal()"><i class="fa-solid fa-plus"></i> Add FAQ</button>
+            </div>
+            <div class="dash-toolbar">
+              <div class="dash-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="faqSearch" placeholder="Search FAQs..." oninput="filterFaqs()" />
+              </div>
+              <select id="faqCategoryFilter" class="btn-sm btn-outline" onchange="filterFaqs()" style="background:var(--bg-950); color:var(--text-primary);">
+                <option value="all">All Categories</option>
+                <option value="general">General</option>
+                <option value="technical">Technical</option>
+                <option value="security">Security</option>
+                <option value="pricing">Pricing</option>
+                <option value="support">Support</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Question</th>
+                    <th>Answer Preview</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="faqsTableBody">
+                  <tr><td colspan="5" style="text-align:center; padding:2rem;">Loading FAQs...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB: USERS ── -->
+        <section id="tab-users" class="hidden">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Registered Client Accounts</h3>
+              <button class="btn btn-sm btn-outline" onclick="loadUsers()"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+            </div>
+            <div class="dash-toolbar">
+              <div class="dash-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="userSearch" placeholder="Search by name or email..." oninput="filterUsers()" />
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Client Name</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                    <th>Projects</th>
+                    <th>Inquiries</th>
+                    <th>Joined Date</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="7" style="text-align:center; padding:2rem;">Loading users...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: INQUIRY DETAILS ── -->
+  <div id="inquiryModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="inqModalSubject">Inquiry Details</h3>
+        <button class="icon-btn" onclick="closeModal('inquiryModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Sender Name</span>
+            <span class="detail-value" id="inqModalName">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Email Address</span>
+            <span class="detail-value" id="inqModalEmail">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Company</span>
+            <span class="detail-value" id="inqModalCompany">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Phone</span>
+            <span class="detail-value" id="inqModalPhone">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Budget</span>
+            <span class="detail-value" id="inqModalBudget">-</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">NDA Requested</span>
+            <span class="detail-value" id="inqModalNda">-</span>
+          </div>
+          <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">Submitted On</span>
+            <span class="detail-value" id="inqModalDate">-</span>
+          </div>
+        </div>
+        <div class="detail-item" style="margin-top:0.5rem;">
+          <span class="detail-label">Message</span>
+          <div id="inqModalMessage" style="background:var(--bg-950); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:0.875rem; line-height:1.6; white-space:pre-wrap; color:var(--text-primary); margin-top:0.35rem;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a id="inqModalReplyBtn" href="#" class="btn btn-sm btn-primary"><i class="fa-solid fa-reply"></i> Reply via Email</a>
+        <button class="btn btn-sm btn-outline" onclick="closeModal('inquiryModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: PROJECT CREATE / EDIT ── -->
+  <div id="projectModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="projModalTitle">Create Project</h3>
+        <button class="icon-btn" onclick="closeModal('projectModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="projectForm" onsubmit="saveProject(event)">
+        <input type="hidden" id="projId" />
+        <div class="modal-body">
+          <div class="form-group" id="projUserGroup">
+            <label for="projUserId">Assign to Client</label>
+            <select id="projUserId" required style="width:100%; padding:0.6rem 0.75rem; border-radius:var(--radius-sm); background:var(--bg-950); border:1px solid var(--border); color:var(--text-primary);">
+              <option value="">Select a client...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="projName">Project Name</label>
+            <input type="text" id="projName" maxlength="160" required placeholder="e.g. Enterprise Cloud Migration" />
+          </div>
+          <div class="form-group">
+            <label for="projDesc">Project Description & Scope</label>
+            <textarea id="projDesc" rows="4" maxlength="5000" required placeholder="Outline key milestones and deliverables..."></textarea>
+          </div>
+          <div class="detail-grid">
+            <div class="form-group">
+              <label for="projStatus">Status</label>
+              <select id="projStatus" style="width:100%; padding:0.6rem 0.75rem; border-radius:var(--radius-sm); background:var(--bg-950); border:1px solid var(--border); color:var(--text-primary);">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Review">Review</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="projDueDate">Due Date</label>
+              <input type="date" id="projDueDate" style="width:100%; padding:0.6rem 0.75rem; border-radius:var(--radius-sm); background:var(--bg-950); border:1px solid var(--border); color:var(--text-primary);" />
+            </div>
+          </div>
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <label for="projProgress">Progress: <span id="projProgressVal" style="color:var(--amber); font-weight:700;">0%</span></label>
+            </div>
+            <input type="range" id="projProgress" min="0" max="100" value="0" style="width:100%; accent-color:var(--amber);" oninput="document.getElementById('projProgressVal').textContent = this.value + '%'" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('projectModal')">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-primary" id="projSubmitBtn">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── MODAL: FAQ CREATE / EDIT ── -->
+  <div id="faqModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="faqModalTitle">Add FAQ Item</h3>
+        <button class="icon-btn" onclick="closeModal('faqModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="faqForm" onsubmit="saveFaq(event)">
+        <input type="hidden" id="faqId" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="faqCategory">Category</label>
+            <select id="faqCategory" required style="width:100%; padding:0.6rem 0.75rem; border-radius:var(--radius-sm); background:var(--bg-950); border:1px solid var(--border); color:var(--text-primary);">
+              <option value="general">General</option>
+              <option value="technical">Technical</option>
+              <option value="security">Security</option>
+              <option value="pricing">Pricing</option>
+              <option value="support">Support</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="faqQuestion">Question</label>
+            <input type="text" id="faqQuestion" maxlength="500" required placeholder="e.g. How do you handle intellectual property?" />
+          </div>
+          <div class="form-group">
+            <label for="faqAnswer">Answer</label>
+            <textarea id="faqAnswer" rows="4" maxlength="5000" required placeholder="Provide a comprehensive answer..."></textarea>
+          </div>
+          <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="checkbox" id="faqPublished" checked style="width:auto; cursor:pointer;" />
+            <label for="faqPublished" style="margin-bottom:0; cursor:pointer;">Published (visible to public website visitors)</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('faqModal')">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-primary" id="faqSubmitBtn">Save FAQ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // State management
+    let state = {
+      currentUser: null,
+      inquiries: [],
+      projects: [],
+      faqs: [],
+      users: []
+    };
+
+    // Helper: Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toastMessage');
+      document.getElementById('toastText').textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // Modal helpers
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.sidebar-nav .sidebar-link').forEach(btn => {
+        if (btn.tagName === 'BUTTON') btn.classList.remove('active');
+      });
+      event?.target?.closest('button')?.classList.add('active');
+
+      const titles = {
+        overview: 'Admin Overview',
+        inquiries: 'Inquiries Management',
+        projects: 'Projects Delivery',
+        faqs: 'FAQ Content Manager',
+        users: 'Client Directory'
+      };
+      document.getElementById('pageTitle').textContent = titles[tabId] || 'Admin Portal';
+
+      ['overview', 'inquiries', 'projects', 'faqs', 'users'].forEach(t => {
+        const sec = document.getElementById(`tab-${t}`);
+        if (sec) sec.classList.toggle('hidden', t !== tabId);
+      });
+
+      if (tabId === 'inquiries') loadInquiries();
+      if (tabId === 'projects') loadProjects();
+      if (tabId === 'faqs') loadFaqs();
+      if (tabId === 'users') loadUsers();
+    }
+
+    // ── Authentication Check ──────────────────────────────────────────
+    async function checkAdminAuth() {
+      try {
+        const res = await apiFetch('/api/auth/me');
+        if (!res.ok) throw new Error('Not authenticated');
+        const data = await res.json();
+        
+        if (data.user.role !== 'admin') {
+          document.getElementById('authGateMsg').classList.remove('hidden');
+          document.getElementById('adminContent').classList.add('hidden');
+          return;
+        }
+
+        state.currentUser = data.user;
+        document.getElementById('adminName').textContent = data.user.name || 'Admin';
+        const initials = (data.user.name || 'AD').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        document.getElementById('adminAvatar').textContent = initials;
+
+        document.getElementById('authGateMsg').classList.add('hidden');
+        document.getElementById('adminContent').classList.remove('hidden');
+
+        // Initial fetch
+        loadAdminStats();
+        loadInquiries();
+        loadProjects();
+        loadUsers();
+        loadFaqs();
+      } catch (err) {
+        document.getElementById('authGateMsg').classList.remove('hidden');
+        document.getElementById('adminContent').classList.add('hidden');
+      }
+    }
+
+    // ── Load Stats ───────────────────────────────────────────────────
+    async function loadAdminStats() {
+      try {
+        const res = await apiFetch('/api/admin/stats');
+        if (!res.ok) return;
+        const { stats } = await res.json();
+
+        document.getElementById('statInquiries').textContent = stats.totalInquiries;
+        document.getElementById('statActiveProjects').textContent = stats.activeProjects;
+        document.getElementById('statClients').textContent = stats.totalUsers;
+        document.getElementById('statFaqs').textContent = `${stats.publishedFaqs} / ${stats.totalFaqs}`;
+
+        if (stats.totalInquiries > 0) {
+          const badge = document.getElementById('inquiryCountBadge');
+          badge.textContent = stats.totalInquiries;
+          badge.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error('Failed to load stats:', err);
+      }
+    }
+
+    // ── Inquiries ────────────────────────────────────────────────────
+    async function loadInquiries() {
+      try {
+        const res = await apiFetch('/api/admin/inquiries');
+        if (!res.ok) return;
+        const data = await res.json();
+        state.inquiries = data.inquiries || [];
+        renderInquiries(state.inquiries);
+        renderRecentInquiries(state.inquiries.slice(0, 5));
+      } catch (err) {
+        console.error('Failed to load inquiries:', err);
+      }
+    }
+
+    function renderRecentInquiries(list) {
+      const tbody = document.getElementById('recentInquiriesBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:1rem;">No recent inquiries.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(inq => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(inq.name)}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+          </td>
+          <td>${escapeHtml(inq.subject)}</td>
+          <td style="font-size:0.75rem; color:var(--text-muted);">${formatDate(inq.createdAt)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderInquiries(list) {
+      const tbody = document.getElementById('inquiriesTableBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No inquiries found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(inq => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(inq.name)}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+          </td>
+          <td>${escapeHtml(inq.subject)}</td>
+          <td>
+            ${inq.company ? `<div><i class="fa-solid fa-building" style="font-size:0.75rem; color:var(--text-muted);"></i> ${escapeHtml(inq.company)}</div>` : ''}
+            ${inq.phone ? `<div style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-phone" style="font-size:0.7rem;"></i> ${escapeHtml(inq.phone)}</div>` : '-'}
+          </td>
+          <td>${inq.budget ? `<span class="badge-pill" style="background:rgba(255,255,255,0.05);">${escapeHtml(inq.budget)}</span>` : '-'}</td>
+          <td>${inq.ndaRequested ? '<span class="badge-pill badge-nda"><i class="fa-solid fa-lock"></i> NDA</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">No</span>'}</td>
+          <td style="font-size:0.75rem; color:var(--text-muted);">${formatDate(inq.createdAt)}</td>
+          <td style="text-align:right;">
+            <div class="actions-cell">
+              <button class="btn-sm btn-outline" onclick="viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
+              <button class="btn-sm btn-danger" onclick="deleteInquiry(${inq.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterInquiries() {
+      const query = (document.getElementById('inquirySearch').value || '').toLowerCase();
+      const ndaFilter = document.getElementById('inquiryNdaFilter').value;
+
+      const filtered = state.inquiries.filter(inq => {
+        const matchesQuery = !query ||
+          (inq.name && inq.name.toLowerCase().includes(query)) ||
+          (inq.email && inq.email.toLowerCase().includes(query)) ||
+          (inq.company && inq.company.toLowerCase().includes(query)) ||
+          (inq.subject && inq.subject.toLowerCase().includes(query)) ||
+          (inq.message && inq.message.toLowerCase().includes(query));
+
+        let matchesNda = true;
+        if (ndaFilter === 'nda') matchesNda = inq.ndaRequested === 1;
+        if (ndaFilter === 'standard') matchesNda = inq.ndaRequested === 0;
+
+        return matchesQuery && matchesNda;
+      });
+
+      renderInquiries(filtered);
+    }
+
+    function viewInquiry(id) {
+      const inq = state.inquiries.find(i => i.id === id);
+      if (!inq) return;
+
+      document.getElementById('inqModalSubject').textContent = inq.subject;
+      document.getElementById('inqModalName').textContent = inq.name;
+      document.getElementById('inqModalEmail').textContent = inq.email;
+      document.getElementById('inqModalCompany').textContent = inq.company || 'Not specified';
+      document.getElementById('inqModalPhone').textContent = inq.phone || 'Not specified';
+      document.getElementById('inqModalBudget').textContent = inq.budget || 'Not specified';
+      document.getElementById('inqModalNda').innerHTML = inq.ndaRequested
+        ? '<span class="badge-pill badge-nda">Yes, NDA Requested</span>'
+        : 'No';
+      document.getElementById('inqModalDate').textContent = formatDate(inq.createdAt);
+      document.getElementById('inqModalMessage').textContent = inq.message;
+      document.getElementById('inqModalReplyBtn').href = `mailto:${encodeURIComponent(inq.email)}?subject=${encodeURIComponent('Re: ' + inq.subject)}`;
+
+      openModal('inquiryModal');
+    }
+
+    async function deleteInquiry(id) {
+      if (!confirm('Are you sure you want to delete this inquiry?')) return;
+      try {
+        const res = await apiFetch(`/api/admin/inquiries/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete inquiry');
+        showToast('Inquiry deleted successfully');
+        loadInquiries();
+        loadAdminStats();
+      } catch (err) {
+        alert(err.message || 'Error deleting inquiry');
+      }
+    }
+
+    // ── Projects ─────────────────────────────────────────────────────
+    async function loadProjects() {
+      try {
+        const res = await apiFetch('/api/admin/projects');
+        if (!res.ok) return;
+        const data = await res.json();
+        state.projects = data.projects || [];
+        renderProjects(state.projects);
+        renderRecentProjects(state.projects.slice(0, 5));
+      } catch (err) {
+        console.error('Failed to load projects:', err);
+      }
+    }
+
+    function renderRecentProjects(list) {
+      const tbody = document.getElementById('recentProjectsBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:1rem;">No projects active.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(p => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(p.name)}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientName)}</div>
+          </td>
+          <td><span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
+          <td>
+            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+            <div class="progress-label">${p.progress}%</div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderProjects(list) {
+      const tbody = document.getElementById('projectsTableBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No projects found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(p => `
+        <tr>
+          <td>
+            <div class="proj-name">${escapeHtml(p.name)}</div>
+            <div class="proj-sub" style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.description)}</div>
+          </td>
+          <td>
+            <strong>${escapeHtml(p.clientName)}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientEmail)}</div>
+          </td>
+          <td><span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
+          <td>
+            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+            <div class="progress-label">${p.progress}% Complete</div>
+          </td>
+          <td style="font-size:0.8rem; color:var(--text-muted);">${p.dueDate || 'Ongoing'}</td>
+          <td style="text-align:right;">
+            <div class="actions-cell">
+              <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Project Chat & Updates"><i class="fa-solid fa-comments"></i> Chat</button>
+              <button class="btn-sm btn-outline" onclick="editProject(${p.id})" title="Edit Project"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterProjects() {
+      const query = (document.getElementById('projectSearch').value || '').toLowerCase();
+      const statusFilter = document.getElementById('projectStatusFilter').value;
+
+      const filtered = state.projects.filter(p => {
+        const matchesQuery = !query ||
+          (p.name && p.name.toLowerCase().includes(query)) ||
+          (p.clientName && p.clientName.toLowerCase().includes(query)) ||
+          (p.clientEmail && p.clientEmail.toLowerCase().includes(query)) ||
+          (p.description && p.description.toLowerCase().includes(query));
+
+        const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+        return matchesQuery && matchesStatus;
+      });
+
+      renderProjects(filtered);
+    }
+
+    function openNewProjectModal(preselectedUserId = null) {
+      document.getElementById('projModalTitle').textContent = 'Create New Project';
+      document.getElementById('projId').value = '';
+      document.getElementById('projName').value = '';
+      document.getElementById('projDesc').value = '';
+      document.getElementById('projStatus').value = 'Pending';
+      document.getElementById('projDueDate').value = '';
+      document.getElementById('projProgress').value = 0;
+      document.getElementById('projProgressVal').textContent = '0%';
+      document.getElementById('projUserGroup').classList.remove('hidden');
+
+      // Populate user select
+      const select = document.getElementById('projUserId');
+      select.innerHTML = '<option value="">Select a client...</option>' + 
+        state.users.map(u => `<option value="${u.id}" ${u.id === preselectedUserId ? 'selected' : ''}>${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
+
+      openModal('projectModal');
+    }
+
+    function editProject(id) {
+      const p = state.projects.find(proj => proj.id === id);
+      if (!p) return;
+
+      document.getElementById('projModalTitle').textContent = 'Edit Project: ' + p.name;
+      document.getElementById('projId').value = p.id;
+      document.getElementById('projName').value = p.name;
+      document.getElementById('projDesc').value = p.description;
+      document.getElementById('projStatus').value = p.status;
+      document.getElementById('projDueDate').value = p.dueDate || '';
+      document.getElementById('projProgress').value = p.progress;
+      document.getElementById('projProgressVal').textContent = p.progress + '%';
+      document.getElementById('projUserGroup').classList.add('hidden');
+
+      openModal('projectModal');
+    }
+
+    async function saveProject(e) {
+      e.preventDefault();
+      const id = document.getElementById('projId').value;
+      const isNew = !id;
+
+      const payload = {
+        name: document.getElementById('projName').value,
+        description: document.getElementById('projDesc').value,
+        status: document.getElementById('projStatus').value,
+        progress: Number(document.getElementById('projProgress').value),
+        dueDate: document.getElementById('projDueDate').value || null
+      };
+
+      if (isNew) {
+        payload.userId = Number(document.getElementById('projUserId').value);
+        if (!payload.userId) {
+          alert('Please select a client.');
+          return;
+        }
+      }
+
+      const btn = document.getElementById('projSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const url = isNew ? '/api/admin/projects' : `/api/admin/projects/${id}`;
+        const method = isNew ? 'POST' : 'PUT';
+
+        const res = await apiFetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to save project');
+
+        closeModal('projectModal');
+        showToast(isNew ? 'Project created successfully' : 'Project updated successfully');
+        loadProjects();
+        loadAdminStats();
+      } catch (err) {
+        alert(err.message || 'Error saving project');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Project';
+      }
+    }
+
+    async function deleteProject(id) {
+      if (!confirm('Are you sure you want to permanently delete this project?')) return;
+      try {
+        const res = await apiFetch(`/api/admin/projects/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete project');
+        showToast('Project deleted');
+        loadProjects();
+        loadAdminStats();
+      } catch (err) {
+        alert(err.message || 'Error deleting project');
+      }
+    }
+
+    // ── FAQs ─────────────────────────────────────────────────────────
+    async function loadFaqs() {
+      try {
+        const res = await apiFetch('/api/admin/faqs');
+        if (!res.ok) return;
+        const data = await res.json();
+        state.faqs = data.faqs || [];
+        renderFaqs(state.faqs);
+      } catch (err) {
+        console.error('Failed to load FAQs:', err);
+      }
+    }
+
+    function renderFaqs(list) {
+      const tbody = document.getElementById('faqsTableBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No FAQs found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(f => `
+        <tr>
+          <td><span class="badge-pill badge-category">${escapeHtml(f.category)}</span></td>
+          <td><strong>${escapeHtml(f.q)}</strong></td>
+          <td style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-muted); font-size:0.8rem;">${escapeHtml(f.a)}</td>
+          <td>${f.published ? '<span class="status-badge completed">Published</span>' : '<span class="status-badge pending">Draft</span>'}</td>
+          <td style="text-align:right;">
+            <div class="actions-cell">
+              <button class="btn-sm btn-outline" onclick="editFaq(${f.id})" title="Edit FAQ"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button class="btn-sm btn-danger" onclick="deleteFaq(${f.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterFaqs() {
+      const query = (document.getElementById('faqSearch').value || '').toLowerCase();
+      const catFilter = document.getElementById('faqCategoryFilter').value;
+
+      const filtered = state.faqs.filter(f => {
+        const matchesQuery = !query ||
+          (f.q && f.q.toLowerCase().includes(query)) ||
+          (f.a && f.a.toLowerCase().includes(query));
+
+        const matchesCat = catFilter === 'all' || f.category === catFilter;
+        return matchesQuery && matchesCat;
+      });
+
+      renderFaqs(filtered);
+    }
+
+    function openFaqModal() {
+      document.getElementById('faqModalTitle').textContent = 'Add New FAQ';
+      document.getElementById('faqId').value = '';
+      document.getElementById('faqCategory').value = 'general';
+      document.getElementById('faqQuestion').value = '';
+      document.getElementById('faqAnswer').value = '';
+      document.getElementById('faqPublished').checked = true;
+      openModal('faqModal');
+    }
+
+    function editFaq(id) {
+      const f = state.faqs.find(faq => faq.id === id);
+      if (!f) return;
+
+      document.getElementById('faqModalTitle').textContent = 'Edit FAQ Item';
+      document.getElementById('faqId').value = f.id;
+      document.getElementById('faqCategory').value = f.category;
+      document.getElementById('faqQuestion').value = f.q;
+      document.getElementById('faqAnswer').value = f.a;
+      document.getElementById('faqPublished').checked = f.published === 1;
+      openModal('faqModal');
+    }
+
+    async function saveFaq(e) {
+      e.preventDefault();
+      const id = document.getElementById('faqId').value;
+      const isNew = !id;
+
+      const payload = {
+        category: document.getElementById('faqCategory').value,
+        q: document.getElementById('faqQuestion').value,
+        a: document.getElementById('faqAnswer').value,
+        published: document.getElementById('faqPublished').checked
+      };
+
+      const btn = document.getElementById('faqSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const url = isNew ? '/api/admin/faqs' : `/api/admin/faqs/${id}`;
+        const method = isNew ? 'POST' : 'PUT';
+
+        const res = await apiFetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to save FAQ');
+
+        closeModal('faqModal');
+        showToast(isNew ? 'FAQ added' : 'FAQ updated');
+        loadFaqs();
+        loadAdminStats();
+      } catch (err) {
+        alert(err.message || 'Error saving FAQ');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save FAQ';
+      }
+    }
+
+    async function deleteFaq(id) {
+      if (!confirm('Are you sure you want to delete this FAQ?')) return;
+      try {
+        const res = await apiFetch(`/api/admin/faqs/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete FAQ');
+        showToast('FAQ deleted');
+        loadFaqs();
+        loadAdminStats();
+      } catch (err) {
+        alert(err.message || 'Error deleting FAQ');
+      }
+    }
+
+    // ── Users / Clients Directory ────────────────────────────────────
+    async function loadUsers() {
+      try {
+        const res = await apiFetch('/api/admin/users');
+        if (!res.ok) return;
+        const data = await res.json();
+        state.users = data.users || [];
+        renderUsers(state.users);
+      } catch (err) {
+        console.error('Failed to load users:', err);
+      }
+    }
+
+    function renderUsers(list) {
+      const tbody = document.getElementById('usersTableBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No users found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(u => `
+        <tr>
+          <td><strong>${escapeHtml(u.name)}</strong></td>
+          <td>${escapeHtml(u.email)}</td>
+          <td><span class="badge-pill ${u.role === 'admin' ? 'badge-admin' : 'badge-client'}">${u.role.toUpperCase()}</span></td>
+          <td><span class="badge-pill" style="background:rgba(99,102,241,0.1); color:#a5b4fc;">${u.projectCount || 0}</span></td>
+          <td><span class="badge-pill" style="background:rgba(234,179,8,0.1); color:#fde047;">${u.inquiryCount || 0}</span></td>
+          <td style="font-size:0.75rem; color:var(--text-muted);">${formatDate(u.createdAt)}</td>
+          <td style="text-align:right;">
+            <div class="actions-cell">
+              <button class="btn-sm btn-primary" onclick="openNewProjectModal(${u.id})" title="Assign Project"><i class="fa-solid fa-plus"></i> Project</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterUsers() {
+      const query = (document.getElementById('userSearch').value || '').toLowerCase();
+      const filtered = state.users.filter(u =>
+        !query ||
+        (u.name && u.name.toLowerCase().includes(query)) ||
+        (u.email && u.email.toLowerCase().includes(query))
+      );
+      renderUsers(filtered);
+    }
+
+    // ── Helpers & Formatting ─────────────────────────────────────────
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatDate(dtStr) {
+      if (!dtStr) return '-';
+      try {
+        const d = new Date(dtStr);
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch {
+        return dtStr;
+      }
+    }
+
+    function statusClass(st) {
+      switch ((st || '').toLowerCase()) {
+        case 'in progress': return 'in-progress';
+        case 'review': return 'review';
+        case 'completed': return 'completed';
+        case 'cancelled': return 'cancelled';
+        default: return 'pending';
+      }
+    }
+
+    function statusColor(st) {
+      switch ((st || '').toLowerCase()) {
+        case 'in progress': return 'linear-gradient(90deg, #6366f1, #8b5cf6)';
+        case 'review': return 'linear-gradient(90deg, #06b6d4, #3b82f6)';
+        case 'completed': return 'linear-gradient(90deg, #10b981, #059669)';
+        case 'cancelled': return '#ef4444';
+        default: return 'linear-gradient(90deg, #f59e0b, #d97706)';
+      }
+    }
+
+    // ── Admin Live Project Messaging ────────────────────────────────
+    let currentAdminChatProjectId = null;
+    let adminChatPollTimer = null;
+
+    async function openAdminChat(projectId, projectName, clientName) {
+      currentAdminChatProjectId = projectId;
+      document.getElementById('adminChatProjectTitle').textContent = projectName || 'Project Discussion';
+      document.getElementById('adminChatClientSub').textContent = `Client: ${clientName || 'Assigned Client'}`;
+      document.getElementById('adminChatModal').classList.remove('hidden');
+      document.getElementById('adminChatMessagesList').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:2rem;">Loading thread...</div>';
+      document.getElementById('adminChatMessageInput').value = '';
+      document.getElementById('adminChatIsInternal').checked = false;
+      document.getElementById('adminChatMessageInput').focus();
+
+      await fetchAdminChatMessages();
+
+      if (adminChatPollTimer) clearInterval(adminChatPollTimer);
+      adminChatPollTimer = setInterval(fetchAdminChatMessages, 4000);
+    }
+
+    function closeAdminChat() {
+      document.getElementById('adminChatModal').classList.add('hidden');
+      if (adminChatPollTimer) clearInterval(adminChatPollTimer);
+      adminChatPollTimer = null;
+      currentAdminChatProjectId = null;
+    }
+
+    async function fetchAdminChatMessages() {
+      if (!currentAdminChatProjectId) return;
+      try {
+        const res = await apiFetch(`/api/projects/${currentAdminChatProjectId}/messages`);
+        if (!res.ok) return;
+        const data = await res.json();
+        renderAdminChatMessages(data.messages || []);
+      } catch (err) {
+        console.error('Error loading admin messages:', err);
+      }
+    }
+
+    function renderAdminChatMessages(messages) {
+      const list = document.getElementById('adminChatMessagesList');
+      if (!messages.length) {
+        list.innerHTML = `
+          <div style="text-align:center; color:var(--text-muted); margin:auto; padding:2rem;">
+            <i class="fa-solid fa-comments" style="font-size:2rem; margin-bottom:0.75rem; opacity:0.4;"></i>
+            <p>No messages in this project thread yet. Post an update or note below.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = messages.map(m => {
+        const isMine = m.senderRole === 'admin';
+        const roleLabel = isMine
+          ? '<span class="badge-pill badge-admin" style="font-size:0.65rem;">ADMIN</span>'
+          : '<span class="badge-pill badge-client" style="font-size:0.65rem;">CLIENT</span>';
+        const internalTag = m.isInternal ? '<span class="badge-pill badge-nda" style="font-size:0.65rem; margin-left:0.3rem;"><i class="fa-solid fa-lock"></i> INTERNAL NOTE</span>' : '';
+        const timeStr = new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="chat-bubble ${isMine ? 'mine' : 'theirs'} ${m.isInternal ? 'internal' : ''}">
+            <div class="chat-meta">
+              <span><strong>${escapeHtml(m.senderName)}</strong> ${roleLabel}${internalTag}</span>
+              <span>• ${timeStr}</span>
+            </div>
+            <div class="chat-body">${escapeHtml(m.content)}</div>
+          </div>
+        `;
+      }).join('');
+
+      list.scrollTop = list.scrollHeight;
+    }
+
+    async function sendAdminChatMessage(e) {
+      e.preventDefault();
+      if (!currentAdminChatProjectId) return;
+      const input = document.getElementById('adminChatMessageInput');
+      const isInternal = document.getElementById('adminChatIsInternal').checked;
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('adminChatSendBtn');
+      btn.disabled = true;
+
+      try {
+        const res = await apiFetch(`/api/projects/${currentAdminChatProjectId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: text, isInternal })
+        });
+        if (!res.ok) throw new Error('Failed to post message');
+        input.value = '';
+        await fetchAdminChatMessages();
+      } catch (err) {
+        alert(err.message || 'Error posting message');
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    window.openAdminChat = openAdminChat;
+    window.closeAdminChat = closeAdminChat;
+    window.sendAdminChatMessage = sendAdminChatMessage;
+
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', checkAdminAuth);
+  </script>
+
+  <!-- ── MODAL: ADMIN PROJECT DISCUSSION ── -->
+  <div id="adminChatModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 720px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="adminChatProjectTitle">Project Discussion</h3>
+          <span id="adminChatClientSub" style="font-size: 0.775rem; color: var(--text-muted);">Client Thread</span>
+        </div>
+        <button class="icon-btn" onclick="closeAdminChat()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="chat-container" style="border:none; border-radius:0;">
+        <div class="chat-messages-wrap" id="adminChatMessagesList">
+          <!-- Live messages populate here -->
+        </div>
+        <form class="chat-input-bar" onsubmit="sendAdminChatMessage(event)">
+          <div style="display:flex; flex-direction:column; gap:0.4rem; flex:1;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="text" id="adminChatMessageInput" placeholder="Write message to client or internal update..." maxlength="5000" autocomplete="off" required style="width:100%;" />
+              <button type="submit" class="chat-send-btn" id="adminChatSendBtn" title="Send Message">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+            <label style="font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:0.4rem; cursor:pointer; margin:0 0.5rem;">
+              <input type="checkbox" id="adminChatIsInternal" style="accent-color:#eab308; cursor:pointer;" />
+              <span>Mark as private Internal Team Note (hidden from client)</span>
+            </label>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

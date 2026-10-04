@@ -67,15 +67,6 @@
         </button>
       </form>
 
-      <!-- Demo shortcuts -->
-      <div class="auth-demo">
-        <p>Quick demo logins:</p>
-        <div class="auth-demo-btns">
-          <button class="auth-demo-btn" onclick="fillDemo('alice@example.com','demo123')">Client</button>
-          <button class="auth-demo-btn" onclick="fillDemo('carol@logictech.io','demo123')">Admin</button>
-        </div>
-      </div>
-
       <p class="auth-footer">
         Don't have an account? <a href="register.html">Sign up free</a>
       </p>
@@ -97,42 +88,32 @@
       }
     });
 
-    // Demo fill
-    function fillDemo(email, pw) {
-      document.getElementById('loginEmail').value = email;
-      document.getElementById('loginPassword').value = pw;
-    }
-    window.fillDemo = fillDemo;
-
-    // Login submit (demo logic — replace with real API call)
     document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email    = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
       const btn      = document.getElementById('loginBtn');
       const errBox   = document.getElementById('loginError');
 
-      btn.textContent = 'Signing in...';
-      btn.disabled = true;
       errBox.classList.add('hidden');
-
-      await new Promise(r => setTimeout(r, 1200));
-
-      // Demo credentials check
-      const validUsers = {
-        'alice@example.com': { pw: 'demo123', role: 'client', name: 'Alice Wanjiku' },
-        'carol@logictech.io': { pw: 'demo123', role: 'admin', name: 'Carol Admin' },
-      };
-      const user = validUsers[email];
-
-      if (user && user.pw === password) {
-        localStorage.setItem('lt-user', JSON.stringify({ email, name: user.name, role: user.role }));
-        showToast('Welcome back, ' + user.name.split(' ')[0] + '!', 'success');
-        setTimeout(() => {
-          window.location.href = user.role === 'admin' ? 'dashboard-admin.html' : 'dashboard-client.html';
-        }, 800);
-      } else {
-        errBox.textContent = 'Invalid email or password. Try a demo login below.';
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      try {
+        const response = await apiFetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('loginEmail').value,
+            password: document.getElementById('loginPassword').value
+          })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Unable to sign in.');
+        if (result.user && result.user.role === 'admin') {
+          window.location.href = 'dashboard-admin.html';
+        } else {
+          window.location.href = 'dashboard-client.html';
+        }
+      } catch (error) {
+        errBox.textContent = error.message || 'The server could not be reached. Please try again.';
         errBox.classList.remove('hidden');
         btn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
         btn.disabled = false;

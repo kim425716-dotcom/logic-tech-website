@@ -1,16 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact &amp; Schedule Consultation – Logic Tech</title>
+  <title>Contact &amp; Schedule Consultation â€“ Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
+
 <body>
 
   <!-- ========== NAVBAR ========== -->
@@ -24,6 +29,7 @@
       <nav class="nav-links" id="navLinks">
         <a href="about.html">About</a>
         <a href="services.html">Services</a>
+        <a href="estimator.html">Estimator</a>
         <a href="case-studies.html">Case Studies</a>
         <a href="how-it-works.html">How It Works</a>
         <a href="faq.html">FAQ</a>
@@ -46,6 +52,7 @@
     <div class="mobile-menu" id="mobileMenu">
       <a href="about.html" class="mobile-link">About</a>
       <a href="services.html" class="mobile-link">Services</a>
+      <a href="estimator.html" class="mobile-link">Estimator</a>
       <a href="case-studies.html" class="mobile-link">Case Studies</a>
       <a href="how-it-works.html" class="mobile-link">How It Works</a>
       <a href="faq.html" class="mobile-link">FAQ</a>
@@ -63,7 +70,8 @@
       <div class="page-hero-content animate-in">
         <div class="badge-outline amber"><i class="fa-solid fa-headset"></i> Connect with Our Engineering Team</div>
         <h1>Let's Build Something <span class="gradient-text">Exceptional Together</span></h1>
-        <p>Whether you need a dedicated engineering squad, a high-throughput cloud migration, or a rapid MVP rollout, our solutions architects are ready to scope your project.</p>
+        <p>Whether you need a dedicated engineering squad, a high-throughput cloud migration, or a rapid MVP rollout,
+          our solutions architects are ready to scope your project.</p>
       </div>
     </div>
   </section>
@@ -89,8 +97,8 @@
             <i class="fa-brands fa-whatsapp"></i>
           </div>
           <div>
-            <h4>WhatsApp Hotline</h4>
-            <a href="https://wa.me/254700000000" target="_blank">+254 700 000 000</a>
+            <h4>Phone / WhatsApp</h4>
+            <a href="https://wa.me/254702588886" target="_blank">+254 702 588 886</a>
           </div>
         </div>
         <div class="contact-info-card">
@@ -107,11 +115,12 @@
       <!-- Main Project Inquiry Form -->
       <div class="contact-card animate-on-scroll">
         <div class="contact-card-glow"></div>
-        
+
         <div id="contactSuccess" class="contact-success hidden">
           <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
           <h3>Inquiry Received!</h3>
-          <p>Thank you for reaching out. A Senior Solutions Architect has been assigned to your request and will follow up with an initial technical assessment within 24 hours.</p>
+          <p>Thank you for reaching out. A Senior Solutions Architect has been assigned to your request and will follow
+            up with an initial technical assessment within 24 hours.</p>
           <button class="btn btn-ghost" onclick="resetContact()">Submit Another Inquiry</button>
         </div>
 
@@ -145,7 +154,7 @@
               <label>Phone / WhatsApp Number</label>
               <div class="input-wrap">
                 <i class="fa-solid fa-phone input-icon"></i>
-                <input type="tel" name="phone" placeholder="+254 712 345 678" />
+                <input type="tel" name="phone" placeholder="0702588886 / +254 702 588 886" />
               </div>
             </div>
           </div>
@@ -156,8 +165,10 @@
             <div class="input-wrap">
               <i class="fa-solid fa-tag input-icon"></i>
               <select name="subject" required>
-                <option value="Custom Software Development">Custom Software Development (Web / APIs / Microservices)</option>
-                <option value="Cloud Architecture & DevOps">Cloud Architecture &amp; DevOps (AWS / GCP / Kubernetes)</option>
+                <option value="Custom Software Development">Custom Software Development (Web / APIs / Microservices)
+                </option>
+                <option value="Cloud Architecture & DevOps">Cloud Architecture &amp; DevOps (AWS / GCP / Kubernetes)
+                </option>
                 <option value="Cybersecurity & SOC Compliance">Cybersecurity, Pentesting &amp; Compliance Audit</option>
                 <option value="Mobile App Development">Mobile App Development (iOS &amp; Android)</option>
                 <option value="Data Engineering & AI/ML">Data Engineering, Warehousing &amp; AI Integration</option>
@@ -169,23 +180,23 @@
 
           <!-- Budget Range Selector -->
           <div class="form-group">
-            <label>Estimated Project Budget (USD)</label>
+            <label>Estimated Project Budget (KES)</label>
             <div class="budget-options">
               <div class="budget-radio">
-                <input type="radio" id="budget1" name="budget" value="Under $10k" />
-                <label for="budget1">&lt; $10k</label>
+                <input type="radio" id="budget1" name="budget" value="Under KSh 250k" />
+                <label for="budget1">&lt; KSh 250k</label>
               </div>
               <div class="budget-radio">
-                <input type="radio" id="budget2" name="budget" value="$10k - $25k" checked />
-                <label for="budget2">$10k – $25k</label>
+                <input type="radio" id="budget2" name="budget" value="KSh 250k - KSh 1M" checked />
+                <label for="budget2">KSh 250k. 1M</label>
               </div>
               <div class="budget-radio">
-                <input type="radio" id="budget3" name="budget" value="$25k - $50k" />
-                <label for="budget3">$25k – $50k</label>
+                <input type="radio" id="budget3" name="budget" value="KSh 1M - KSh 3M" />
+                <label for="budget3">KSh 1M 3M</label>
               </div>
               <div class="budget-radio">
-                <input type="radio" id="budget4" name="budget" value="$50k+" />
-                <label for="budget4">$50k+ (Enterprise)</label>
+                <input type="radio" id="budget4" name="budget" value="KSh 3M+ (Enterprise)" />
+                <label for="budget4">KSh 3M+ (Enterprise)</label>
               </div>
             </div>
           </div>
@@ -195,20 +206,24 @@
             <label>Project Details &amp; Technical Requirements *</label>
             <div class="input-wrap">
               <i class="fa-solid fa-comment input-icon" style="top:16px;"></i>
-              <textarea name="message" rows="5" placeholder="Tell us about your project goals, current technology stack, desired timeline, or any specific architectural challenges..." required></textarea>
+              <textarea name="message" rows="5"
+                placeholder="Tell us about your project goals, current technology stack, desired timeline, or any specific architectural challenges..."
+                required></textarea>
             </div>
           </div>
 
           <!-- NDA Checkbox -->
           <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.8125rem; color:var(--text-secondary);">
             <input type="checkbox" id="ndaCheckbox" name="nda_requested" />
-            <label for="ndaCheckbox" style="cursor:pointer; text-transform:none; font-weight:400; color:var(--text-secondary);">
+            <label for="ndaCheckbox"
+              style="cursor:pointer; text-transform:none; font-weight:400; color:var(--text-secondary);">
               Please send a mutual Non-Disclosure Agreement (NDA) before our discovery call.
             </label>
           </div>
 
           <div class="form-footer">
-            <span class="form-note"><i class="fa-solid fa-lock" style="color:var(--cyan); margin-right:0.3rem;"></i> 100% Confidential &amp; Protected by strict privacy policy.</span>
+            <span class="form-note"><i class="fa-solid fa-lock" style="color:var(--cyan); margin-right:0.3rem;"></i>
+              100% Confidential &amp; Protected by strict privacy policy.</span>
             <button type="submit" class="btn btn-primary" id="contactSubmit">
               Send Project Inquiry <i class="fa-solid fa-paper-plane"></i>
             </button>
@@ -226,42 +241,45 @@
       <div class="office-grid animate-on-scroll">
         <div class="office-card-with-img">
           <div class="office-img-wrap">
-            <img src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=600&q=80" alt="Nairobi Westlands Skyline & Technology Hub" />
+            <img src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=600&q=80"
+              alt="Nairobi Westlands Skyline & Technology Hub" />
           </div>
           <div class="office-card-content">
-            <div class="office-flag">🇰🇪</div>
+            <div class="office-flag"></div>
             <h3>Nairobi Engineering HQ</h3>
             <p>The Mirage Towers, 8th Floor, Chiromo Road, Westlands, Nairobi, Kenya</p>
             <div class="office-hours">
-              <strong>Timezone:</strong> EAT (UTC+3) &bull; Mon – Fri, 8:00 AM – 6:00 PM
+              <strong>Timezone:</strong> EAT (UTC+3) &bull; Mon Fri, 8:00 AM 6:00 PM
             </div>
           </div>
         </div>
 
         <div class="office-card-with-img">
           <div class="office-img-wrap">
-            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80" alt="United States Corporate Entity & Client Services" />
+            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
+              alt="United States Corporate Entity & Client Services" />
           </div>
           <div class="office-card-content">
-            <div class="office-flag">🇺🇸</div>
+            <div class="office-flag"></div>
             <h3>United States Entity</h3>
             <p>1209 Orange Street, Wilmington, DE 19801, United States</p>
             <div class="office-hours">
-              <strong>Timezone:</strong> EST (UTC-5) &bull; Mon – Fri, 9:00 AM – 5:00 PM
+              <strong>Timezone:</strong> EST (UTC-5) &bull; Mon Fri, 9:00 AM 5:00 PM
             </div>
           </div>
         </div>
 
         <div class="office-card-with-img">
           <div class="office-img-wrap">
-            <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80" alt="London Financial & Operations Advisory Hub" />
+            <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80"
+              alt="London Financial & Operations Advisory Hub" />
           </div>
           <div class="office-card-content">
-            <div class="office-flag">🇬🇧</div>
+            <div class="office-flag"></div>
             <h3>London Operations</h3>
             <p>124 City Road, London, EC1V 2NX, United Kingdom</p>
             <div class="office-hours">
-              <strong>Timezone:</strong> GMT / BST &bull; Mon – Fri, 9:00 AM – 5:00 PM
+              <strong>Timezone:</strong> GMT / BST &bull; Mon “ Fri, 9:00 AM 5:00 PM
             </div>
           </div>
         </div>
@@ -285,7 +303,8 @@
             <a href="#" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
             <a href="#" class="social-btn"><i class="fa-brands fa-github"></i></a>
             <a href="mailto:hello@logictech.io" class="social-btn"><i class="fa-solid fa-envelope"></i></a>
-            <a href="https://wa.me/254700000000" target="_blank" class="social-btn whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://wa.me/254702588886" target="_blank" class="social-btn whatsapp"><i
+                class="fa-brands fa-whatsapp"></i></a>
           </div>
         </div>
         <div class="footer-links-col">
@@ -313,19 +332,22 @@
         <div class="footer-links-col">
           <h4>Legal</h4>
           <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="cookies.html">Cookie Policy</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <p id="footerYear">© 2026 Logic Tech. All rights reserved.</p>
+        <p id="footerYear">Â© 2026 Logic Tech. All rights reserved.</p>
         <p>Made with <i class="fa-solid fa-heart red"></i> in Nairobi, Kenya</p>
       </div>
     </div>
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/chatbot.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,478 @@
+/* ================================================================
+   LOGIC TECH — Architecture & Project Cost Estimator Styles
+   ================================================================ */
+
+.estimator-wrapper {
+  padding: 3rem 0 6rem;
+  position: relative;
+}
+
+.estimator-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .estimator-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Step Navigation Tabs ---- */
+.estimator-steps-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.step-nav-btn {
+  flex: 1;
+  min-width: 130px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.step-nav-btn .step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: all 0.25s ease;
+}
+
+.step-nav-btn:hover {
+  background: rgba(166, 129, 62, 0.06);
+  color: var(--text-primary);
+}
+
+.step-nav-btn.active {
+  background: rgba(166, 129, 62, 0.12);
+  border-color: rgba(166, 129, 62, 0.4);
+  color: var(--amber);
+}
+
+.step-nav-btn.active .step-num {
+  background: var(--amber);
+  color: #ffffff;
+}
+
+.step-nav-btn.completed .step-num {
+  background: #10b981;
+  color: #ffffff;
+}
+
+/* ---- Step Panels ---- */
+.step-panel {
+  display: none;
+  animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.step-panel.active {
+  display: block;
+}
+
+@keyframes fadeInStep {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-header {
+  margin-bottom: 1.75rem;
+}
+
+.step-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.step-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ---- Option Cards (Radio & Checkbox selections) ---- */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.options-grid.two-col {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.option-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.35rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.option-card:hover {
+  border-color: rgba(166, 129, 62, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.option-card.selected {
+  border-color: var(--amber);
+  background: rgba(166, 129, 62, 0.08);
+  box-shadow: 0 0 0 1px var(--amber), 0 12px 30px rgba(166, 129, 62, 0.12);
+}
+
+.option-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.option-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: rgba(166, 129, 62, 0.12);
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.option-card.selected .option-icon {
+  background: var(--amber);
+  color: #ffffff;
+}
+
+.option-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.option-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.option-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.option-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.option-card.selected .option-badge {
+  background: rgba(166, 129, 62, 0.15);
+  color: var(--amber);
+}
+
+.option-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: transparent;
+  transition: all 0.2s ease;
+}
+
+.option-card.selected .option-check {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: #ffffff;
+}
+
+/* Step Footer Navigation Buttons */
+.step-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ---- Sticky Summary Sidebar ---- */
+.estimator-sidebar {
+  position: sticky;
+  top: 90px;
+}
+
+.summary-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--amber), #c49e58, var(--amber));
+}
+
+.summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.summary-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.currency-toggle {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.curr-btn {
+  padding: 0.25rem 0.65rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.curr-btn.active {
+  background: var(--amber);
+  color: #ffffff;
+}
+
+.price-display {
+  background: rgba(166, 129, 62, 0.08);
+  border: 1px solid rgba(166, 129, 62, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.price-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.price-range {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-estimate {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.timeline-estimate strong {
+  color: var(--text-primary);
+}
+
+/* Summary Blueprint Specs List */
+.summary-section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 1.25rem 0 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
+
+.specs-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+}
+
+.specs-item-name {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.specs-item-val {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+/* Recommended Stack Badges */
+.stack-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.stack-tag {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+}
+
+/* Direct Spec Submission Form Inside Step 4 or Modal */
+.spec-lead-form {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.form-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .form-grid-two {
+    grid-template-columns: 1fr;
+  }
+}
+
+.estimator-success {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--card-bg);
+  border: 1.5px solid #10b981;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 15px 40px rgba(16, 185, 129, 0.1);
+}
+
+.estimator-success-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1.25rem;
+}
+
+/* Printable Sheet styles (when triggered) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printSpecSheet, #printSpecSheet * {
+    visibility: visible;
+  }
+  #printSpecSheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 2rem;
+    background: #ffffff;
+    color: #111111;
+  }
+}

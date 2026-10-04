@@ -2,6 +2,22 @@
    LOGIC TECH — JavaScript
    ============================================= */
 
+/* ---- API Configuration ---- */
+// In dev mode (Live Server on 5500), point to backend on 8080.
+// In production, backend serves everything from the same origin.
+const API_BASE = window.location.port === '5500' ? 'http://localhost:8080' : '';
+
+/**
+ * Wrapper around fetch() that always sends credentials (cookies)
+ * and prepends the correct API base URL.
+ * @param {string} path  API path, e.g. '/api/auth/login'
+ * @param {Object} opts  fetch options (method, headers, body, etc.)
+ * @returns {Promise<Response>}
+ */
+function apiFetch(path, opts = {}) {
+  return fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
+}
+
 /* ---- Smooth scroll offset for fixed navbar ---- */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
@@ -139,7 +155,7 @@ if (marqueeTrack) {
 }
 
 /* ---- Comprehensive FAQ Data ---- */
-const faqs = [
+let faqs = [
   // General & Onboarding
   {
     category: 'general',
@@ -262,13 +278,20 @@ const faqs = [
 ];
 
 function buildFAQItem(faq, idx) {
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[character]);
   return `
-    <div class="faq-item" data-idx="${idx}" data-category="${faq.category}">
+    <div class="faq-item" data-idx="${idx}" data-category="${escapeHtml(faq.category)}">
       <button class="faq-q" onclick="toggleFAQ(${idx})">
-        <span>${faq.q}</span>
+        <span>${escapeHtml(faq.q)}</span>
         <i class="fa-solid fa-chevron-down"></i>
       </button>
-      <div class="faq-a"><p>${faq.a}</p></div>
+      <div class="faq-a"><p>${escapeHtml(faq.a)}</p></div>
     </div>
   `;
 }
@@ -328,6 +351,21 @@ if (faqSearch) {
 
 renderFAQs();
 
+if (faqList) {
+  apiFetch('/api/faqs')
+    .then(response => {
+      if (!response.ok) throw new Error('FAQ service is unavailable.');
+      return response.json();
+    })
+    .then(items => {
+      faqs = items;
+      renderFAQs();
+    })
+    .catch(() => {
+      faqList.innerHTML = '<div class="faq-empty"><p>FAQs could not be loaded. Please refresh the page or contact us directly.</p></div>';
+    });
+}
+
 /* ---- Contact form ---- */
 const contactForm = document.getElementById('contactForm');
 const contactSuccess = document.getElementById('contactSuccess');
@@ -348,12 +386,22 @@ contactForm?.addEventListener('submit', async (e) => {
   contactSubmit.textContent = 'Sending...';
   contactSubmit.disabled = true;
 
-  // Simulate async send (replace with real fetch/EmailJS call)
-  await new Promise(r => setTimeout(r, 1500));
-
-  contactForm.classList.add('hidden');
-  contactSuccess.classList.remove('hidden');
-  showToast('Message sent successfully!', 'success');
+  try {
+    const response = await apiFetch('/api/inquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(data.entries()))
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Your inquiry could not be sent.');
+    contactForm.classList.add('hidden');
+    contactSuccess.classList.remove('hidden');
+    showToast('Message sent successfully!', 'success');
+  } catch (error) {
+    showToast(error.message || 'The server could not be reached. Please try again.', 'error');
+    contactSubmit.innerHTML = 'Send Project Inquiry <i class="fa-solid fa-paper-plane"></i>';
+    contactSubmit.disabled = false;
+  }
 });
 
 function resetContact() {
@@ -366,3 +414,26 @@ function resetContact() {
   }
 }
 window.resetContact = resetContact;
+
+/* ---- Scroll progress bar ---- */
+(function() {
+  var bar = document.createElement('div');
+  bar.id = 'ltScrollProgress';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', function() {
+    var scrolled = window.scrollY;
+    var total = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+  }, { passive: true });
+})();
+
+/* ---- Active nav link highlight ---- */
+(function() {
+  var current = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-links a').forEach(function(a) {
+    var href = a.getAttribute('href');
+    if (href === current || (current === '' && href === 'index.html')) {
+      a.classList.add('active');
+    }
+  });
+})();

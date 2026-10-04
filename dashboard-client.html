@@ -63,36 +63,49 @@
           <h2 id="welcomeMsg">Welcome back 👋</h2>
           <p>Here's an overview of your projects and activity.</p>
         </div>
-        <a href="#" class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Request</a>
+        <button type="button" class="btn btn-primary" id="newRequestBtn"><i class="fa-solid fa-plus"></i> New Request</button>
       </div>
+
+      <form id="projectRequestForm" class="dash-card hidden" style="margin-bottom:1.5rem;">
+        <div class="dash-card-header"><h3>Request a Project</h3></div>
+        <div class="form-group">
+          <label for="projectName">Project name</label>
+          <input id="projectName" name="name" maxlength="160" required />
+        </div>
+        <div class="form-group">
+          <label for="projectDescription">Project details</label>
+          <textarea id="projectDescription" name="description" rows="4" maxlength="5000" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="projectRequestSubmit">Send Request</button>
+      </form>
 
       <!-- Stats cards -->
       <div class="dash-stats animate-on-scroll">
         <div class="dstat-card">
           <div class="dstat-icon" style="background:rgba(124,58,237,0.15);color:#a78bfa;"><i class="fa-solid fa-folder-open"></i></div>
           <div>
-            <p class="dstat-value">4</p>
+            <p class="dstat-value" id="activeProjects">0</p>
             <p class="dstat-label">Active Projects</p>
           </div>
         </div>
         <div class="dstat-card">
           <div class="dstat-icon" style="background:rgba(16,185,129,0.15);color:#34d399;"><i class="fa-solid fa-circle-check"></i></div>
           <div>
-            <p class="dstat-value">12</p>
+            <p class="dstat-value" id="completedProjects">0</p>
             <p class="dstat-label">Completed</p>
           </div>
         </div>
         <div class="dstat-card">
           <div class="dstat-icon" style="background:rgba(245,158,11,0.15);color:#fcd34d;"><i class="fa-solid fa-clock"></i></div>
           <div>
-            <p class="dstat-value">2</p>
+            <p class="dstat-value" id="pendingProjects">0</p>
             <p class="dstat-label">Pending Review</p>
           </div>
         </div>
         <div class="dstat-card">
           <div class="dstat-icon" style="background:rgba(59,130,246,0.15);color:#93c5fd;"><i class="fa-solid fa-message"></i></div>
           <div>
-            <p class="dstat-value">5</p>
+            <p class="dstat-value">0</p>
             <p class="dstat-label">Unread Messages</p>
           </div>
         </div>
@@ -115,60 +128,7 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="proj-name"><i class="fa-solid fa-code" style="color:#a78bfa;"></i> E-Commerce Platform</div>
-                  <div class="proj-sub">Full-stack React + Node.js</div>
-                </td>
-                <td><span class="status-badge in-progress">In Progress</span></td>
-                <td>
-                  <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#7c3aed;"></div></div>
-                  <span class="progress-label">65%</span>
-                </td>
-                <td>Oct 15, 2026</td>
-                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="proj-name"><i class="fa-solid fa-cloud" style="color:#06b6d4;"></i> AWS Migration</div>
-                  <div class="proj-sub">Cloud architecture & DevOps</div>
-                </td>
-                <td><span class="status-badge review">In Review</span></td>
-                <td>
-                  <div class="progress-bar"><div class="progress-fill" style="width:90%;background:#06b6d4;"></div></div>
-                  <span class="progress-label">90%</span>
-                </td>
-                <td>Sep 30, 2026</td>
-                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="proj-name"><i class="fa-solid fa-mobile-screen" style="color:#ec4899;"></i> Mobile App (iOS/Android)</div>
-                  <div class="proj-sub">React Native — v2.1</div>
-                </td>
-                <td><span class="status-badge completed">Completed</span></td>
-                <td>
-                  <div class="progress-bar"><div class="progress-fill" style="width:100%;background:#10b981;"></div></div>
-                  <span class="progress-label">100%</span>
-                </td>
-                <td>Aug 20, 2026</td>
-                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="proj-name"><i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> Security Audit</div>
-                  <div class="proj-sub">SOC 2 Compliance</div>
-                </td>
-                <td><span class="status-badge pending">Pending</span></td>
-                <td>
-                  <div class="progress-bar"><div class="progress-fill" style="width:10%;background:#f59e0b;"></div></div>
-                  <span class="progress-label">10%</span>
-                </td>
-                <td>Nov 01, 2026</td>
-                <td><button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem;">View</button></td>
-              </tr>
-            </tbody>
+            <tbody id="projectList"><tr><td colspan="5">Loading projects...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -177,21 +137,228 @@
 
   <script src="js/main.js"></script>
   <script>
-    // Load user info
-    const user = JSON.parse(localStorage.getItem('lt-user') || 'null');
-    if (!user) { window.location.href = 'login.html'; }
-    else {
-      const initials = user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-      document.getElementById('dashAvatar').textContent = initials;
-      document.getElementById('dashName').textContent = user.name.split(' ')[0];
-      document.getElementById('welcomeMsg').textContent = `Welcome back, ${user.name.split(' ')[0]}! 👋`;
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+
+    async function loadDashboard() {
+      const response = await apiFetch('/api/dashboard');
+      if (response.status === 401) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Unable to load your dashboard.');
+      
+      if (result.user && result.user.role === 'admin') {
+        const nav = document.querySelector('.sidebar-nav');
+        if (nav && !document.getElementById('adminPortalLink')) {
+          const adminLink = document.createElement('a');
+          adminLink.id = 'adminPortalLink';
+          adminLink.href = 'dashboard-admin.html';
+          adminLink.className = 'sidebar-link';
+          adminLink.style.color = '#818cf8';
+          adminLink.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Admin Portal';
+          nav.insertBefore(adminLink, nav.firstChild);
+        }
+      }
+
+      const firstName = result.user.name.split(' ')[0];
+      document.getElementById('dashAvatar').textContent = result.user.name.split(' ').map(part => part[0]).join('').toUpperCase().slice(0, 2);
+      document.getElementById('dashName').textContent = firstName;
+      document.getElementById('welcomeMsg').textContent = `Welcome back, ${firstName}!`;
+      document.getElementById('activeProjects').textContent = result.stats.active;
+      document.getElementById('completedProjects').textContent = result.stats.completed;
+      document.getElementById('pendingProjects').textContent = result.stats.pending;
+      const projectList = document.getElementById('projectList');
+      if (result.projects.length === 0) {
+        projectList.innerHTML = '<tr><td colspan="5">No projects yet. Submit a request to get started.</td></tr>';
+        return;
+      }
+      projectList.innerHTML = result.projects.map(project => {
+        const statusClass = {
+          'In Progress': 'in-progress',
+          'In Review': 'review',
+          Completed: 'completed',
+          Pending: 'pending',
+          Cancelled: 'pending'
+        }[project.status] || 'pending';
+        return `<tr>
+          <td><div class="proj-name"><i class="fa-solid fa-code"></i> ${escapeHtml(project.name)}</div><div class="proj-sub">${escapeHtml(project.description)}</div></td>
+          <td><span class="status-badge ${statusClass}">${escapeHtml(project.status)}</span></td>
+          <td><div class="progress-bar"><div class="progress-fill" style="width:${project.progress}%"></div></div><span class="progress-label">${project.progress}%</span></td>
+          <td>${project.dueDate ? escapeHtml(new Date(project.dueDate).toLocaleDateString()) : 'Not set'}</td>
+          <td style="text-align:right;">
+            <button class="btn-sm btn-outline" onclick="openProjectChat(${project.id}, '${escapeHtml(project.name).replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-comments"></i> Discussion
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
     }
 
+    // ── Live Project Messaging ─────────────────────────────────────────
+    let currentChatProjectId = null;
+    let chatPollTimer = null;
+
+    async function openProjectChat(projectId, projectName) {
+      currentChatProjectId = projectId;
+      document.getElementById('chatProjectTitle').textContent = projectName || 'Project Discussion';
+      document.getElementById('chatModal').classList.remove('hidden');
+      document.getElementById('chatMessagesList').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:2rem;">Loading discussion thread...</div>';
+      document.getElementById('chatMessageInput').value = '';
+      document.getElementById('chatMessageInput').focus();
+
+      await fetchChatMessages();
+
+      // Start live polling every 4 seconds while modal is open
+      if (chatPollTimer) clearInterval(chatPollTimer);
+      chatPollTimer = setInterval(fetchChatMessages, 4000);
+    }
+
+    function closeChatModal() {
+      document.getElementById('chatModal').classList.add('hidden');
+      if (chatPollTimer) clearInterval(chatPollTimer);
+      chatPollTimer = null;
+      currentChatProjectId = null;
+    }
+
+    async function fetchChatMessages() {
+      if (!currentChatProjectId) return;
+      try {
+        const res = await apiFetch(`/api/projects/${currentChatProjectId}/messages`);
+        if (!res.ok) return;
+        const data = await res.json();
+        renderChatMessages(data.messages || []);
+      } catch (err) {
+        console.error('Error fetching messages:', err);
+      }
+    }
+
+    function renderChatMessages(messages) {
+      const list = document.getElementById('chatMessagesList');
+      if (!messages.length) {
+        list.innerHTML = `
+          <div style="text-align:center; color:var(--text-muted); margin:auto; padding:2rem;">
+            <i class="fa-solid fa-comments" style="font-size:2rem; margin-bottom:0.75rem; opacity:0.4;"></i>
+            <p>No messages yet. Send an update or question below to start the discussion.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = messages.map(m => {
+        const isMine = m.senderRole === 'client';
+        const roleLabel = m.senderRole === 'admin' ? '<span class="badge-pill badge-admin" style="font-size:0.65rem;">ENGINEERING</span>' : '<span class="badge-pill badge-client" style="font-size:0.65rem;">YOU</span>';
+        const timeStr = new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
+            <div class="chat-meta">
+              <span><strong>${escapeHtml(m.senderName)}</strong> ${roleLabel}</span>
+              <span>• ${timeStr}</span>
+            </div>
+            <div class="chat-body">${escapeHtml(m.content)}</div>
+          </div>
+        `;
+      }).join('');
+
+      list.scrollTop = list.scrollHeight;
+    }
+
+    async function sendChatMessage(e) {
+      e.preventDefault();
+      if (!currentChatProjectId) return;
+      const input = document.getElementById('chatMessageInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('chatSendBtn');
+      btn.disabled = true;
+
+      try {
+        const res = await apiFetch(`/api/projects/${currentChatProjectId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: text })
+        });
+        if (!res.ok) throw new Error('Failed to send message');
+        input.value = '';
+        await fetchChatMessages();
+      } catch (err) {
+        showToast(err.message || 'Error sending message', 'error');
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    window.openProjectChat = openProjectChat;
+    window.closeChatModal = closeChatModal;
+    window.sendChatMessage = sendChatMessage;
+
+    document.getElementById('newRequestBtn').addEventListener('click', () => {
+      document.getElementById('projectRequestForm').classList.toggle('hidden');
+    });
+
+    document.getElementById('projectRequestForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const submit = document.getElementById('projectRequestSubmit');
+      submit.disabled = true;
+      try {
+        const response = await apiFetch('/api/project-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form).entries()))
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Unable to submit your project request.');
+        form.reset();
+        form.classList.add('hidden');
+        showToast('Project request submitted.', 'success');
+        await loadDashboard();
+      } catch (error) {
+        showToast(error.message || 'The server could not be reached. Please try again.', 'error');
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
     function logout() {
-      localStorage.removeItem('lt-user');
-      window.location.href = 'login.html';
+      apiFetch('/api/auth/logout', { method: 'POST' }).finally(() => {
+        window.location.href = 'login.html';
+      });
     }
     window.logout = logout;
+    loadDashboard().catch(error => {
+      document.getElementById('projectList').innerHTML = '<tr><td colspan="5">Dashboard data could not be loaded. Please refresh.</td></tr>';
+      showToast(error.message || 'Unable to load your dashboard.', 'error');
+    });
   </script>
+
+  <!-- ── PROJECT DISCUSSION MODAL ── -->
+  <div id="chatModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="chatProjectTitle">Project Discussion</h3>
+          <span id="chatProjectSubtitle" style="font-size: 0.775rem; color: var(--text-muted);">Direct channel with Logic Tech Solutions Engineering</span>
+        </div>
+        <button class="icon-btn" onclick="closeChatModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="chat-container" style="border:none; border-radius:0;">
+        <div class="chat-messages-wrap" id="chatMessagesList">
+          <!-- Live messages populate here -->
+        </div>
+        <form class="chat-input-bar" onsubmit="sendChatMessage(event)">
+          <input type="text" id="chatMessageInput" placeholder="Write an update, question, or milestone note..." maxlength="5000" autocomplete="off" required />
+          <button type="submit" class="chat-send-btn" id="chatSendBtn" title="Send Message">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

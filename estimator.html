@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture & Project Cost Estimator – Logic Tech Kenya</title>
+  <meta name="description" content="Configure your enterprise IT infrastructure, Safaricom M-Pesa Daraja 3.0 integrations, cloud migration, and regulatory compliance footprint with instant transparent estimates." />
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/estimator.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" alt="Logic Tech Logo" />
+        <span>Logic<span class="accent">Tech</span></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="estimator.html" class="active" style="position:relative;">
+          Estimator
+          <span style="font-size: 0.6rem; background: var(--amber); color: #fff; padding: 1px 5px; border-radius: 999px; margin-left: 2px; vertical-align: top; font-weight:700;">NEW</span>
+        </a>
+        <a href="case-studies.html">Case Studies</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="themeToggle" class="icon-btn" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book Consultation &rarr;</a>
+        <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars" id="menuIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="services.html" class="mobile-link">Services</a>
+      <a href="estimator.html" class="mobile-link active">Estimator (New)</a>
+      <a href="case-studies.html" class="mobile-link">Case Studies</a>
+      <a href="how-it-works.html" class="mobile-link">How It Works</a>
+      <a href="faq.html" class="mobile-link">FAQ</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <div class="mobile-auth">
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book Consultation</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== PAGE HERO ========== -->
+  <section class="page-hero-section">
+    <div class="container">
+      <div class="page-hero-content animate-in">
+        <div class="badge-outline amber"><i class="fa-solid fa-calculator"></i> Self-Service Architecture Sizing</div>
+        <h1>Enterprise Architecture &amp; <span class="gradient-text">Investment Estimator</span></h1>
+        <p>Configure your cloud infrastructure footprint, Safaricom M-Pesa Daraja 3.0 integrations, and regulatory compliance requirements. Receive instant architectural sizing, transparent investment estimates, and recommended tech stacks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ESTIMATOR WRAPPER ========== -->
+  <section class="estimator-wrapper">
+    <div class="container">
+      
+      <!-- Step Navigation Header -->
+      <div class="estimator-steps-nav">
+        <button class="step-nav-btn active" data-step="1">
+          <span class="step-num">1</span>
+          <span>1. Solution Domain</span>
+        </button>
+        <button class="step-nav-btn" data-step="2">
+          <span class="step-num">2</span>
+          <span>2. System Scale</span>
+        </button>
+        <button class="step-nav-btn" data-step="3">
+          <span class="step-num">3</span>
+          <span>3. Add-on Modules</span>
+        </button>
+        <button class="step-nav-btn" data-step="4">
+          <span class="step-num">4</span>
+          <span>4. Velocity &amp; Submit</span>
+        </button>
+      </div>
+
+      <!-- Two-Column Estimator Grid -->
+      <div class="estimator-grid">
+        
+        <!-- Left: Steps Container -->
+        <div class="estimator-main">
+          
+          <!-- ── STEP 1: SOLUTION DOMAIN ── -->
+          <div class="step-panel active" data-step="1">
+            <div class="step-header">
+              <h2>Select Your Primary Engineering Domain</h2>
+              <p>Choose the core practice area that best aligns with your upcoming initiative.</p>
+            </div>
+
+            <div class="options-grid">
+              
+              <!-- Option: Cloud Migration -->
+              <div class="option-card selected" data-option="practice" data-val="cloud">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-cloud"></i></div>
+                    <div>
+                      <div class="option-title">Cloud Infrastructure &amp; Migration</div>
+                      <div class="option-desc">AWS / Azure multi-region architectures, Kubernetes containerization, and zero-downtime legacy migration.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-clock"></i> Typical: 6 Weeks</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Option: FinTech / M-Pesa -->
+              <div class="option-card" data-option="practice" data-val="fintech">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <div>
+                      <div class="option-title">M-Pesa Daraja 3.0 &amp; FinTech Rails</div>
+                      <div class="option-desc">Automated STK push, B2C disbursements, C2B paybills, real-time webhook reconciliation, and CBK compliance.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-clock"></i> Typical: 5 Weeks</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Option: Custom Software / ERP -->
+              <div class="option-card" data-option="practice" data-val="software">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div>
+                      <div class="option-title">Custom Enterprise Software &amp; ERP</div>
+                      <div class="option-desc">Full-cycle web platforms, multi-tenant SaaS, internal workflow automation engines, and microservices.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-clock"></i> Typical: 8 Weeks</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Option: Cybersecurity & Audit -->
+              <div class="option-card" data-option="practice" data-val="cybersecurity">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                      <div class="option-title">Cybersecurity, Pen-Testing &amp; Audit</div>
+                      <div class="option-desc">Comprehensive vulnerability assessments, ISO 27001 readiness, Kenya ODPC data audits, and CBK guidance hardening.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-clock"></i> Typical: 4 Weeks</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Option: High Throughput Data -->
+              <div class="option-card" data-option="practice" data-val="data">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <div>
+                      <div class="option-title">High-Throughput Data &amp; Streaming</div>
+                      <div class="option-desc">Apache Kafka event streaming, data pipelines, sub-second financial ledger processing, and live BI dashboards.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-clock"></i> Typical: 7 Weeks</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Option: 24/7 Managed Ops -->
+              <div class="option-card" data-option="practice" data-val="devops">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <div>
+                      <div class="option-title">24/7 Managed IT &amp; DevOps Pod</div>
+                      <div class="option-desc">Dedicated site reliability engineering squad, proactive incident response, CI/CD automation, and 99.99% uptime.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-clock"></i> Retainer / Month</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── STEP 2: SYSTEM SCALE ── -->
+          <div class="step-panel" data-step="2">
+            <div class="step-header">
+              <h2>Target User Concurrency &amp; Infrastructure Scale</h2>
+              <p>Scale dictates redundancy levels, auto-scaling thresholds, database replication, and fault tolerance.</p>
+            </div>
+
+            <div class="options-grid two-col">
+              
+              <!-- Scale: Starter -->
+              <div class="option-card" data-option="scale" data-val="starter">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                    <div>
+                      <div class="option-title">Emerging Scale / SME</div>
+                      <div class="option-desc">Up to 25,000 monthly active users. Single-region containerized setup, automated daily snapshots, standard load balancing.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-server"></i> Single Region &bull; 99.9% Uptime</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Scale: Growth -->
+              <div class="option-card selected" data-option="scale" data-val="growth">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-building"></i></div>
+                    <div>
+                      <div class="option-title">Growth Enterprise</div>
+                      <div class="option-desc">25,000 to 250,000 users. Multi-AZ redundant cluster, read-replica database pools, distributed Redis caching, auto-scaling groups.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-shield"></i> Multi-AZ &bull; 99.95% SLA</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Scale: Regional -->
+              <div class="option-card" data-option="scale" data-val="regional">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-globe"></i></div>
+                    <div>
+                      <div class="option-title">High-Throughput Regional</div>
+                      <div class="option-desc">250,000 to 1,000,000 users. Multi-region automated disaster recovery, Kafka streaming, automated zero-downtime failover.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-bolt"></i> Multi-Region &bull; 99.99% SLA</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Scale: Mission Critical -->
+              <div class="option-card" data-option="scale" data-val="mission">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-landmark"></i></div>
+                    <div>
+                      <div class="option-title">Tier-1 Mission Critical</div>
+                      <div class="option-desc">1,000,000+ users. Active-Active geo-distribution, sub-millisecond transaction routing, bank-grade HSM hardware security, audited compliance.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge"><i class="fa-solid fa-lock"></i> Active-Active &bull; 99.999% SLA</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── STEP 3: ADD-ON MODULES ── -->
+          <div class="step-panel" data-step="3">
+            <div class="step-header">
+              <h2>Select Enterprise Integrations &amp; Capabilities</h2>
+              <p>Customize your architecture blueprint with specialized security, FinTech, and operations modules.</p>
+            </div>
+
+            <div class="options-grid">
+              
+              <!-- Addon: Daraja -->
+              <div class="option-card selected" data-option="addon" data-val="daraja">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                    <div>
+                      <div class="option-title">Safaricom Daraja 3.0 M-Pesa Engine</div>
+                      <div class="option-desc">Instant STK push, asynchronous callback verification, auto-reconciliation ledger, and failed transaction retry workers.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 250,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: Compliance -->
+              <div class="option-card selected" data-option="addon" data-val="compliance">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-file-shield"></i></div>
+                    <div>
+                      <div class="option-title">CBK &amp; ODPC Regulatory Audit Pack</div>
+                      <div class="option-desc">Full documentation, statutory data protection impact assessment (DPIA), and CBK cybersecurity framework compliance verification.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 320,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: SSO / MFA -->
+              <div class="option-card" data-option="addon" data-val="sso">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-id-badge"></i></div>
+                    <div>
+                      <div class="option-title">Enterprise SSO &amp; Active Directory</div>
+                      <div class="option-desc">Integration with Microsoft Azure AD, Okta, OAuth2/OIDC, and mandatory multi-factor authentication (MFA/TOTP).</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 180,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: Redis -->
+              <div class="option-card" data-option="addon" data-val="redis">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-database"></i></div>
+                    <div>
+                      <div class="option-title">Redis Sentinel Cache &amp; Rate Limiter</div>
+                      <div class="option-desc">Sub-millisecond session state caching, DDoS token bucket rate limiting, and pub/sub messaging channels.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 120,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: Cloudflare WAF -->
+              <div class="option-card" data-option="addon" data-val="waf">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-shield"></i></div>
+                    <div>
+                      <div class="option-title">Cloudflare Enterprise WAF &amp; DDoS Shield</div>
+                      <div class="option-desc">Edge TLS termination, intelligent bot management, rate-limiting rules, and global Content Delivery Network.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 150,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: CI/CD & Terraform -->
+              <div class="option-card" data-option="addon" data-val="cicd">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-code-merge"></i></div>
+                    <div>
+                      <div class="option-title">Automated CI/CD &amp; Terraform IaC</div>
+                      <div class="option-desc">Reproducible infrastructure-as-code, blue/green deployment pipelines, automated integration testing suites.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 190,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: Observability -->
+              <div class="option-card" data-option="addon" data-val="observability">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <div>
+                      <div class="option-title">Observability &amp; SIEM (Prometheus/Grafana)</div>
+                      <div class="option-desc">Real-time CPU/memory alerting, query tracing, centralized log aggregation, and custom executive KPI dashboards.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 160,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <!-- Addon: 24/7 SLA -->
+              <div class="option-card" data-option="addon" data-val="sla24">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-headset"></i></div>
+                    <div>
+                      <div class="option-title">15-Min Critical Response SLA Retainer</div>
+                      <div class="option-desc">Direct hotline to Lead Systems Architect, automated PagerDuty wake-up escalation, guaranteed 15-minute response.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">+ KES 280,000</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── STEP 4: VELOCITY & TRANSMISSION ── -->
+          <div class="step-panel" data-step="4">
+            <div class="step-header">
+              <h2>Select Delivery Velocity &amp; Transmit Specifications</h2>
+              <p>Choose your engagement cadence and submit your tailored blueprint directly to Dr. Brian Kimani and our Principal Architects in Nairobi.</p>
+            </div>
+
+            <!-- Velocity Cards -->
+            <div class="options-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-bottom: 2rem;">
+              
+              <div class="option-card" data-option="velocity" data-val="sprint">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    <div>
+                      <div class="option-title">Sprint Track</div>
+                      <div class="option-desc">Accelerated delivery with dedicated full-time engineering squad (4–6 weeks).</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">Accelerated</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <div class="option-card selected" data-option="velocity" data-val="standard">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-award"></i></div>
+                    <div>
+                      <div class="option-title">Enterprise Phased</div>
+                      <div class="option-desc">Balanced, milestone-driven sprints with architecture review gates (Recommended).</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">Standard (Best Value)</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+              <div class="option-card" data-option="velocity" data-val="retainer">
+                <div>
+                  <div class="option-header">
+                    <div class="option-icon"><i class="fa-solid fa-infinity"></i></div>
+                    <div>
+                      <div class="option-title">Continuous Pod</div>
+                      <div class="option-desc">Ongoing dedicated architecture &amp; development pod on monthly retainer.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="option-meta">
+                  <span class="option-badge">Long-term</span>
+                  <div class="option-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Lead Capture Form -->
+            <div class="spec-lead-form">
+              <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem; color: var(--text-primary);">
+                <i class="fa-solid fa-paper-plane" style="color:var(--amber); margin-right: 0.4rem;"></i>
+                Transmit Architecture Scope to Nairobi Advisory Team
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+                Our Principal Architects will review this exact specification and return a formal Scope of Work &amp; Architecture Roadmap within 1 business day.
+              </p>
+
+              <form id="estimateLeadForm">
+                <div class="form-grid-two">
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.35rem; color:var(--text-secondary);">Your Full Name *</label>
+                    <input type="text" id="estLeadName" class="form-input" placeholder="e.g. David Mwangi" required style="width:100%; padding:0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-card); color:var(--text-primary);" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.35rem; color:var(--text-secondary);">Work Email *</label>
+                    <input type="email" id="estLeadEmail" class="form-input" placeholder="e.g. d.mwangi@company.co.ke" required style="width:100%; padding:0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-card); color:var(--text-primary);" />
+                  </div>
+                </div>
+
+                <div class="form-grid-two">
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.35rem; color:var(--text-secondary);">Organization / Enterprise</label>
+                    <input type="text" id="estLeadCompany" class="form-input" placeholder="e.g. Apex Financial Group" style="width:100%; padding:0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-card); color:var(--text-primary);" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.35rem; color:var(--text-secondary);">Phone / WhatsApp</label>
+                    <input type="tel" id="estLeadPhone" class="form-input" placeholder="+254 700 000 000" style="width:100%; padding:0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-card); color:var(--text-primary);" />
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.35rem; color:var(--text-secondary);">Specific Requirements or Integration Notes</label>
+                  <textarea id="estLeadNotes" rows="3" class="form-input" placeholder="Mention any existing legacy core banking systems, specific cloud providers, or timeline milestones..." style="width:100%; padding:0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-card); color:var(--text-primary); resize:vertical;"></textarea>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1.5rem; font-size:0.85rem; color:var(--text-secondary);">
+                  <input type="checkbox" id="estLeadNda" style="accent-color: var(--amber); width:16px; height:16px;" />
+                  <label for="estLeadNda">Request mutual Non-Disclosure Agreement (NDA) before detailed discovery</label>
+                </div>
+
+                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                  <button type="submit" id="btnSubmitEstimate" class="btn btn-primary btn-lg" style="flex:1;">
+                    Send Architecture Specs to Advisory Team <i class="fa-solid fa-paper-plane"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Spec Sheet
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+          <!-- Step Action Footer Navigation -->
+          <div class="step-actions">
+            <button class="btn btn-outline" id="btnPrevStep" style="visibility:hidden;">
+              <i class="fa-solid fa-arrow-left"></i> Previous Step
+            </button>
+            <button class="btn btn-primary" id="btnNextStep">
+              Continue to Step 2 <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right: Sticky Live Estimate Sidebar -->
+        <aside class="estimator-sidebar">
+          <div class="summary-card">
+            
+            <div class="summary-top">
+              <div class="summary-title">Architecture Estimate</div>
+              <div class="currency-toggle">
+                <button class="curr-btn active" data-curr="KES">KES</button>
+                <button class="curr-btn" data-curr="USD">USD</button>
+              </div>
+            </div>
+
+            <!-- Price Display Box -->
+            <div class="price-display">
+              <div class="price-label">Estimated Investment Range</div>
+              <div class="price-range" id="estPriceRange">KES 1.4M – 2.0M</div>
+              <div class="timeline-estimate">
+                Estimated Delivery: <strong id="estTimeline">7 – 10 Weeks</strong>
+              </div>
+            </div>
+
+            <!-- Configuration Summary -->
+            <div class="summary-section-title">
+              <i class="fa-solid fa-sliders" style="color:var(--amber);"></i> Configured Scope
+            </div>
+            <ul class="specs-list">
+              <li class="specs-item">
+                <span class="specs-item-name"><i class="fa-solid fa-compass"></i> Domain:</span>
+                <span class="specs-item-val" id="specPractice">Cloud Migration</span>
+              </li>
+              <li class="specs-item">
+                <span class="specs-item-name"><i class="fa-solid fa-server"></i> Scale Tier:</span>
+                <span class="specs-item-val" id="specScale">Growth Enterprise</span>
+              </li>
+              <li class="specs-item">
+                <span class="specs-item-name"><i class="fa-solid fa-puzzle-piece"></i> Modules:</span>
+                <span class="specs-item-val" id="specAddons">2 Modules</span>
+              </li>
+              <li class="specs-item">
+                <span class="specs-item-name"><i class="fa-solid fa-gauge"></i> Velocity:</span>
+                <span class="specs-item-val" id="specVelocity">Phased Enterprise</span>
+              </li>
+            </ul>
+
+            <!-- Recommended Stack Tags -->
+            <div class="summary-section-title">
+              <i class="fa-solid fa-microchip" style="color:var(--amber);"></i> Recommended Tech Stack
+            </div>
+            <div class="stack-cloud" id="specStack">
+              <span class="stack-tag">AWS / Azure</span>
+              <span class="stack-tag">Docker &amp; ECS</span>
+              <span class="stack-tag">Terraform IaC</span>
+              <span class="stack-tag">Daraja 3.0</span>
+              <span class="stack-tag">PostgreSQL</span>
+            </div>
+
+            <!-- Enterprise Trust Badges -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.85rem; font-size:0.75rem; color:var(--text-muted); line-height:1.5;">
+              <div style="color:var(--amber); font-weight:700; margin-bottom:0.25rem;">
+                <i class="fa-solid fa-certificate"></i> Logic Tech Assurance
+              </div>
+              All architecture proposals adhere to Central Bank of Kenya (CBK) Cybersecurity guidelines and the Kenya Data Protection Act 2019 (ODPC). Fixed-price delivery guarantees apply upon mutual SOW execution.
+            </div>
+
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo">
+            <img src="assets/logo.png" alt="Logic Tech Logo" />
+            <span>Logic<span class="accent">Tech</span></span>
+          </a>
+          <p>Kenya's premier Enterprise IT solutions provider. Engineering resilience, cloud migration, M-Pesa FinTech rails, and cybersecurity for regional industry leaders.</p>
+          <div class="footer-contact-items">
+            <div class="footer-contact-item"><i class="fa-solid fa-location-dot"></i> Delta Corner Annex, Westlands, Nairobi</div>
+            <div class="footer-contact-item"><i class="fa-solid fa-envelope"></i> hello@logictech.io</div>
+            <div class="footer-contact-item"><i class="fa-solid fa-phone"></i> +254 (0) 20 790 3000</div>
+          </div>
+        </div>
+        <div class="footer-links-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="services.html">Cloud Architecture</a></li>
+            <li><a href="services.html">M-Pesa Integrations</a></li>
+            <li><a href="services.html">Custom Software</a></li>
+            <li><a href="services.html">Cybersecurity &amp; Audit</a></li>
+            <li><a href="services.html">24/7 Managed IT</a></li>
+            <li><a href="estimator.html">Cost Estimator</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Sign In</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="cookies.html">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Logic Tech. All rights reserved.</p>
+        <p>Made with <i class="fa-solid fa-heart red"></i> in Nairobi, Kenya</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/estimator.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>
