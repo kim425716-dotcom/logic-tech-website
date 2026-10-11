@@ -437,3 +437,63 @@ window.resetContact = resetContact;
     }
   });
 })();
+
+/* ---- Pricing Tabs ---- */
+(function () {
+  var tabs = document.querySelectorAll('.pricing-tab');
+  if (!tabs.length) return;
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var targetId = tab.getAttribute('data-target');
+      var targetPanel = document.getElementById(targetId);
+      if (!targetPanel) return;
+
+      // Deactivate all tabs & panels
+      tabs.forEach(function (t) { t.classList.remove('active'); });
+      document.querySelectorAll('.pricing-panel').forEach(function (p) {
+        p.classList.remove('active');
+      });
+
+      // Activate clicked tab and target panel
+      tab.classList.add('active');
+      targetPanel.classList.add('active');
+
+      // Smooth scroll to keep panel in view on mobile
+      if (window.innerWidth < 768) {
+        targetPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  });
+})();
+
+/* ---- Category Filter Pills ---- */
+(function () {
+  var pills = document.querySelectorAll('.cat-pill');
+  if (!pills.length) return;
+
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      var filter = pill.getAttribute('data-filter');
+
+      // Update active pill state
+      pills.forEach(function (p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+
+      var cards = document.querySelectorAll('.cat-card');
+      if (filter === 'all') {
+        cards.forEach(function (c) { c.classList.remove('filtered-out'); });
+      } else {
+        cards.forEach(function (c) {
+          if (c.getAttribute('data-cat') === filter) {
+            c.classList.remove('filtered-out');
+            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            c.classList.add('filtered-out');
+          }
+        });
+      }
+    });
+  });
+})();
+

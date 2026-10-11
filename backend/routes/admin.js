@@ -21,6 +21,7 @@ const router = express.Router();
 const { db } = require('../config/database');
 const { fail, stringField, validateFaq } = require('../utils/validation');
 const { requireAdmin } = require('../middleware/auth');
+const { mailer, smtpConfigured } = require('../utils/mailer');
 
 // All admin routes require authenticated admin
 router.use(requireAdmin);
@@ -72,11 +73,35 @@ router.delete('/inquiries/:id', (req, res, next) => {
   }
 });
 
+router.post('/inquiries/:id/reply', async (req, res, next) => {
+  try {
+    const inquiry = db.prepare('SELECT * FROM inquiries WHERE id = ?').get(Number(req.params.id));
+    if (!inquiry) throw fail(404, 'Inquiry not found.');
+
+    const subject = stringField(req.body.subject, 'Subject', 200);
+    const message = stringField(req.body.message, 'Message', 10000);
+
+    if (mailer) {
+      await mailer.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'info@logictech.io',
+        to: inquiry.email,
+        subject,
+        text: message
+      });
+      return res.json({ message: 'Email sent successfully via SMTP.' });
+    } else {
+      return res.status(400).json({ error: 'SMTP is not configured on the server. Please use Gmail or your desktop email client.' });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ── Projects ────────────────────────────────────────────────────────
 router.get('/projects', (_req, res) => {
   const projects = db.prepare(`
     SELECT p.id, p.name, p.description, p.status, p.progress,
-           p.due_date AS dueDate, p.created_at AS createdAt,
+           p.start_date AS startDate, p.due_date AS dueDate, p.created_at AS createdAt,
            u.id AS userId, u.name AS clientName, u.email AS clientEmail
     FROM projects p
     JOIN users u ON u.id = p.user_id
@@ -98,12 +123,13 @@ router.post('/projects', (req, res, next) => {
     const description = stringField(req.body.description, 'Project description', 5000);
     const status = stringField(req.body.status || 'Pending', 'Status', 40);
     const progress = Math.min(100, Math.max(0, Number(req.body.progress || 0)));
+    const startDate = req.body.startDate ? stringField(req.body.startDate, 'Start date', 50, false) : new Date().toISOString().slice(0, 10);
     const dueDate = req.body.dueDate ? stringField(req.body.dueDate, 'Due date', 50, false) : null;
 
     const result = db.prepare(`
-      INSERT INTO projects (user_id, name, description, status, progress, due_date)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(userId, name, description, status, progress, dueDate);
+      INSERT INTO projects (user_id, name, description, status, progress, start_date, due_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(userId, name, description, status, progress, startDate, dueDate);
 
     res.status(201).json({ id: Number(result.lastInsertRowid), message: 'Project created.' });
   } catch (err) {
@@ -121,13 +147,14 @@ router.put('/projects/:id', (req, res, next) => {
     const description = stringField(req.body.description, 'Project description', 5000);
     const status = stringField(req.body.status || 'Pending', 'Status', 40);
     const progress = Math.min(100, Math.max(0, Number(req.body.progress || 0)));
+    const startDate = req.body.startDate ? stringField(req.body.startDate, 'Start date', 50, false) : null;
     const dueDate = req.body.dueDate ? stringField(req.body.dueDate, 'Due date', 50, false) : null;
 
     db.prepare(`
       UPDATE projects
-      SET name = ?, description = ?, status = ?, progress = ?, due_date = ?
+      SET name = ?, description = ?, status = ?, progress = ?, start_date = ?, due_date = ?
       WHERE id = ?
-    `).run(name, description, status, progress, dueDate, projectId);
+    `).run(name, description, status, progress, startDate, dueDate, projectId);
 
     res.json({ message: 'Project updated.' });
   } catch (err) {

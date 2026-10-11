@@ -8,11 +8,12 @@
  *  - Rate limiting, centralized error handling
  *  - Modular route files
  */
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 
 const { seedFaqs, cleanupExpired, db } = require('./config/database');
 const { hashPassword } = require('./utils/crypto');
@@ -32,7 +33,8 @@ const messageRoutes = require('./routes/messages');
 const chatRoutes = require('./routes/chat');
 
 const app = express();
-const port = Number(process.env.PORT || 8080);
+// Support numeric ports or cPanel Passenger pipes/sockets
+const port = process.env.PORT || 8080;
 
 // ── Global Middleware ───────────────────────────────────────────────
 

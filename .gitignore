@@ -18,3 +18,6 @@ build/
 .env.local
 *.log
 storage/
+backend/storage/
+*.zip
+*.tar.gz

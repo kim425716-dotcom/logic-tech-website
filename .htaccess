@@ -1,0 +1,7 @@
+# Apache cPanel Config
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ .html [L]
+</IfModule>

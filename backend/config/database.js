@@ -56,6 +56,7 @@ db.exec(`
     description TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'Pending',
     progress INTEGER NOT NULL DEFAULT 0 CHECK (progress BETWEEN 0 AND 100),
+    start_date TEXT,
     due_date TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
@@ -90,6 +91,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_project ON messages(project_id, created_at);
 `);
 
+// Migration for existing databases
+try {
+  const cols = db.prepare('PRAGMA table_info(projects)').all();
+  if (!cols.some(c => c.name === 'start_date')) {
+    db.exec('ALTER TABLE projects ADD COLUMN start_date TEXT');
+  }
+} catch (err) {
+  console.error('Database migration note:', err);
+}
+
 // ── Prepared Statements ─────────────────────────────────────────────
 const statements = {
   userByEmail: db.prepare(
@@ -104,7 +115,7 @@ const statements = {
     WHERE sessions.token_hash = ? AND sessions.expires_at > ?
   `),
   projectList: db.prepare(`
-    SELECT id, name, description, status, progress, due_date AS dueDate
+    SELECT id, name, description, status, progress, start_date AS startDate, due_date AS dueDate
     FROM projects WHERE user_id = ? ORDER BY created_at DESC, id DESC
   `),
   publicFaqs: db.prepare(`
