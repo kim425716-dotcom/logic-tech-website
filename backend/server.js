@@ -8,12 +8,11 @@
  *  - Rate limiting, centralized error handling
  *  - Modular route files
  */
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const { seedFaqs, cleanupExpired, db } = require('./config/database');
 const { hashPassword } = require('./utils/crypto');
@@ -33,14 +32,41 @@ const messageRoutes = require('./routes/messages');
 const chatRoutes = require('./routes/chat');
 
 const app = express();
-// Support numeric ports or cPanel Passenger pipes/sockets
-const port = process.env.PORT || 8080;
+const port = Number(process.env.PORT || 8080);
 
 // ── Global Middleware ───────────────────────────────────────────────
 
 // CORS — allow frontend origin with credentials (cookies)
+const allowedOrigins = [
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  process.env.FRONTEND_URL,
+  process.env.PUBLIC_URL,
+  process.env.APP_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5500',
+  origin: (origin, callback) => {
+    // Allow non-browser tools like curl or server-to-server requests
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow same-origin requests from the deployed domain when the origin matches the environment
+    const normalized = origin.replace(/\/$/, '');
+    const hostMatches = allowedOrigins.some(allowed => {
+      if (!allowed) return false;
+      return normalized === allowed.replace(/\/$/, '');
+    });
+
+    if (hostMatches) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type']
