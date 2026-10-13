@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Chatbot & AI Concierge Routes
  * POST /api/chat — Process visitor messages and return context-aware responses
  */
@@ -33,7 +33,7 @@ const KNOWLEDGE_RESPONSES = [
   },
   {
     keywords: ['contact', 'email', 'phone', 'location', 'nairobi', 'consult', 'talk', 'call', 'meeting'],
-    reply: `We would love to connect with your team!\n\n- 📍 **Headquarters:** Logic Tech Towers, Nairobi, Kenya\n- ✉️ **Email:** [contact@logictech.io](mailto:contact@logictech.io)\n- 📱 **Phone:** +254 700 000 000\n- 📝 **Inquiry Form:** [Submit Project Request](contact.html)\n\nYou can also leave your name and email here and our solutions team will follow up within 24 hours.`
+    reply: `We would love to connect with your team!\n\n- 📍 **Headquarters:** Logic Tech Towers, Nairobi, Kenya\n- ✉️ **Email:** [contact@logictech.co.ke](mailto:contact@logictech.co.ke)\n- 📱 **Phone:** +254 700 000 000\n- 📝 **Inquiry Form:** [Submit Project Request](contact.html)\n\nYou can also leave your name and email here and our solutions team will follow up within 24 hours.`
   },
   {
     keywords: ['case study', 'portfolio', 'example', 'client', 'project', 'past work'],

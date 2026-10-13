@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin Routes
  * Full backoffice management endpoints for Logic Tech.
  *
@@ -83,7 +83,7 @@ router.post('/inquiries/:id/reply', async (req, res, next) => {
 
     if (mailer) {
       await mailer.sendMail({
-        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'info@logictech.io',
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'info@logictech.co.ke',
         to: inquiry.email,
         subject,
         text: message

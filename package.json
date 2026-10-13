@@ -5,11 +5,12 @@
   "description": "Logic Tech official website and client portal",
   "main": "app.js",
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.0"
   },
   "scripts": {
     "start": "node app.js",
-    "dev": "node --watch app.js"
+    "dev": "node --watch app.js",
+    "deploy": "bash ./deploy.sh"
   },
   "dependencies": {
     "better-sqlite3": "^11.9.1",
