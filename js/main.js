@@ -17,11 +17,16 @@
 
 (function () {
   const THEME_KEY = 'logictech-theme';
+  const THEME_TOGGLE_SELECTOR = '#themeToggle';
+  const THEME_ICON_SELECTOR = '#themeIcon';
+
+  if (window.__logicTechThemeBound) return;
+  window.__logicTechThemeBound = true;
 
   function applyTheme(isDark) {
     document.body.classList.toggle('dark', isDark);
 
-    const icon = document.getElementById('themeIcon');
+    const icon = document.querySelector(THEME_ICON_SELECTOR);
     if (icon) {
       icon.className = isDark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
     }
@@ -29,26 +34,23 @@
     try {
       localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
     } catch (error) {
-      // Ignore storage errors in restricted or private browsing contexts.
+      // Ignore storage errors in restricted/private browsing contexts.
     }
   }
 
   function initializeTheme() {
-    const savedTheme = (() => {
-      try {
-        return localStorage.getItem(THEME_KEY);
-      } catch (error) {
-        return null;
-      }
-    })();
+    let savedTheme = null;
+    try {
+      savedTheme = localStorage.getItem(THEME_KEY);
+    } catch (error) {
+      // Ignore storage errors in restricted/private browsing contexts.
+    }
 
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const shouldUseDark = savedTheme ? savedTheme === 'dark' : prefersDark;
-
     applyTheme(Boolean(shouldUseDark));
 
-    const toggleButtons = document.querySelectorAll('#themeToggle');
-    toggleButtons.forEach((button) => {
+    document.querySelectorAll(THEME_TOGGLE_SELECTOR).forEach((button) => {
       button.addEventListener('click', () => {
         const isDark = !document.body.classList.contains('dark');
         applyTheme(isDark);

@@ -1,7 +1,26 @@
-# Apache cPanel Config
+# Apache cPanel Configuration for Logic Tech
+
+# Deny access to sensitive files
+<FilesMatch "(\.env|\.db|package\.json|package-lock\.json|\.gitignore|\.git)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Security and Routing
 <IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.html -f
-RewriteRule ^(.*)$ .html [L]
+    RewriteEngine On
+
+    # Block direct web access to backend source, storage, node_modules, and git
+    RewriteRule ^(backend|storage|node_modules|\.git)(/|$) - [F,L]
+
+    # Clean HTML URLs (e.g. /about -> /about.html)
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}\.html -f
+    RewriteRule ^(.*)$ $1.html [L]
 </IfModule>
+
