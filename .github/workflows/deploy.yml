@@ -100,6 +100,10 @@ jobs:
           rm -f scripts/setup-deploy.ps1
           rm -rf backend/storage  # Storage is persistent on server
 
+          # Signal Passenger to restart Node.js app
+          mkdir -p tmp
+          date +%s > tmp/restart.txt
+
           # Prune non-essential files from node_modules for rapid FTP sync
           find node_modules -type f \( -name "*.md" -o -name "*.ts" -o -name "*.map" -o -name "*.yml" -o -name "*.yaml" -o -name "LICENSE*" -o -name "CHANGELOG*" \) -delete
           find node_modules -type d \( -name "test" -o -name "tests" -o -name "example" -o -name "examples" -o -name "doc" -o -name "docs" -o -name ".github" \) -exec rm -rf {} + 2>/dev/null || true
