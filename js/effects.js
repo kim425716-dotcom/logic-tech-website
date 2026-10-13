@@ -263,6 +263,20 @@
     }
   });
 
+  /* ─── IntersectionObserver to reveal .animate-on-scroll elements ─── */
+  if (aosEls.length) {
+    var aosObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          aosObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    aosEls.forEach(function (el) { aosObs.observe(el); });
+  }
+
   /* ─── Tilt effect on testimonial cards ──────────────────────────── */
   document.querySelectorAll('.testimonial-card').forEach(function (card) {
     card.addEventListener('mousemove', function (e) {
