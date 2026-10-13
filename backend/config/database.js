@@ -4,7 +4,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const { DatabaseSync } = require('node:sqlite');
+const Database = require('better-sqlite3');
 
 const storagePath = path.join(__dirname, '..', 'storage');
 const databasePath = path.join(storagePath, 'logic-tech.sqlite');
@@ -13,12 +13,13 @@ const faqSeedPath = path.join(__dirname, '..', '..', 'data', 'faqs.json');
 // Ensure storage directory exists
 fs.mkdirSync(storagePath, { recursive: true });
 
-const db = new DatabaseSync(databasePath);
+const db = new Database(databasePath);
 
-// ── Schema ──────────────────────────────────────────────────────────
+// ── Pragmas & Schema ────────────────────────────────────────────────
+db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
+
 db.exec(`
-  PRAGMA journal_mode = WAL;
-  PRAGMA foreign_keys = ON;
 
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
@@ -131,16 +132,12 @@ function seedFaqs() {
     const insertFaq = db.prepare(
       'INSERT INTO faqs (category, question, answer) VALUES (?, ?, ?)'
     );
-    db.exec('BEGIN');
-    try {
-      for (const faq of faqs) {
+    const insertAll = db.transaction((rows) => {
+      for (const faq of rows) {
         insertFaq.run(faq.category, faq.q, faq.a);
       }
-      db.exec('COMMIT');
-    } catch (err) {
-      db.exec('ROLLBACK');
-      throw err;
-    }
+    });
+    insertAll(faqs);
   }
 }
 
