@@ -1,0 +1,135 @@
+# ──────────────────────────────────────────────────────────────────────
+# Logic Tech — Auto-Deploy to cPanel via FTP
+#
+# Triggers:
+#   • Push to `main`    → deploys to PRODUCTION  (public_html)
+#   • Push to `develop` → deploys to STAGING     (public_html/staging)
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   FTP_HOST              – FTP hostname     (e.g. logictech.co.ke)
+#   FTP_USERNAME          – FTP/cPanel username
+#   FTP_PASSWORD          – FTP/cPanel password
+#   DEPLOY_PATH_PROD      – remote FTP path  (e.g. /public_html)
+#   DEPLOY_PATH_STAGING   – remote FTP path  (e.g. /public_html/staging)
+#
+# Optional Secrets (for the .env on the server):
+#   ENV_PORT, ENV_NODE_ENV, ENV_FRONTEND_URL, ENV_PUBLIC_URL, ENV_APP_URL,
+#   ENV_ADMIN_NAME, ENV_ADMIN_EMAIL, ENV_ADMIN_PASSWORD,
+#   ENV_SESSION_SECRET,
+#   ENV_SMTP_HOST, ENV_SMTP_PORT, ENV_SMTP_USER, ENV_SMTP_PASSWORD, ENV_SMTP_FROM
+# ──────────────────────────────────────────────────────────────────────
+
+name: 🚀 Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+# Cancel in-progress runs on the same branch
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy (${{ github.ref_name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      NODE_VERSION: "20"
+
+    steps:
+      # ─── 1. Checkout ────────────────────────────────────────────
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # ─── 2. Determine target path ──────────────────────────────
+      - name: 🎯 Set deployment target
+        id: target
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "deploy_path=${{ secrets.DEPLOY_PATH_PROD }}" >> "$GITHUB_OUTPUT"
+            echo "env_label=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy_path=${{ secrets.DEPLOY_PATH_STAGING }}" >> "$GITHUB_OUTPUT"
+            echo "env_label=staging" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ─── 3. Generate .env file ─────────────────────────────────
+      - name: 📝 Generate backend .env
+        run: |
+          cat > backend/.env << 'EOF'
+          PORT=${{ secrets.ENV_PORT }}
+          NODE_ENV=${{ steps.target.outputs.env_label }}
+          FRONTEND_URL=${{ secrets.ENV_FRONTEND_URL }}
+          PUBLIC_URL=${{ secrets.ENV_PUBLIC_URL }}
+          APP_URL=${{ secrets.ENV_APP_URL }}
+          ADMIN_NAME=${{ secrets.ENV_ADMIN_NAME }}
+          ADMIN_EMAIL=${{ secrets.ENV_ADMIN_EMAIL }}
+          ADMIN_PASSWORD=${{ secrets.ENV_ADMIN_PASSWORD }}
+          SESSION_SECRET=${{ secrets.ENV_SESSION_SECRET }}
+          SMTP_HOST=${{ secrets.ENV_SMTP_HOST }}
+          SMTP_PORT=${{ secrets.ENV_SMTP_PORT }}
+          SMTP_USER=${{ secrets.ENV_SMTP_USER }}
+          SMTP_PASSWORD=${{ secrets.ENV_SMTP_PASSWORD }}
+          SMTP_FROM=${{ secrets.ENV_SMTP_FROM }}
+          EOF
+          # Strip leading whitespace from heredoc
+          sed -i 's/^[[:space:]]*//' backend/.env
+
+      # ─── 4. Setup Node & install deps ──────────────────────────
+      - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install production dependencies
+        run: npm ci --omit=dev --no-audit --no-fund
+
+      # ─── 5. Clean up files not needed on server ────────────────
+      - name: 🧹 Prepare deployment files
+        run: |
+          # Remove files that shouldn't be uploaded
+          rm -rf .git .github .vscode .gitignore
+          rm -f deploy.sh *.zip *.tar.gz
+          rm -f scripts/setup-deploy.ps1
+          rm -rf backend/storage  # Storage is persistent on server
+
+      # ─── 6. Deploy via FTP ─────────────────────────────────────
+      - name: 🚀 Deploy to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ steps.target.outputs.deploy_path }}/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/storage/**
+            **/*.db
+            **/*.sqlite
+            **/backend/storage/**
+
+      # ─── 7. Post summary ───────────────────────────────────────
+      - name: 📊 Deployment summary
+        if: success()
+        run: |
+          echo "### 🚀 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | ${{ steps.target.outputs.env_label }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Target** | \`${{ steps.target.outputs.deploy_path }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Deployed by** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Time** | $(date -u '+%Y-%m-%d %H:%M UTC') |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> **Note:** If this is the first deploy, you still need to set up the Node.js app in cPanel and run \`npm ci\` via cPanel Terminal." >> $GITHUB_STEP_SUMMARY
