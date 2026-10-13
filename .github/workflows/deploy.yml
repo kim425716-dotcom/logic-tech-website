@@ -37,7 +37,7 @@ jobs:
   deploy:
     name: Deploy (${{ github.ref_name }})
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
 
     env:
       NODE_VERSION: "20"
@@ -94,11 +94,15 @@ jobs:
       # ─── 5. Clean up files not needed on server ────────────────
       - name: 🧹 Prepare deployment files
         run: |
-          # Remove files that shouldn't be uploaded
+          # Remove repository/local files that shouldn't be uploaded
           rm -rf .git .github .vscode .gitignore
           rm -f deploy.sh *.zip *.tar.gz
           rm -f scripts/setup-deploy.ps1
           rm -rf backend/storage  # Storage is persistent on server
+
+          # Prune non-essential files from node_modules for rapid FTP sync
+          find node_modules -type f \( -name "*.md" -o -name "*.ts" -o -name "*.map" -o -name "*.yml" -o -name "*.yaml" -o -name "LICENSE*" -o -name "CHANGELOG*" \) -delete
+          find node_modules -type d \( -name "test" -o -name "tests" -o -name "example" -o -name "examples" -o -name "doc" -o -name "docs" -o -name ".github" \) -exec rm -rf {} + 2>/dev/null || true
 
       # ─── 6. Deploy via FTP ─────────────────────────────────────
       - name: 🚀 Deploy to cPanel via FTP
