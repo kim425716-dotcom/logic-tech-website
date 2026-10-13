@@ -1,3 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enterprise Client Portal — Logic Tech</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="dark">
+
+  <!-- Mobile Drawer Backdrop -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebarMobile()"></div>
+
+  <!-- ════ SIDEBAR NAVIGATION ════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html">
+        <img src="assets/logo.png" alt="Logic Tech" />
+        <span>Logic<span class="accent">Tech</span></span>
+      </a>
+      <span class="sidebar-brand-badge" style="background:rgba(196,158,88,0.15); color:var(--dash-accent); border-color:rgba(196,158,88,0.3);">CLIENT</span>
+    </div>
+
+    <div class="sidebar-section-title">Workspace</div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-link active" id="sideLink-overview" onclick="switchClientTab('overview'); closeSidebarMobile();">
+        <i class="fa-solid fa-gauge-high"></i> Overview
+      </button>
+      <button class="sidebar-link" id="sideLink-projects" onclick="switchClientTab('projects'); closeSidebarMobile();">
+        <i class="fa-solid fa-cubes"></i> My Projects
+        <span class="sidebar-badge" id="clientProjectBadge" style="display:none;">0</span>
+      </button>
+      <button class="sidebar-link" id="sideLink-request" onclick="switchClientTab('request'); closeSidebarMobile();">
+        <i class="fa-solid fa-file-signature"></i> Request Deliverable
+      </button>
+      <button class="sidebar-link" id="sideLink-faqs" onclick="switchClientTab('faqs'); closeSidebarMobile();">
+        <i class="fa-solid fa-circle-question"></i> Help & FAQs
+      </button>
+      <button class="sidebar-link" id="sideLink-account" onclick="switchClientTab('account'); closeSidebarMobile();">
+        <i class="fa-solid fa-user-shield"></i> Account & SLA
+      </button>
+
+      <div class="sidebar-section-title" style="margin-top:0.5rem;">Shortcuts</div>
+      <a href="index.html" class="sidebar-link">
+        <i class="fa-solid fa-globe"></i> Public Website
+      </a>
+      <a href="contact.html" class="sidebar-link">
+        <i class="fa-solid fa-headset"></i> Contact Solutions Team
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-system-card">
+        <div class="sidebar-system-header">
+          <span>Enterprise SLA</span>
+          <span class="pulse-dot" title="Operational"></span>
+        </div>
+        <div style="color:var(--text-muted); font-size:0.7rem; display:flex; justify-content:space-between;">
+          <span>99.98% High Availability</span>
+          <span style="color:#10b981;">Active Tier</span>
+        </div>
+      </div>
+      <button class="sidebar-link logout-btn" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ════ MAIN CONTENT CONTAINER ════ -->
+  <div class="dash-main">
+    <!-- Top Bar -->
+    <header class="dash-topbar">
+      <div class="dash-topbar-left">
+        <button class="icon-btn" onclick="toggleSidebarMobile()" title="Toggle Sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="dash-breadcrumb">
+          <a href="#" onclick="switchClientTab('overview')">Client Portal</a>
+          <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i>
+          <span id="clientBreadcrumb">Overview</span>
+        </div>
+        <div class="dash-telemetry-chip">
+          <span class="pulse-dot"></span>
+          <span>Enterprise SLA Active</span>
+        </div>
+      </div>
+
+      <!-- Quick Command Bar -->
+      <div class="dash-cmd-bar" onclick="openClientCmdPalette()" style="cursor:pointer;" title="Press Ctrl + K for quick actions">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" placeholder="Quick search or jump to... (Ctrl K)" readonly />
+        <span class="cmd-badge">Ctrl K</span>
+      </div>
+
+      <!-- Top Right Controls -->
+      <div class="dash-topbar-right">
+        <div class="dash-clock-widget" id="clientClockWidget" title="Current Time & Date">
+          <i class="fa-regular fa-clock" style="color:var(--dash-accent);"></i>
+          <span id="clientLiveTime">--:--:--</span>
+          <span class="clock-date-part" id="clientLiveDate" style="opacity:0.8; font-size:0.725rem; margin-left:2px; border-left:1px solid var(--dash-border); padding-left:6px;">--</span>
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')" style="display:flex; align-items:center; gap:0.4rem;">
+          <i class="fa-solid fa-plus"></i> <span>New Request</span>
+        </button>
+        <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="dash-user" onclick="switchClientTab('account')" style="cursor:pointer;" title="View Account Profile">
+          <div class="dash-avatar" id="dashAvatar">CL</div>
+          <div class="dash-user-info">
+            <span class="dash-user-name" id="dashName">Client Account</span>
+            <span class="dash-user-role">Enterprise Client</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Body -->
+    <div class="dash-body">
+
+      <!-- ════ TAB 1: OVERVIEW ════ -->
+      <section id="tab-client-overview" class="tab-pane">
+        <!-- Executive Welcome Banner -->
+        <div class="dash-welcome">
+          <div>
+            <h2>Welcome back, <span id="welcomeClientName">Partner</span> 👋</h2>
+            <p>Enterprise software delivery portal. Track live engineering sprints, inspect deliverables, and collaborate with your technical squad.</p>
+            <div class="welcome-clock-badge" id="clientHeroClockBadge">
+              <i class="fa-regular fa-clock" style="color:var(--dash-accent);"></i>
+              <span id="welcomeLiveClock" style="font-weight:700; color:var(--text-primary); font-variant-numeric:tabular-nums; letter-spacing:0.5px;">--:--:--</span>
+              <span class="clock-divider">•</span>
+              <span id="welcomeLiveDate" style="color:var(--text-secondary); font-size:0.775rem;">--</span>
+              <span class="clock-divider">•</span>
+              <span class="clock-sync-badge"><i class="fa-solid fa-signal" style="font-size:0.65rem;"></i> Live Portal Sync</span>
+            </div>
+          </div>
+          <div class="dash-welcome-actions">
+            <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')">
+              <i class="fa-solid fa-plus"></i> Request Deliverable
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="loadDashboard()">
+              <i class="fa-solid fa-arrows-rotate"></i> Sync Data
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="switchClientTab('faqs')">
+              <i class="fa-solid fa-circle-question"></i> Browse FAQs
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics (Clickable to Filter) -->
+        <div class="dash-stats">
+          <!-- Active Sprints -->
+          <div class="dstat-card clickable" id="kpiCard-active" onclick="filterByKpi('In Progress')" title="Click to filter by Active Sprints" style="--stat-accent:#6366f1;">
+            <div class="dstat-top">
+              <div class="dstat-icon" style="background:rgba(99,102,241,0.12); color:#818cf8;">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <span class="trend-badge neutral"><i class="fa-solid fa-bolt"></i> Filter Stage</span>
+            </div>
+            <div>
+              <div class="dstat-value" id="activeProjects">0</div>
+              <div class="dstat-label">Active Sprints</div>
+              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="activeSpark" style="width:75%; background:#6366f1;"></div></div>
+            </div>
+          </div>
+
+          <!-- Completed Deliverables -->
+          <div class="dstat-card clickable" id="kpiCard-completed" onclick="filterByKpi('Completed')" title="Click to filter by Completed" style="--stat-accent:#10b981;">
+            <div class="dstat-top">
+              <div class="dstat-icon" style="background:rgba(16,185,129,0.12); color:#10b981;">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <span class="trend-badge up"><i class="fa-solid fa-check"></i> Filter Stage</span>
+            </div>
+            <div>
+              <div class="dstat-value" id="completedProjects">0</div>
+              <div class="dstat-label">Completed Deliverables</div>
+              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="completedSpark" style="width:100%; background:#10b981;"></div></div>
+            </div>
+          </div>
+
+          <!-- In Review / QA -->
+          <div class="dstat-card clickable" id="kpiCard-review" onclick="filterByKpi('Review')" title="Click to filter by Review / QA" style="--stat-accent:#06b6d4;">
+            <div class="dstat-top">
+              <div class="dstat-icon" style="background:rgba(6,182,212,0.12); color:#06b6d4;">
+                <i class="fa-solid fa-vial-circle-check"></i>
+              </div>
+              <span class="trend-badge neutral"><i class="fa-solid fa-clock"></i> Filter Stage</span>
+            </div>
+            <div>
+              <div class="dstat-value" id="reviewProjects">0</div>
+              <div class="dstat-label">In Review / QA</div>
+              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="reviewSpark" style="width:50%; background:#06b6d4;"></div></div>
+            </div>
+          </div>
+
+          <!-- Pending Scoping -->
+          <div class="dstat-card clickable" id="kpiCard-pending" onclick="filterByKpi('Pending')" title="Click to filter by Pending Planning" style="--stat-accent:#f59e0b;">
+            <div class="dstat-top">
+              <div class="dstat-icon" style="background:rgba(245,158,11,0.12); color:#f59e0b;">
+                <i class="fa-solid fa-hourglass-start"></i>
+              </div>
+              <span class="trend-badge amber"><i class="fa-solid fa-file-invoice"></i> Filter Stage</span>
+            </div>
+            <div>
+              <div class="dstat-value" id="pendingProjects">0</div>
+              <div class="dstat-label">Pending Review</div>
+              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="pendingSpark" style="width:30%; background:#f59e0b;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pipeline Breakdown Bar -->
+        <div class="pipeline-bar-card">
+          <div class="pipeline-header">
+            <h4><i class="fa-solid fa-diagram-project" style="color:var(--dash-accent);"></i> Delivery Pipeline Distribution</h4>
+            <span id="clientPipelineTotalCount" style="font-size:0.775rem; color:var(--text-muted); font-weight:600;">0 Total Projects</span>
+          </div>
+          <div class="pipeline-segments" id="clientPipelineSegmentsBar">
+            <div class="pipeline-segment" style="width:100%; background:rgba(255,255,255,0.06);" data-tooltip="No projects"></div>
+          </div>
+          <div class="pipeline-legend">
+            <div class="pipeline-legend-item"><span class="pipeline-dot" style="background:#f59e0b;"></span> Pending (<span id="clientCountPending">0</span>)</div>
+            <div class="pipeline-legend-item"><span class="pipeline-dot" style="background:#6366f1;"></span> In Progress (<span id="clientCountInProgress">0</span>)</div>
+            <div class="pipeline-legend-item"><span class="pipeline-dot" style="background:#06b6d4;"></span> In Review (<span id="clientCountReview">0</span>)</div>
+            <div class="pipeline-legend-item"><span class="pipeline-dot" style="background:#10b981;"></span> Completed (<span id="clientCountCompleted">0</span>)</div>
+          </div>
+        </div>
+
+        <!-- Recent Projects Deck -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3><i class="fa-solid fa-cubes" style="color:var(--dash-accent);"></i> Active Software Deliverables</h3>
+              <div class="dash-card-header-subtitle">Real-time status of your engineering engagements and sprint milestones</div>
+            </div>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <span id="activeFilterNotice" style="display:none; font-size:0.75rem; color:var(--dash-accent); font-weight:600;">
+                Filtered: <span id="activeFilterName"></span> 
+                <button type="button" onclick="clearKpiFilter()" style="background:none; border:none; color:#f87171; cursor:pointer; margin-left:0.35rem;"><i class="fa-solid fa-xmark"></i></button>
+              </span>
+              <button class="btn btn-sm btn-outline" onclick="switchClientTab('projects')">View All Projects</button>
+            </div>
+          </div>
+
+          <div class="dash-toolbar">
+            <div class="dash-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="overviewSearch" placeholder="Search deliverables, scope, milestones..." oninput="filterOverviewProjects()" />
+            </div>
+            <div class="dash-filters">
+              <select class="dash-select" id="overviewStatusFilter" onchange="filterOverviewProjects()">
+                <option value="all">All Stages</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Review">In Review</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Project Name & Technical Scope</th>
+                  <th>Status</th>
+                  <th>Completion Progress</th>
+                  <th>Timeline</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="overviewProjectList">
+                <tr><td colspan="5" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading deliverables...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ TAB 2: MY PROJECTS ════ -->
+      <section id="tab-client-projects" class="tab-pane hidden">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3><i class="fa-solid fa-folder-open" style="color:var(--dash-accent);"></i> All Assigned Deliverables</h3>
+              <div class="dash-card-header-subtitle">Comprehensive milestone roadmap, technical specifications, and squad collaboration</div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')">
+              <i class="fa-solid fa-plus"></i> Request New Project
+            </button>
+          </div>
+
+          <div class="dash-toolbar">
+            <div class="dash-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="projectsFullSearch" placeholder="Filter projects by title or scope..." oninput="filterFullProjects()" />
+            </div>
+            <div class="dash-filters">
+              <select class="dash-select" id="projectsFullStatusFilter" onchange="filterFullProjects()">
+                <option value="all">All Stages</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Review">In Review</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Project Name & Scope</th>
+                  <th>Status</th>
+                  <th>Completion Progress</th>
+                  <th>Timeline</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="fullProjectList">
+                <tr><td colspan="5" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ TAB 3: REQUEST DELIVERABLE (INTERACTIVE RFP BUILDER) ════ -->
+      <section id="tab-client-request" class="tab-pane hidden">
+        <div class="dash-card" style="max-width:820px; margin:0 auto;">
+          <div class="dash-card-header">
+            <div>
+              <h3><i class="fa-solid fa-file-signature" style="color:var(--dash-accent);"></i> Interactive Project Request & RFP Builder</h3>
+              <div class="dash-card-header-subtitle">Specify architectural requirements for rapid engineering scoping and milestone estimation</div>
+            </div>
+          </div>
+
+          <form id="projectRequestForm" style="padding:1.75rem 2rem;" onsubmit="handleProjectRequestSubmit(event)">
+            <!-- Project Title -->
+            <div class="form-group" style="margin-bottom:1.35rem;">
+              <label for="projectName" style="display:block; font-size:0.825rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">
+                Project Title *
+              </label>
+              <input type="text" id="projectName" name="name" maxlength="160" required placeholder="e.g. Enterprise Cloud Migration & Zero-Trust Architecture" style="width:100%; padding:0.8rem 1rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); background:var(--dash-surface); color:var(--text-primary); font-size:0.9rem;" oninput="updateRfpPreview()" />
+            </div>
+
+            <!-- Scope & Requirements -->
+            <div class="form-group" style="margin-bottom:1.35rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                <label for="projectDescription" style="font-size:0.825rem; font-weight:700; color:var(--text-primary);">
+                  Technical Scope & Architecture Requirements *
+                </label>
+                <span id="charCountLabel" style="font-size:0.725rem; color:var(--text-muted);">0 / 5,000</span>
+              </div>
+              <textarea id="projectDescription" name="description" rows="5" maxlength="5000" required placeholder="Specify target technology stack, microservices architecture, integrations, expected user volume, and core delivery milestones..." style="width:100%; padding:0.85rem 1rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); background:var(--dash-surface); color:var(--text-primary); line-height:1.6; font-size:0.875rem;" oninput="updateCharCount(this); updateRfpPreview();"></textarea>
+            </div>
+
+            <!-- Detail Grid: Start Date & Scope Tier -->
+            <div class="detail-grid" style="margin-bottom:1.35rem;">
+              <div class="form-group">
+                <label for="projectStartDate" style="display:block; font-size:0.825rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">
+                  Target Initiation Date
+                </label>
+                <input type="date" id="projectStartDate" name="startDate" style="width:100%; padding:0.75rem 1rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); background:var(--dash-surface); color:var(--text-primary); font-size:0.875rem;" onchange="updateRfpPreview()" />
+              </div>
+              <div class="form-group">
+                <label style="display:block; font-size:0.825rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">
+                  Selected Scope Tier
+                </label>
+                <input type="text" id="selectedTierDisplay" readonly value="Enterprise Platform ($30k - $75k)" style="width:100%; padding:0.75rem 1rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); background:var(--dash-surface); color:var(--dash-accent); font-weight:600; font-size:0.875rem;" />
+              </div>
+            </div>
+
+            <!-- Interactive Tier Cards -->
+            <div style="margin-bottom:1.75rem;">
+              <label style="display:block; font-size:0.825rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">
+                Select Deliverable Scope Tier:
+              </label>
+              <div class="tier-selector-grid">
+                <div class="tier-card" id="tier-1" onclick="selectTier('Core Sprint ($15k - $30k)', 'tier-1')">
+                  <div class="tier-card-badge">SPRINT TIER</div>
+                  <div class="tier-card-title">Core Sprint</div>
+                  <div class="tier-card-desc">$15k – $30k • 2-4 Weeks execution. MVP, proof of concept, or single feature milestone.</div>
+                </div>
+                <div class="tier-card selected" id="tier-2" onclick="selectTier('Enterprise Platform ($30k - $75k)', 'tier-2')">
+                  <div class="tier-card-badge">MOST POPULAR</div>
+                  <div class="tier-card-title">Enterprise Platform</div>
+                  <div class="tier-card-desc">$30k – $75k • 4-8 Weeks delivery. Complete full-stack system with CI/CD deployment.</div>
+                </div>
+                <div class="tier-card" id="tier-3" onclick="selectTier('Dedicated Squad ($75k - $150k+)', 'tier-3')">
+                  <div class="tier-card-badge">FULL SCALE</div>
+                  <div class="tier-card-title">Dedicated Squad</div>
+                  <div class="tier-card-desc">$75k – $150k+ • Continuous delivery. Full dedicated squad (Architect, Tech Lead, Senior QA).</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live RFP Preview Box -->
+            <div id="rfpPreviewBox" style="margin-bottom:1.75rem; padding:1.25rem; background:rgba(255,255,255,0.02); border:1px dashed var(--dash-border); border-radius:var(--dash-radius-sm); font-size:0.825rem; display:none;">
+              <div style="font-weight:700; color:var(--dash-accent); margin-bottom:0.35rem;"><i class="fa-solid fa-eye"></i> Scope Draft Preview:</div>
+              <div id="rfpPreviewContent" style="color:var(--text-secondary); line-height:1.5;"></div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+              <button type="button" class="btn btn-outline" onclick="switchClientTab('overview')">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="projectRequestSubmit" style="display:inline-flex; align-items:center; gap:0.5rem;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Deliverable Request
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ════ TAB 4: HELP & FAQS ════ -->
+      <section id="tab-client-faqs" class="tab-pane hidden">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3><i class="fa-solid fa-circle-question" style="color:var(--dash-accent);"></i> Enterprise Client Knowledge Base</h3>
+              <div class="dash-card-header-subtitle">Official policies, security practices, intellectual property, and SLA governance</div>
+            </div>
+            <button class="btn btn-xs btn-outline" onclick="toggleAllFaqs()" id="toggleAllFaqsBtn">
+              Expand All
+            </button>
+          </div>
+
+          <div class="dash-toolbar">
+            <div class="dash-search" style="max-width:500px;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="faqSearchInput" placeholder="Search knowledge articles, IP ownership, SLAs..." oninput="filterClientFaqs()" />
+            </div>
+            <div style="font-size:0.775rem; color:var(--text-muted);" id="faqMatchCount">Showing all articles</div>
+          </div>
+
+          <div style="padding:1.5rem;" id="clientFaqsAccordion">
+            <div style="text-align:center; padding:3rem; color:var(--text-muted);">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading knowledge base articles...
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ TAB 5: ACCOUNT & SLA ════ -->
+      <section id="tab-client-account" class="tab-pane hidden">
+        <div class="client-account-grid">
+          <!-- Account Summary Card -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3><i class="fa-solid fa-user-shield" style="color:var(--dash-accent);"></i> Account Profile</h3>
+              <span class="badge-pill" style="background:rgba(16,185,129,0.15); color:#10b981;">Active</span>
+            </div>
+            <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
+              <div style="display:flex; align-items:center; gap:1rem;">
+                <div class="dash-avatar" id="accountAvatar" style="width:52px; height:52px; font-size:1.15rem;">CL</div>
+                <div>
+                  <h4 id="accountName" style="font-size:1.05rem; margin:0 0 0.2rem; color:var(--text-primary);">-</h4>
+                  <div id="accountEmail" style="font-size:0.85rem; color:var(--text-muted);">-</div>
+                </div>
+              </div>
+              <div style="border-top:1px solid var(--dash-border); padding-top:1rem; display:flex; flex-direction:column; gap:0.65rem; font-size:0.85rem;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:var(--text-muted);">Account Role:</span>
+                  <strong style="color:var(--text-primary);">Enterprise Client</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:var(--text-muted);">Security Standard:</span>
+                  <span style="color:#10b981; font-weight:600;"><i class="fa-solid fa-shield-check"></i> Scrypt Salted Session</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:var(--text-muted);">Dedicated Squad Lead:</span>
+                  <span style="color:var(--dash-accent); font-weight:600;">Logic Tech Solutions Team</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enterprise SLA Guarantees Card -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3><i class="fa-solid fa-award" style="color:#10b981;"></i> Service Level Agreement</h3>
+              <span class="badge-pill" style="background:rgba(196,158,88,0.15); color:var(--dash-accent);">Enterprise</span>
+            </div>
+            <div style="padding:1.5rem;">
+              <ul class="sla-feature-list">
+                <li class="sla-feature-item">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <div><strong>99.98% High Availability Uptime:</strong> Guaranteed SLA backed infrastructure for all enterprise application deployments.</div>
+                </li>
+                <li class="sla-feature-item">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <div><strong>100% Intellectual Property Assignment:</strong> All custom codebases, artifacts, and documentation are transferred in full upon milestone signoff.</div>
+                </li>
+                <li class="sla-feature-item">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <div><strong>Sub-Hour Critical Response Time:</strong> Priority incident resolution and live architecture support via dedicated channels.</div>
+                </li>
+                <li class="sla-feature-item">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <div><strong>Automated CI/CD Pipeline & Audit Trails:</strong> Full transparency into commits, unit testing coverage, and deployment gates.</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ════ MODAL 1: PROJECT SCOPE & ROADMAP DRAWER ════ -->
+  <div id="projectDetailsModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="detailsModalTitle">Milestone Roadmap</h3>
+          <span id="detailsModalStatus" style="font-size:0.775rem; color:var(--text-muted);">Technical specifications & deliverables</span>
+        </div>
+        <button class="icon-btn" onclick="closeModal('projectDetailsModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding:0.85rem 1rem; border-radius:var(--dash-radius-sm); background:var(--dash-surface); border:1px solid var(--dash-border);">
+          <div>
+            <span style="font-size:0.725rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Delivery Progress</span>
+            <div id="detailsModalProgressLabel" style="font-size:1.15rem; font-weight:800; color:var(--dash-accent);">0%</div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:0.725rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Target Timeline</span>
+            <div id="detailsModalTimeline" style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">-</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:1.25rem;">
+          <h4 style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin-bottom:0.35rem;">Technical Scope & Requirements:</h4>
+          <div id="detailsModalDesc" style="font-size:0.875rem; line-height:1.6; color:var(--text-secondary); background:var(--dash-surface); padding:1rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); white-space:pre-wrap;"></div>
+        </div>
+
+        <div>
+          <h4 style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin-bottom:0.35rem;">Sprint Milestone Roadmap:</h4>
+          <div class="roadmap-checklist" id="detailsModalRoadmap">
+            <!-- Dynamically populated based on project progress -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('projectDetailsModal')">Close</button>
+        <button type="button" class="btn btn-sm btn-primary" id="detailsModalChatBtn">
+          <i class="fa-solid fa-comments"></i> Open Discussion
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ MODAL 2: LIVE PROJECT MESSAGING DISCUSSION ════ -->
+  <div id="chatModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="chatProjectTitle">Project Discussion</h3>
+          <span id="chatProjectSubtitle" style="font-size: 0.775rem; color: var(--text-muted);">Direct technical channel with Logic Tech Solutions Engineering</span>
+        </div>
+        <button class="icon-btn" onclick="closeChatModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="chat-container" style="border:none; border-radius:0;">
+        <div class="chat-messages-wrap" id="chatMessagesList">
+          <!-- Messages dynamically populate here -->
+        </div>
+
+        <!-- Interactive Quick Replies -->
+        <div class="chat-quick-replies">
+          <span class="chat-quick-chip" onclick="insertQuickReply('Can we get a quick ETA and status update on the current milestone?')">Request ETA Update</span>
+          <span class="chat-quick-chip" onclick="insertQuickReply('Scope looks great! Approved to proceed with next deployment.')">Approve Milestone</span>
+          <span class="chat-quick-chip" onclick="insertQuickReply('Let\'s schedule a brief architecture review call this week.')">Schedule Call</span>
+          <span class="chat-quick-chip" onclick="insertQuickReply('We have updated the technical requirements document.')">Doc Updated</span>
+        </div>
+
+        <form class="chat-input-bar" onsubmit="sendChatMessage(event)">
+          <input type="text" id="chatMessageInput" placeholder="Write an update, question, or milestone note..." maxlength="5000" autocomplete="off" required />
+          <button type="submit" class="chat-send-btn" id="chatSendBtn" title="Send Message">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ MODAL 3: CLIENT COMMAND PALETTE (CTRL + K) ════ -->
+  <div id="cmdPaletteModal" class="modal-overlay hidden" onclick="if(event.target===this) closeClientCmdPalette();">
+    <div class="modal-content" style="max-width: 540px; padding: 0; overflow:hidden;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--dash-border); display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+        <input type="text" id="cmdPaletteInput" placeholder="Type a command or jump to section..." style="border:none; background:transparent; width:100%; outline:none; font-size:0.95rem; color:var(--text-primary);" oninput="filterCmdPalette()" />
+        <span class="cmd-badge">ESC</span>
+      </div>
+      <div id="cmdPaletteResults" style="max-height: 320px; overflow-y: auto; padding: 0.5rem;">
+        <div class="cmd-palette-item" onclick="execClientCmd('overview')">
+          <i class="fa-solid fa-gauge-high"></i> Jump to Overview
+        </div>
+        <div class="cmd-palette-item" onclick="execClientCmd('projects')">
+          <i class="fa-solid fa-cubes"></i> Jump to My Projects
+        </div>
+        <div class="cmd-palette-item" onclick="execClientCmd('request')">
+          <i class="fa-solid fa-file-signature"></i> Request New Deliverable / RFP
+        </div>
+        <div class="cmd-palette-item" onclick="execClientCmd('faqs')">
+          <i class="fa-solid fa-circle-question"></i> Search Help & FAQs
+        </div>
+        <div class="cmd-palette-item" onclick="execClientCmd('account')">
+          <i class="fa-solid fa-user-shield"></i> View Account & SLA Guarantees
+        </div>
+        <div class="cmd-palette-item" onclick="execClientCmd('theme')">
+          <i class="fa-solid fa-circle-half-stroke"></i> Toggle Dark / Light Theme
+        </div>
+        <div class="cmd-palette-item" onclick="execClientCmd('logout')" style="color:#f87171;">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        </div>
+      </div>
+      <div class="cmd-palette-footer">
+        <span>Use arrow keys or click to select</span>
+        <span>Logic Tech Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SCRIPTS ════ -->
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const clientState = {
+      user: null,
+      projects: [],
+      stats: {},
+      faqs: [],
+      currentTab: 'overview',
+      activeKpiFilter: null
+    };
+
+    const escapeHtml = value => String(value || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+
+    // Mobile Sidebar Drawer
+    function toggleSidebarMobile() {
+      const sb = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const isOpen = sb.classList.toggle('sidebar-open');
+      backdrop.classList.toggle('active', isOpen);
+    }
+
+    function closeSidebarMobile() {
+      const sb = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.remove('sidebar-open');
+      backdrop.classList.remove('active');
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('hidden');
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.add('hidden');
+    }
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+
+    // Live Clock
+    function updateLiveClock() {
+      const el = document.getElementById('clientLiveTime');
+      if (el) {
+        el.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+      }
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
     // Theme Toggle
     const themeBtn = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
@@ -17,3 +702,674 @@
     }
 
     // Tab Switching
+    function switchClientTab(tabId) {
+      clientState.currentTab = tabId;
+      const tabs = ['overview', 'projects', 'request', 'faqs', 'account'];
+
+      tabs.forEach(t => {
+        const pane = document.getElementById(`tab-client-${t}`);
+        const sideLink = document.getElementById(`sideLink-${t}`);
+        if (pane) pane.classList.toggle('hidden', t !== tabId);
+        if (sideLink) sideLink.classList.toggle('active', t !== tabId);
+      });
+
+      const breadcrumbMap = {
+        overview: 'Overview',
+        projects: 'My Projects Pipeline',
+        request: 'Request Deliverable',
+        faqs: 'Knowledge & FAQs',
+        account: 'Account & SLA'
+      };
+      document.getElementById('clientBreadcrumb').textContent = breadcrumbMap[tabId] || 'Portal';
+
+      if (tabId === 'request') {
+        const startInput = document.getElementById('projectStartDate');
+        if (startInput && !startInput.value) {
+          startInput.value = new Date().toISOString().slice(0, 10);
+        }
+      }
+      if (tabId === 'faqs' && !clientState.faqs.length) {
+        loadClientFaqs();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.switchClientTab = switchClientTab;
+
+    // Load Dashboard Core Data
+    async function loadDashboard() {
+      try {
+        const response = await apiFetch('/api/dashboard');
+        if (response.status === 401) {
+          window.location.href = 'login.html';
+          return;
+        }
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Unable to load dashboard.');
+
+        clientState.user = result.user;
+        clientState.projects = result.projects || [];
+        clientState.stats = result.stats || {};
+
+        // Admin Portal Link in Sidebar if user is admin
+        if (result.user && result.user.role === 'admin') {
+          const nav = document.querySelector('.sidebar-nav');
+          if (nav && !document.getElementById('adminPortalLink')) {
+            const adminLink = document.createElement('a');
+            adminLink.id = 'adminPortalLink';
+            adminLink.href = 'dashboard-admin.html';
+            adminLink.className = 'sidebar-link';
+            adminLink.style.color = '#818cf8';
+            adminLink.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Admin Portal';
+            nav.insertBefore(adminLink, nav.firstChild);
+          }
+        }
+
+        // Render User Header
+        const firstName = (result.user.name || 'Client').split(' ')[0];
+        const initials = (result.user.name || 'CL').split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+        
+        document.getElementById('dashAvatar').textContent = initials;
+        document.getElementById('dashName').textContent = result.user.name;
+        document.getElementById('welcomeClientName').textContent = firstName;
+        document.getElementById('accountAvatar').textContent = initials;
+        document.getElementById('accountName').textContent = result.user.name;
+        document.getElementById('accountEmail').textContent = result.user.email;
+
+        // Stats Counters
+        document.getElementById('activeProjects').textContent = result.stats.active || 0;
+        document.getElementById('completedProjects').textContent = result.stats.completed || 0;
+        document.getElementById('pendingProjects').textContent = result.stats.pending || 0;
+
+        const inReviewCount = clientState.projects.filter(p => p.status === 'Review' || p.status === 'In Review').length;
+        document.getElementById('reviewProjects').textContent = inReviewCount;
+
+        // Sidebar Project Badge
+        const badge = document.getElementById('clientProjectBadge');
+        if (clientState.projects.length) {
+          badge.textContent = clientState.projects.length;
+          badge.style.display = 'inline-flex';
+        } else {
+          badge.style.display = 'none';
+        }
+
+        // Render Pipeline Distribution Bar
+        renderClientPipelineBar(clientState.projects);
+
+        // Render Project Tables
+        renderOverviewProjects(clientState.projects);
+        renderFullProjects(clientState.projects);
+
+      } catch (error) {
+        showToast(error.message || 'Unable to sync dashboard data.', 'error');
+      }
+    }
+
+    // Render Pipeline Distribution
+    function renderClientPipelineBar(projects) {
+      const total = projects.length;
+      document.getElementById('clientPipelineTotalCount').textContent = `${total} Total ${total === 1 ? 'Project' : 'Projects'}`;
+
+      const pending = projects.filter(p => p.status === 'Pending').length;
+      const inProgress = projects.filter(p => p.status === 'In Progress').length;
+      const review = projects.filter(p => p.status === 'Review' || p.status === 'In Review').length;
+      const completed = projects.filter(p => p.status === 'Completed').length;
+
+      document.getElementById('clientCountPending').textContent = pending;
+      document.getElementById('clientCountInProgress').textContent = inProgress;
+      document.getElementById('clientCountReview').textContent = review;
+      document.getElementById('clientCountCompleted').textContent = completed;
+
+      const bar = document.getElementById('clientPipelineSegmentsBar');
+      if (!total) {
+        bar.innerHTML = '<div class="pipeline-segment" style="width:100%; background:rgba(255,255,255,0.06);" data-tooltip="No projects"></div>';
+        return;
+      }
+
+      const pPct = Math.round((pending / total) * 100);
+      const ipPct = Math.round((inProgress / total) * 100);
+      const rPct = Math.round((review / total) * 100);
+      const cPct = Math.max(0, 100 - (pPct + ipPct + rPct));
+
+      bar.innerHTML = `
+        ${pending ? `<div class="pipeline-segment" style="width:${pPct}%; background:#f59e0b;" data-tooltip="Pending: ${pending}"></div>` : ''}
+        ${inProgress ? `<div class="pipeline-segment" style="width:${ipPct}%; background:#6366f1;" data-tooltip="In Progress: ${inProgress}"></div>` : ''}
+        ${review ? `<div class="pipeline-segment" style="width:${rPct}%; background:#06b6d4;" data-tooltip="Review: ${review}"></div>` : ''}
+        ${completed ? `<div class="pipeline-segment" style="width:${cPct}%; background:#10b981;" data-tooltip="Completed: ${completed}"></div>` : ''}
+      `;
+    }
+
+    function statusBadgeClass(status) {
+      return {
+        'In Progress': 'in-progress',
+        'In Review': 'review',
+        'Review': 'review',
+        'Completed': 'completed',
+        'Pending': 'pending',
+        'Cancelled': 'pending'
+      }[status] || 'pending';
+    }
+
+    function statusColor(status) {
+      return {
+        'In Progress': '#6366f1',
+        'In Review': '#06b6d4',
+        'Review': '#06b6d4',
+        'Completed': '#10b981',
+        'Pending': '#f59e0b',
+        'Cancelled': '#ef4444'
+      }[status] || 'var(--dash-accent)';
+    }
+
+    // Interactive KPI Filtering
+    function filterByKpi(stage) {
+      clientState.activeKpiFilter = stage;
+      ['active', 'completed', 'review', 'pending'].forEach(k => {
+        const card = document.getElementById(`kpiCard-${k}`);
+        if (card) card.classList.remove('active-filter');
+      });
+
+      const cardMap = {
+        'In Progress': 'active',
+        'Completed': 'completed',
+        'Review': 'review',
+        'Pending': 'pending'
+      };
+      const activeCardId = cardMap[stage];
+      if (activeCardId) {
+        document.getElementById(`kpiCard-${activeCardId}`).classList.add('active-filter');
+      }
+
+      document.getElementById('overviewStatusFilter').value = stage;
+      document.getElementById('activeFilterNotice').style.display = 'inline-flex';
+      document.getElementById('activeFilterName').textContent = stage;
+
+      filterOverviewProjects();
+      const tableCard = document.querySelector('#tab-client-overview .dash-card:last-child');
+      if (tableCard) tableCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    window.filterByKpi = filterByKpi;
+
+    function clearKpiFilter() {
+      clientState.activeKpiFilter = null;
+      ['active', 'completed', 'review', 'pending'].forEach(k => {
+        const card = document.getElementById(`kpiCard-${k}`);
+        if (card) card.classList.remove('active-filter');
+      });
+      document.getElementById('overviewStatusFilter').value = 'all';
+      document.getElementById('activeFilterNotice').style.display = 'none';
+      filterOverviewProjects();
+    }
+    window.clearKpiFilter = clearKpiFilter;
+
+    // Render Overview Table
+    function renderOverviewProjects(list) {
+      const tbody = document.getElementById('overviewProjectList');
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                <div class="empty-title">No deliverables found</div>
+                <div class="empty-desc">Submit your first technical scope or RFP to initiate engineering sprints with our squad.</div>
+                <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')" style="margin-top:0.75rem;">
+                  <i class="fa-solid fa-plus"></i> Request Deliverable
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.slice(0, 6).map(p => `
+        <tr>
+          <td>
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.2rem; cursor:pointer;" onclick="openProjectDetails(${p.id})">
+              <i class="fa-solid fa-code" style="color:var(--dash-accent); margin-right:0.35rem; font-size:0.85rem;"></i> ${escapeHtml(p.name)}
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              ${escapeHtml(p.description)}
+            </div>
+          </td>
+          <td><span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+          <td style="min-width:140px;">
+            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+            <div class="progress-label">${p.progress}% Complete</div>
+          </td>
+          <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
+            ${p.startDate ? `<div style="margin-bottom:0.2rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${escapeHtml(p.startDate)}</div>` : ''}
+            <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Due:</span> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</div>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:inline-flex; gap:0.4rem;">
+              <button class="btn-sm btn-outline" onclick="openProjectDetails(${p.id})" title="View Scope & Roadmap">
+                <i class="fa-solid fa-eye"></i> Scope
+              </button>
+              <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Open Discussion Thread">
+                <i class="fa-solid fa-comments"></i> Chat
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Filter Overview Table
+    function filterOverviewProjects() {
+      const q = (document.getElementById('overviewSearch').value || '').toLowerCase().trim();
+      const status = document.getElementById('overviewStatusFilter').value;
+
+      const filtered = clientState.projects.filter(p => {
+        const matchesQ = !q || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
+        const matchesStatus = status === 'all' || p.status === status;
+        return matchesQ && matchesStatus;
+      });
+      renderOverviewProjects(filtered);
+    }
+
+    // Render Full Projects Table
+    function renderFullProjects(list) {
+      const tbody = document.getElementById('fullProjectList');
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                <div class="empty-title">No deliverables match filter</div>
+                <div class="empty-desc">Clear your search parameters or request a new deliverable.</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(p => `
+        <tr>
+          <td>
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.25rem; cursor:pointer;" onclick="openProjectDetails(${p.id})">
+              <i class="fa-solid fa-cubes" style="color:var(--dash-accent); margin-right:0.35rem; font-size:0.85rem;"></i> ${escapeHtml(p.name)}
+            </div>
+            <div style="font-size:0.775rem; color:var(--text-muted); line-height:1.4; max-width:420px;">
+              ${escapeHtml(p.description)}
+            </div>
+          </td>
+          <td><span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+          <td style="min-width:160px;">
+            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+            <div class="progress-label">${p.progress}% Complete</div>
+          </td>
+          <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
+            ${p.startDate ? `<div style="margin-bottom:0.25rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${escapeHtml(p.startDate)}</div>` : ''}
+            <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Target:</span> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</div>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:inline-flex; gap:0.4rem;">
+              <button class="btn-sm btn-outline" onclick="openProjectDetails(${p.id})" title="Inspect Scope & Roadmap">
+                <i class="fa-solid fa-eye"></i> Scope
+              </button>
+              <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Collaborate with Engineering Squad">
+                <i class="fa-solid fa-comments"></i> Chat
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterFullProjects() {
+      const q = (document.getElementById('projectsFullSearch').value || '').toLowerCase().trim();
+      const status = document.getElementById('projectsFullStatusFilter').value;
+
+      const filtered = clientState.projects.filter(p => {
+        const matchesQ = !q || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
+        const matchesStatus = status === 'all' || p.status === status;
+        return matchesQ && matchesStatus;
+      });
+      renderFullProjects(filtered);
+    }
+
+    // ── Project Scope & Roadmap Modal ──
+    function openProjectDetails(id) {
+      const p = clientState.projects.find(item => item.id === id);
+      if (!p) return;
+
+      document.getElementById('detailsModalTitle').textContent = p.name;
+      document.getElementById('detailsModalStatus').innerHTML = `Status: <span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span>`;
+      document.getElementById('detailsModalProgressLabel').textContent = `${p.progress}% Completed`;
+      document.getElementById('detailsModalDesc').textContent = p.description;
+
+      const timelineStr = `${p.startDate ? `Started: ${p.startDate}` : 'Ongoing'} • ${p.dueDate ? `Target: ${new Date(p.dueDate).toLocaleDateString()}` : 'Continuous'}`;
+      document.getElementById('detailsModalTimeline').textContent = timelineStr;
+
+      // Dynamic Milestones Checklist based on progress
+      const milestones = [
+        { label: 'Technical Architecture & Scoping Review', threshold: 10 },
+        { label: 'Database Schema, Data Models & API Contracts', threshold: 30 },
+        { label: 'Core Sprint Implementation & Microservices', threshold: 55 },
+        { label: 'Security Hardening, Zero-Trust Audit & QA Testing', threshold: 80 },
+        { label: 'Production Deployment & SLA Active Monitoring', threshold: 100 }
+      ];
+
+      const roadmapEl = document.getElementById('detailsModalRoadmap');
+      roadmapEl.innerHTML = milestones.map((m, idx) => {
+        const isDone = p.progress >= m.threshold;
+        const isActive = p.progress < m.threshold && (idx === 0 || p.progress >= milestones[idx - 1].threshold);
+        const icon = isDone ? 'fa-circle-check' : (isActive ? 'fa-circle-notch fa-spin' : 'fa-circle');
+        const color = isDone ? '#10b981' : (isActive ? '#6366f1' : 'var(--text-muted)');
+        const cls = isDone ? 'completed' : (isActive ? 'active' : '');
+
+        return `
+          <div class="roadmap-item ${cls}">
+            <i class="fa-solid ${icon}" style="color:${color}; font-size:1.1rem; margin-top:0.15rem;"></i>
+            <div style="flex:1;">
+              <div style="font-weight:700; color:var(--text-primary);">Milestone ${idx + 1}: ${m.label}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${isDone ? 'Completed & Verified ✓' : (isActive ? 'Currently In Progress...' : 'Pending completion of previous milestone')}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('detailsModalChatBtn').onclick = () => {
+        closeModal('projectDetailsModal');
+        openProjectChat(p.id, p.name);
+      };
+
+      openModal('projectDetailsModal');
+    }
+    window.openProjectDetails = openProjectDetails;
+
+    // ── Interactive RFP Request Builder ──
+    function updateCharCount(el) {
+      document.getElementById('charCountLabel').textContent = `${el.value.length} / 5,000`;
+    }
+
+    function selectTier(tierName, elementId) {
+      document.getElementById('selectedTierDisplay').value = tierName;
+      ['tier-1', 'tier-2', 'tier-3'].forEach(id => {
+        const card = document.getElementById(id);
+        if (card) card.classList.remove('selected');
+      });
+      const selected = document.getElementById(elementId);
+      if (selected) selected.classList.add('selected');
+      updateRfpPreview();
+    }
+    window.selectTier = selectTier;
+
+    function updateRfpPreview() {
+      const name = document.getElementById('projectName').value.trim();
+      const desc = document.getElementById('projectDescription').value.trim();
+      const date = document.getElementById('projectStartDate').value;
+      const tier = document.getElementById('selectedTierDisplay').value;
+
+      const previewBox = document.getElementById('rfpPreviewBox');
+      const previewContent = document.getElementById('rfpPreviewContent');
+
+      if (!name && !desc) {
+        previewBox.style.display = 'none';
+        return;
+      }
+      previewBox.style.display = 'block';
+      previewContent.innerHTML = `
+        <strong>${escapeHtml(name || 'Untitled Deliverable')}</strong><br>
+        <span style="font-size:0.75rem; color:var(--dash-accent);">${escapeHtml(tier)}</span> • 
+        <span style="font-size:0.75rem;">Target Start: ${date || 'Immediate'}</span><br>
+        <p style="margin-top:0.35rem; font-size:0.8rem;">${escapeHtml(desc || 'No requirements specified yet.')}</p>
+      `;
+    }
+
+    // Submit Project Request
+    async function handleProjectRequestSubmit(e) {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const btn = document.getElementById('projectRequestSubmit');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting Deliverable...';
+
+      try {
+        const tier = document.getElementById('selectedTierDisplay').value;
+        const rawDesc = document.getElementById('projectDescription').value;
+        const fullDesc = `[Scope Tier: ${tier}]\n\n${rawDesc}`;
+
+        const payload = {
+          name: document.getElementById('projectName').value,
+          description: fullDesc,
+          startDate: document.getElementById('projectStartDate').value || new Date().toISOString().slice(0, 10)
+        };
+
+        const res = await apiFetch('/api/project-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to submit project request.');
+
+        form.reset();
+        document.getElementById('rfpPreviewBox').style.display = 'none';
+        showToast('Your project request has been submitted for technical scoping!', 'success', 'Submitted');
+        await loadDashboard();
+        switchClientTab('projects');
+      } catch (err) {
+        showToast(err.message || 'Error submitting project request', 'error', 'Error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Deliverable Request';
+      }
+    }
+
+    // ── FAQ Knowledge Base ──
+    async function loadClientFaqs() {
+      try {
+        const res = await apiFetch('/api/faqs');
+        if (!res.ok) return;
+        const data = await res.json();
+        clientState.faqs = data.faqs || [];
+        renderClientFaqs(clientState.faqs);
+      } catch (err) {
+        console.error('Error loading FAQs:', err);
+      }
+    }
+
+    function renderClientFaqs(faqs) {
+      const container = document.getElementById('clientFaqsAccordion');
+      if (!faqs.length) {
+        container.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">No knowledge articles published yet.</div>';
+        return;
+      }
+      container.innerHTML = faqs.map(f => `
+        <div class="faq-accordion-item" onclick="this.classList.toggle('open')">
+          <div class="faq-accordion-header">
+            <span><i class="fa-regular fa-circle-question" style="margin-right:0.5rem;"></i> ${escapeHtml(f.q)}</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-accordion-body">
+            ${escapeHtml(f.a)}
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('faqMatchCount').textContent = `Showing ${faqs.length} ${faqs.length === 1 ? 'article' : 'articles'}`;
+    }
+
+    function filterClientFaqs() {
+      const q = (document.getElementById('faqSearchInput').value || '').toLowerCase().trim();
+      const filtered = clientState.faqs.filter(f => !q || (f.q && f.q.toLowerCase().includes(q)) || (f.a && f.a.toLowerCase().includes(q)));
+      renderClientFaqs(filtered);
+    }
+
+    let allFaqsExpanded = false;
+    function toggleAllFaqs() {
+      allFaqsExpanded = !allFaqsExpanded;
+      document.querySelectorAll('.faq-accordion-item').forEach(el => {
+        el.classList.toggle('open', allFaqsExpanded);
+      });
+      document.getElementById('toggleAllFaqsBtn').textContent = allFaqsExpanded ? 'Collapse All' : 'Expand All';
+    }
+
+    // ── Live Messaging Chat ──────────────────────────────────────────
+    let currentChatProjectId = null;
+    let chatPollTimer = null;
+
+    async function openProjectChat(projectId, projectName) {
+      currentChatProjectId = projectId;
+      document.getElementById('chatProjectTitle').textContent = projectName || 'Project Discussion';
+      document.getElementById('chatModal').classList.remove('hidden');
+      document.getElementById('chatMessagesList').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading discussion thread...</div>';
+      document.getElementById('chatMessageInput').value = '';
+      document.getElementById('chatMessageInput').focus();
+
+      await fetchChatMessages();
+      if (chatPollTimer) clearInterval(chatPollTimer);
+      chatPollTimer = setInterval(fetchChatMessages, 4000);
+    }
+
+    function closeChatModal() {
+      document.getElementById('chatModal').classList.add('hidden');
+      if (chatPollTimer) clearInterval(chatPollTimer);
+      chatPollTimer = null;
+      currentChatProjectId = null;
+    }
+
+    async function fetchChatMessages() {
+      if (!currentChatProjectId) return;
+      try {
+        const res = await apiFetch(`/api/projects/${currentChatProjectId}/messages`);
+        if (!res.ok) return;
+        const data = await res.json();
+        renderChatMessages(data.messages || []);
+      } catch (err) {
+        console.error('Error fetching chat messages:', err);
+      }
+    }
+
+    function renderChatMessages(messages) {
+      const list = document.getElementById('chatMessagesList');
+      if (!messages.length) {
+        list.innerHTML = `
+          <div style="text-align:center; color:var(--text-muted); margin:auto; padding:2rem;">
+            <i class="fa-solid fa-comments" style="font-size:2rem; margin-bottom:0.75rem; opacity:0.4;"></i>
+            <p style="font-size:0.875rem;">No updates yet. Post an update or technical query below to start collaborating.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = messages.map(m => {
+        const isMine = m.senderRole === 'client';
+        const roleLabel = m.senderRole === 'admin' 
+          ? '<span class="badge-pill badge-admin" style="font-size:0.65rem; background:rgba(99,102,241,0.15); color:#818cf8;">SOLUTIONS SQUAD</span>' 
+          : '<span class="badge-pill badge-client" style="font-size:0.65rem; background:rgba(196,158,88,0.15); color:var(--dash-accent);">YOU</span>';
+        const timeStr = new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
+            <div class="chat-meta">
+              <span><strong>${escapeHtml(m.senderName)}</strong> ${roleLabel}</span>
+              <span>• ${timeStr}</span>
+            </div>
+            <div class="chat-body">${escapeHtml(m.content)}</div>
+          </div>
+        `;
+      }).join('');
+
+      list.scrollTop = list.scrollHeight;
+    }
+
+    function insertQuickReply(text) {
+      const input = document.getElementById('chatMessageInput');
+      input.value = text;
+      input.focus();
+    }
+
+    async function sendChatMessage(e) {
+      e.preventDefault();
+      if (!currentChatProjectId) return;
+      const input = document.getElementById('chatMessageInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('chatSendBtn');
+      btn.disabled = true;
+
+      try {
+        const res = await apiFetch(`/api/projects/${currentChatProjectId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: text })
+        });
+        if (!res.ok) throw new Error('Failed to post message');
+        input.value = '';
+        await fetchChatMessages();
+      } catch (err) {
+        showToast(err.message || 'Error sending message', 'error');
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    window.openProjectChat = openProjectChat;
+    window.closeChatModal = closeChatModal;
+    window.sendChatMessage = sendChatMessage;
+
+    // ── Command Palette (Ctrl + K) ──
+    function openClientCmdPalette() {
+      openModal('cmdPaletteModal');
+      const input = document.getElementById('cmdPaletteInput');
+      input.value = '';
+      input.focus();
+      filterCmdPalette();
+    }
+
+    function closeClientCmdPalette() {
+      closeModal('cmdPaletteModal');
+    }
+
+    function filterCmdPalette() {
+      const q = (document.getElementById('cmdPaletteInput').value || '').toLowerCase().trim();
+      const items = document.querySelectorAll('#cmdPaletteResults .cmd-palette-item');
+      items.forEach(el => {
+        const text = el.textContent.toLowerCase();
+        el.style.display = !q || text.includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    function execClientCmd(action) {
+      closeClientCmdPalette();
+      if (action === 'overview' || action === 'projects' || action === 'request' || action === 'faqs' || action === 'account') {
+        switchClientTab(action);
+      } else if (action === 'theme') {
+        toggleTheme();
+      } else if (action === 'logout') {
+        logout();
+      }
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openClientCmdPalette();
+      }
+      if (e.key === 'Escape') {
+        closeClientCmdPalette();
+        closeModal('projectDetailsModal');
+        closeChatModal();
+        closeSidebarMobile();
+      }
+    });
+
+    function logout() {
+      apiFetch('/api/auth/logout', { method: 'POST' }).finally(() => {
+        window.location.href = 'login.html';
+      });
+    }
+    window.logout = logout;
+
+    // Initialize Dashboard
+    loadDashboard();
+  </script>
+</body>
+</html>
