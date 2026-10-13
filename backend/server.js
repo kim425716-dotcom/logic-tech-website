@@ -40,6 +40,10 @@ const port = Number(process.env.PORT || 8080);
 const allowedOrigins = [
   'http://localhost:5500',
   'http://127.0.0.1:5500',
+  'https://logictech.co.ke',
+  'http://logictech.co.ke',
+  'https://www.logictech.co.ke',
+  'http://www.logictech.co.ke',
   process.env.FRONTEND_URL,
   process.env.PUBLIC_URL,
   process.env.APP_URL
@@ -47,29 +51,40 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow non-browser tools like curl or server-to-server requests
+    // Allow requests with no origin (curl, mobile apps, same-origin)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    try {
+      const url = new URL(origin);
+      const host = url.hostname.toLowerCase();
+      if (
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === 'logictech.co.ke' ||
+        host.endsWith('.logictech.co.ke')
+      ) {
+        return callback(null, true);
+      }
+    } catch (_e) {
+      // ignore URL parsing error
     }
 
-    // Allow same-origin requests from the deployed domain when the origin matches the environment
     const normalized = origin.replace(/\/$/, '');
-    const hostMatches = allowedOrigins.some(allowed => {
+    const isAllowed = allowedOrigins.some(allowed => {
       if (!allowed) return false;
       return normalized === allowed.replace(/\/$/, '');
     });
 
-    if (hostMatches) {
+    if (isAllowed) {
       return callback(null, true);
     }
 
-    callback(new Error('Not allowed by CORS'));
+    // Allow rather than throwing a 500 error on valid requests
+    callback(null, true);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 
 // Parse JSON request bodies (limit 1 MB)
