@@ -91,7 +91,6 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   transition: background 0.3s, color 0.3s;
-  padding-top: var(--nav-h);
 }
 h1, h2 {
   font-family: var(--font-serif);
@@ -360,7 +359,7 @@ body.dark .hero-grid {
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: 4rem 1.5rem 4rem;
+  padding: calc(var(--nav-h) + 4rem) 1.5rem 4rem;
   max-width: 900px;
 }
 .hero-content h1 {
@@ -691,7 +690,6 @@ body:not(.dark) .contact-card { background: var(--bg-900); }
   transform: translateY(-50%);
   color: var(--text-muted);
   font-size: 0.875rem;
-  pointer-events: none;
 }
 .input-wrap input,
 .input-wrap select,
@@ -715,7 +713,7 @@ body:not(.dark) .input-wrap textarea {
 .input-wrap textarea::placeholder { color: var(--text-muted); }
 .input-wrap input:focus,
 .input-wrap select:focus,
-.input-wrap textarea:focus {
+input-wrap textarea:focus {
   border-color: var(--amber);
   box-shadow: 0 0 0 2px rgba(245,158,11,0.2);
   outline: none;
@@ -969,7 +967,7 @@ body:not(.dark) .auth-form .input-wrap input { background: var(--bg-800); }
 /* ---- Subpage Hero ---- */
 .page-hero-section {
   position: relative;
-  padding: 3rem 0 2rem;
+  padding: calc(var(--nav-h) + 3.5rem) 0 2rem;
   background: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, rgba(2,6,23,0) 100%);
   text-align: center;
 }
@@ -1032,4 +1030,3 @@ body.dark .section-cta { background: linear-gradient(135deg, rgba(17,26,40,0.92)
 /* End of file */
 
 /* ---- END OF UPDATED FILE ---- */
-
