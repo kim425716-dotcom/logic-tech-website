@@ -919,6 +919,10 @@ body:not(.dark) .auth-form .input-wrap input { background: var(--bg-800); }
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+/* Fallback: reveal immediately when JS hasn't run or user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll { opacity: 1; transform: none; transition: none; }
+}
 @keyframes fadeUp {
   to { opacity: 1; transform: translateY(0); }
 }
