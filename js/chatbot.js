@@ -1,5 +1,5 @@
-/**
- * Logic Tech AI Concierge — Interactive Chatbox Widget
+ï»¿/**
+ * Logic Tech AI Concierge ï¿½ Interactive Chatbox Widget
  * Features: Typewriter replies, smart follow-ups, lead capture, reactions,
  *           persistent session history, attention pulse, keyboard shortcuts.
  */
@@ -422,7 +422,7 @@
       setStatus('Online \u2022 Instant Answers', '#10b981');
       var reply = (response.ok && data.reply)
         ? data.reply
-        : "I'm having a brief moment of delay. Reach our team via our [Contact Form](contact.html) or email **contact@logictech.io**.";
+        : "I'm having a brief moment of delay. Reach our team via our [Contact Form](contact.html) or email **contact@logictech.co.ke**.";
       var result = appendMessage('bot', '');
       typewriterEffect(result.contentEl, formatMarkdown(reply), function() {
         var category = detectCategory(reply + ' ' + text);
@@ -435,7 +435,7 @@
     } catch(_) {
       hideTyping();
       setStatus('Online \u2022 Instant Answers', '#10b981');
-      var fb = "Our team is ready! You can submit an inquiry on our [Contact Page](contact.html) or email **contact@logictech.io**.";
+      var fb = "Our team is ready! You can submit an inquiry on our [Contact Page](contact.html) or email **contact@logictech.co.ke**.";
       var r = appendMessage('bot', '');
       typewriterEffect(r.contentEl, formatMarkdown(fb));
       renderChips(FOLLOW_UP_MAP.default, FOLLOW_UP_PROMPTS);
