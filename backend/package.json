@@ -4,13 +4,14 @@
   "private": true,
   "description": "Logic Tech modular Express.js backend with SQLite",
   "engines": {
-    "node": ">=22.5"
+    "node": ">=18.0"
   },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
   "dependencies": {
+    "better-sqlite3": "^11.9.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
