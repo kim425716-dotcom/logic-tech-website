@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Executive Admin Portal – Logic Tech</title>
+  <title>Executive Admin Portal � Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/style.css?v=2.2" />
+  <link rel="stylesheet" href="css/dashboard.css?v=2.2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
@@ -14,7 +14,7 @@
 </head>
 <body class="dark">
 
-  <!-- ── Sidebar ── -->
+  <!-- -- Sidebar -- -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <a href="index.html">
@@ -70,7 +70,7 @@
     </div>
   </aside>
 
-  <!-- ── Main Dashboard Container ── -->
+  <!-- -- Main Dashboard Container -- -->
   <div class="dash-main">
     <!-- Top Bar -->
     <header class="dash-topbar">
@@ -138,15 +138,15 @@
         <a href="login.html" class="btn btn-primary" style="padding:0.75rem 1.75rem;"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign in as Administrator</a>
       </div>
 
-      <!-- ── MAIN ADMIN TABS ── -->
+      <!-- -- MAIN ADMIN TABS -- -->
       <div id="adminContent">
 
-        <!-- ════ TAB: OVERVIEW ════ -->
+        <!-- ---- TAB: OVERVIEW ---- -->
         <section id="tab-overview">
           <!-- Welcome Hero Banner -->
           <div class="dash-welcome">
             <div>
-              <h2>Executive Operations Deck <span style="font-size:1.2rem;">⚡</span></h2>
+              <h2>Executive Operations Deck <span style="font-size:1.2rem;">?</span></h2>
               <p>Real-time client demand, engineering delivery pipeline, customer directory, and published knowledge assets.</p>
             </div>
             <div class="dash-welcome-actions">
@@ -345,7 +345,7 @@
           </div>
         </section>
 
-        <!-- ════ TAB: INQUIRIES ════ -->
+        <!-- ---- TAB: INQUIRIES ---- -->
         <section id="tab-inquiries" class="hidden">
           <div class="dash-card">
             <div class="dash-card-header">
@@ -378,7 +378,7 @@
                 <select id="inquiryBudgetFilter" class="dash-select" onchange="filterInquiries()">
                   <option value="all">All Budget Tiers</option>
                   <option value="10k">Under $10,000</option>
-                  <option value="50k">$10k – $50k</option>
+                  <option value="50k">$10k � $50k</option>
                   <option value="enterprise">$50,000+ Enterprise</option>
                 </select>
               </div>
@@ -406,7 +406,7 @@
           </div>
         </section>
 
-        <!-- ════ TAB: PROJECTS ════ -->
+        <!-- ---- TAB: PROJECTS ---- -->
         <section id="tab-projects" class="hidden">
           <div class="dash-card">
             <div class="dash-card-header">
@@ -463,7 +463,7 @@
           </div>
         </section>
 
-        <!-- ════ TAB: FAQS ════ -->
+        <!-- ---- TAB: FAQS ---- -->
         <section id="tab-faqs" class="hidden">
           <div class="dash-card">
             <div class="dash-card-header">
@@ -514,7 +514,7 @@
           </div>
         </section>
 
-        <!-- ════ TAB: CLIENTS DIRECTORY ════ -->
+        <!-- ---- TAB: CLIENTS DIRECTORY ---- -->
         <section id="tab-users" class="hidden">
           <div class="dash-card">
             <div class="dash-card-header">
@@ -566,7 +566,7 @@
     </div>
   </div>
 
-  <!-- ════ MODAL: INQUIRY DETAILS ════ -->
+  <!-- ---- MODAL: INQUIRY DETAILS ---- -->
   <div id="inquiryModal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -638,7 +638,7 @@
     </div>
   </div>
 
-  <!-- ════ MODAL: EMAIL REPLY TO INQUIRY ════ -->
+  <!-- ---- MODAL: EMAIL REPLY TO INQUIRY ---- -->
   <div id="emailReplyModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:620px;">
       <div class="modal-header">
@@ -686,7 +686,7 @@
     </div>
   </div>
 
-  <!-- ════ MODAL: CREATE / EDIT PROJECT ════ -->
+  <!-- ---- MODAL: CREATE / EDIT PROJECT ---- -->
   <div id="projectModal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -756,7 +756,7 @@
     </div>
   </div>
 
-  <!-- ════ MODAL: CREATE / EDIT FAQ ════ -->
+  <!-- ---- MODAL: CREATE / EDIT FAQ ---- -->
   <div id="faqModal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -800,7 +800,7 @@
     </div>
   </div>
 
-  <!-- ════ MODAL: CLIENT DOSSIER / PROFILE ════ -->
+  <!-- ---- MODAL: CLIENT DOSSIER / PROFILE ---- -->
   <div id="clientDossierModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width: 680px;">
       <div class="modal-header">
@@ -826,7 +826,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Total Engagements</span>
-            <span class="detail-value" id="clientDossierStats">0 Projects • 0 Inquiries</span>
+            <span class="detail-value" id="clientDossierStats">0 Projects � 0 Inquiries</span>
           </div>
         </div>
 
@@ -846,7 +846,7 @@
     </div>
   </div>
 
-  <!-- ════ MODAL: COMMAND PALETTE (CTRL+K) ════ -->
+  <!-- ---- MODAL: COMMAND PALETTE (CTRL+K) ---- -->
   <div id="cmdPaletteModal" class="cmd-palette-overlay hidden" onclick="if(event.target === this) closeCmdPalette()">
     <div class="cmd-palette-box">
       <div class="cmd-palette-input-wrap">
@@ -893,13 +893,13 @@
         </div>
       </div>
       <div class="cmd-palette-footer">
-        <span>Navigation: <kbd style="background:rgba(255,255,255,0.08); padding:0.1rem 0.3rem; border-radius:3px;">↑</kbd> <kbd style="background:rgba(255,255,255,0.08); padding:0.1rem 0.3rem; border-radius:3px;">↓</kbd> Enter</span>
+        <span>Navigation: <kbd style="background:rgba(255,255,255,0.08); padding:0.1rem 0.3rem; border-radius:3px;">?</kbd> <kbd style="background:rgba(255,255,255,0.08); padding:0.1rem 0.3rem; border-radius:3px;">?</kbd> Enter</span>
         <span>Logic Tech Command Engine</span>
       </div>
     </div>
   </div>
 
-  <!-- ════ MODAL: ADMIN LIVE PROJECT MESSAGING ════ -->
+  <!-- ---- MODAL: ADMIN LIVE PROJECT MESSAGING ---- -->
   <div id="adminChatModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width: 740px;">
       <div class="modal-header">
@@ -931,7 +931,7 @@
     </div>
   </div>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=2.2"></script>
   <script>
     // State management
     const state = {
@@ -943,7 +943,7 @@
       currentInquiryForConvert: null
     };
 
-    // ── Live Clock in Topbar ──────────────────────────────────────────
+    // -- Live Clock in Topbar ------------------------------------------
     function startClock() {
       const el = document.getElementById('liveTime');
       function update() {
@@ -955,7 +955,7 @@
       setInterval(update, 1000);
     }
 
-    // ── Toast Feedback Helper ─────────────────────────────────────────
+    // -- Toast Feedback Helper -----------------------------------------
     function showToast(msg, type = 'success', title = 'Success') {
       const toast = document.getElementById('toastMessage');
       const text = document.getElementById('toastText');
@@ -972,7 +972,7 @@
       }, 4000);
     }
 
-    // ── Modal Handlers ────────────────────────────────────────────────
+    // -- Modal Handlers ------------------------------------------------
     function openModal(id) {
       document.getElementById(id)?.classList.remove('hidden');
     }
@@ -980,7 +980,7 @@
       document.getElementById(id)?.classList.add('hidden');
     }
 
-    // ── Tab Switching ─────────────────────────────────────────────────
+    // -- Tab Switching -------------------------------------------------
     function switchTab(tabId) {
       document.querySelectorAll('.sidebar-nav .sidebar-link').forEach(btn => {
         if (btn.tagName === 'BUTTON') btn.classList.remove('active');
@@ -1013,7 +1013,7 @@
       if (tabId === 'overview') loadAdminStats();
     }
 
-    // ── Auth Check ────────────────────────────────────────────────────
+    // -- Auth Check ----------------------------------------------------
     async function checkAdminAuth() {
       try {
         const res = await apiFetch('/api/auth/me');
@@ -1062,7 +1062,7 @@
       showToast('All administrative records updated.', 'success', 'Synced');
     }
 
-    // ── Stats & Pipeline Metrics ──────────────────────────────────────
+    // -- Stats & Pipeline Metrics --------------------------------------
     async function loadAdminStats() {
       try {
         const res = await apiFetch('/api/admin/stats');
@@ -1134,7 +1134,7 @@
       `;
     }
 
-    // ── Inquiries ─────────────────────────────────────────────────────
+    // -- Inquiries -----------------------------------------------------
     async function loadInquiries() {
       try {
         const res = await apiFetch('/api/admin/inquiries');
@@ -1327,7 +1327,7 @@
       }
     }
 
-    // ── WhatsApp & Email Inquiry Replies ─────────────────────────────
+    // -- WhatsApp & Email Inquiry Replies -----------------------------
     function formatPhoneForWhatsapp(rawPhone) {
       if (!rawPhone) return null;
       let cleaned = String(rawPhone).trim().replace(/\D/g, '');
@@ -1376,7 +1376,7 @@
       document.getElementById('emailReplyInquiryId').value = inq.id;
       document.getElementById('emailReplyTo').value = inq.email;
       document.getElementById('emailReplyToDisplay').textContent = `To: ${inq.name} (${inq.email})`;
-      document.getElementById('emailReplySubject').value = `Re: Logic Tech — ${inq.subject}`;
+      document.getElementById('emailReplySubject').value = `Re: Logic Tech � ${inq.subject}`;
       document.getElementById('emailReplyBody').value = 
 `Dear ${inq.name},
 
@@ -1458,7 +1458,7 @@ https://logictech.co.ke`;
       }
     }
 
-    // ── Projects ──────────────────────────────────────────────────────
+    // -- Projects ------------------------------------------------------
     async function loadProjects() {
       try {
         const res = await apiFetch('/api/admin/projects');
@@ -1675,7 +1675,7 @@ https://logictech.co.ke`;
       }
     }
 
-    // ── FAQs ──────────────────────────────────────────────────────────
+    // -- FAQs ----------------------------------------------------------
     async function loadFaqs() {
       try {
         const res = await apiFetch('/api/admin/faqs');
@@ -1813,7 +1813,7 @@ https://logictech.co.ke`;
       }
     }
 
-    // ── Users / Clients Directory ─────────────────────────────────────
+    // -- Users / Clients Directory -------------------------------------
     async function loadUsers() {
       try {
         const res = await apiFetch('/api/admin/users');
@@ -1898,7 +1898,7 @@ https://logictech.co.ke`;
       document.getElementById('clientDossierId').textContent = '#' + u.id;
       document.getElementById('clientDossierRole').innerHTML = `<span class="badge-pill ${u.role === 'admin' ? 'badge-admin' : 'badge-client'}">${u.role.toUpperCase()}</span>`;
       document.getElementById('clientDossierJoined').textContent = formatDate(u.createdAt);
-      document.getElementById('clientDossierStats').textContent = `${u.projectCount || 0} Projects • ${u.inquiryCount || 0} Inquiries`;
+      document.getElementById('clientDossierStats').textContent = `${u.projectCount || 0} Projects � ${u.inquiryCount || 0} Inquiries`;
 
       // Projects by this user
       const userProjects = state.projects.filter(p => p.userId === u.id);
@@ -1910,7 +1910,7 @@ https://logictech.co.ke`;
           <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.85rem; border-radius:6px; background:var(--dash-surface); border:1px solid var(--dash-border); font-size:0.85rem;">
             <div>
               <strong>${escapeHtml(p.name)}</strong>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${p.progress}% • ${p.startDate ? `Started: ${p.startDate} • ` : ''}Due: ${p.dueDate || 'Ongoing'}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${p.progress}% � ${p.startDate ? `Started: ${p.startDate} � ` : ''}Due: ${p.dueDate || 'Ongoing'}</div>
             </div>
             <span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span>
           </div>
@@ -1925,7 +1925,7 @@ https://logictech.co.ke`;
       openModal('clientDossierModal');
     }
 
-    // ── Audit Log Generator ───────────────────────────────────────────
+    // -- Audit Log Generator -------------------------------------------
     function updateActivityAudit() {
       const feed = document.getElementById('activityFeedList');
       if (!feed) return;
@@ -1978,7 +1978,7 @@ https://logictech.co.ke`;
       `).join('');
     }
 
-    // ── CSV Exporters ─────────────────────────────────────────────────
+    // -- CSV Exporters -------------------------------------------------
     function downloadCsv(filename, headers, rows) {
       const escapeCell = (c) => `"${String(c || '').replace(/"/g, '""')}"`;
       const csvContent = 'data:text/csv;charset=utf-8,' +
@@ -2043,7 +2043,7 @@ https://logictech.co.ke`;
       downloadCsv(`logic-tech-summary-${new Date().toISOString().slice(0, 10)}.csv`, ['Metric', 'Value'], summary.slice(1));
     }
 
-    // ── Command Palette (Ctrl+K) ──────────────────────────────────────
+    // -- Command Palette (Ctrl+K) --------------------------------------
     function openCmdPalette() {
       const modal = document.getElementById('cmdPaletteModal');
       const input = document.getElementById('cmdPaletteInput');
@@ -2100,7 +2100,7 @@ https://logictech.co.ke`;
       }
     });
 
-    // ── Helpers ───────────────────────────────────────────────────────
+    // -- Helpers -------------------------------------------------------
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -2141,7 +2141,7 @@ https://logictech.co.ke`;
       }
     }
 
-    // ── Live Project Messaging ────────────────────────────────────────
+    // -- Live Project Messaging ----------------------------------------
     let currentAdminChatProjectId = null;
     let adminChatPollTimer = null;
 
@@ -2204,7 +2204,7 @@ https://logictech.co.ke`;
           <div class="chat-bubble ${isMine ? 'mine' : 'theirs'} ${m.isInternal ? 'internal' : ''}">
             <div class="chat-meta">
               <span><strong>${escapeHtml(m.senderName)}</strong> ${roleLabel}${internalTag}</span>
-              <span>• ${timeStr}</span>
+              <span>� ${timeStr}</span>
             </div>
             <div class="chat-body">${escapeHtml(m.content)}</div>
           </div>
