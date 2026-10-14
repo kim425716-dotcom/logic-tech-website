@@ -6,6 +6,7 @@
   <title>Logic Tech  Enterprise IT Solutions</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css?v=2.3" />
+  <link rel="stylesheet" href="css/flip-deck.css?v=2.4" />
   <link rel="stylesheet" href="css/chatbot.css?v=2.3" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -61,8 +62,11 @@
     </div>
   </header>
 
-  <!-- ========== HERO ========== -->
-  <section id="hero" class="hero-section">
+  <!-- ========== 3D SECTION FLIP DECK ========== -->
+  <main id="flipDeck" class="flip-deck-wrapper">
+
+  <!-- ========== SECTION 1: HERO ========== -->
+  <section id="hero" class="deck-section hero-section">
     <div class="hero-bg">
       <div class="hero-grid" id="heroGrid"></div>
       <div class="hero-overlay"></div>
@@ -104,8 +108,8 @@
     </div>
   </section>
 
-  <!-- ========== STATS ========== -->
-  <section class="stats-section">
+  <!-- ========== SECTION 2: STATS ========== -->
+  <section id="stats" class="deck-section stats-section">
     <div class="container">
       <div class="stats-grid">
         <div class="stat-card animate-on-scroll">
@@ -132,8 +136,8 @@
     </div>
   </section>
 
-  <!-- ========== SERVICES ========== -->
-  <section id="services" class="services-section">
+  <!-- ========== SECTION 3: SERVICES ========== -->
+  <section id="services" class="deck-section services-section">
     <div class="container">
       <div class="section-header animate-on-scroll">
         <div class="badge-outline">Our Services</div>
@@ -217,8 +221,8 @@
     </div>
   </section>
 
-  <!-- ========== HOW IT WORKS ========== -->
-  <section id="how-it-works" class="how-section">
+  <!-- ========== SECTION 4: HOW IT WORKS ========== -->
+  <section id="how-it-works" class="deck-section how-section">
     <div class="container">
       <div class="section-header animate-on-scroll">
         <div class="badge-outline blue">How It Works</div>
@@ -254,8 +258,8 @@
     </div>
   </section>
 
-  <!-- ========== LEADERSHIP & ADVISORY TEAM ========== -->
-  <section class="team-section">
+  <!-- ========== SECTION 5: LEADERSHIP & ADVISORY TEAM ========== -->
+  <section id="team" class="deck-section team-section">
     <div class="container">
       <div class="section-header animate-on-scroll">
         <div class="badge-outline blue"><i class="fa-solid fa-user-tie"></i> Senior Leadership</div>
@@ -330,8 +334,8 @@
     </div>
   </section>
 
-  <!-- ========== TESTIMONIALS ========== -->
-  <section class="testimonials-section">
+  <!-- ========== SECTION 6: TESTIMONIALS ========== -->
+  <section id="testimonials" class="deck-section testimonials-section">
     <div class="container">
       <div class="section-header animate-on-scroll">
         <div class="badge-outline">Testimonials</div>
@@ -346,8 +350,8 @@
     </div>
   </section>
 
-  <!-- ========== FAQ ========== -->
-  <section id="faq" class="faq-section">
+  <!-- ========== SECTION 7: FAQ ========== -->
+  <section id="faq" class="deck-section faq-section">
     <div class="faq-glow"></div>
     <div class="container faq-container">
       <div class="section-header animate-on-scroll">
@@ -363,8 +367,8 @@
     </div>
   </section>
 
-  <!-- ========== CONTACT ========== -->
-  <section id="contact" class="contact-section">
+  <!-- ========== SECTION 8: CONTACT & FOOTER ========== -->
+  <section id="contact" class="deck-section contact-section contact-and-footer">
     <div class="contact-glow"></div>
     <div class="container contact-container">
       <div class="section-header animate-on-scroll">
@@ -483,10 +487,40 @@
       </div>
     </div>
   </footer>
+  </section>
+  <!-- End .contact-and-footer deck-section -->
+
+  </main>
+  <!-- End #flipDeck -->
+
+  <!-- ========== 3D FLIP DECK HUD ========== -->
+  <nav class="deck-hud" id="deckHud" aria-label="Page Sections Navigation">
+    <div class="deck-hud-counter" id="deckHudCounter">
+      <span class="hud-current" id="hudCurrent">01</span>
+      <span class="hud-sep">/</span>
+      <span class="hud-total" id="hudTotal">08</span>
+    </div>
+    <ul class="deck-hud-dots" id="deckHudDots"></ul>
+    <div class="deck-mode-toggle-wrap">
+      <button id="deckModeToggle" class="deck-mode-btn" title="Toggle 3D Flip Deck Mode" aria-label="Toggle 3D Deck Mode">
+        <i class="fa-solid fa-cube"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Bottom Flip Hint / Next Button -->
+  <div class="deck-bottom-controls" id="deckBottomControls">
+    <button class="deck-next-btn" id="deckNextBtn" aria-label="Flip to next section">
+      <span>Flip to next</span>
+      <span class="deck-hint-key">&darr;</span>
+      <i class="fa-solid fa-chevron-down deck-arrow-bounce"></i>
+    </button>
+  </div>
 
   <script src="js/api.js"></script>
   <script src="js/main.js?v=2.2"></script>
   <script src="js/effects.js?v=2.2"></script>
+  <script src="js/flip-deck.js?v=2.4"></script>
   <script src="js/chatbot.js?v=2.2"></script>
 </body>
 </html>
