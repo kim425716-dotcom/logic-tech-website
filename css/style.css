@@ -90,7 +90,17 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ---- Smooth global theme cross-fade ---- */
+/* All colour-bearing elements animate on dark/light toggle */
+body *:not(img):not(video):not(iframe):not(canvas):not(input[type="range"]) {
+  transition:
+    background-color 0.35s ease,
+    border-color     0.35s ease,
+    color            0.35s ease,
+    box-shadow       0.35s ease;
 }
 h1, h2 {
   font-family: var(--font-serif);
@@ -263,7 +273,22 @@ body:not(.dark) .nav-inner { background: rgba(248,250,252,0.88); }
   font-weight: 800;
   color: var(--text-primary);
 }
-.nav-logo img { width: 36px; height: 36px; object-fit: contain; }
+/* Logo: smooth colour-mode transition + white-background removal */
+.nav-logo img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  /* Smooth adaptation on theme toggle */
+  transition: filter 0.4s ease, mix-blend-mode 0.4s ease;
+  /* Light mode: multiply removes the white PNG background against white page */
+  mix-blend-mode: multiply;
+}
+/* Dark mode: multiply would invert badly — reset to normal */
+body.dark .nav-logo img {
+  mix-blend-mode: normal;
+  /* Boost brightness slightly so the logo pops on dark navy */
+  filter: drop-shadow(0 0 6px rgba(196, 158, 88, 0.35)) brightness(1.08);
+}
 
 .nav-links {
   display: flex;
@@ -839,7 +864,17 @@ body:not(.dark) .auth-card { background: var(--bg-900); }
   color: var(--text-primary);
   margin-bottom: 1.25rem;
 }
-.auth-logo img { width: 48px; height: 48px; object-fit: contain; }
+.auth-logo img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  transition: filter 0.4s ease, mix-blend-mode 0.4s ease;
+  mix-blend-mode: multiply;
+}
+body.dark .auth-logo img {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 0 8px rgba(196, 158, 88, 0.4)) brightness(1.08);
+}
 .auth-logo h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
 .auth-logo p { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem; }
 .auth-form { display: flex; flex-direction: column; gap: 1rem; }
