@@ -50,6 +50,8 @@ const themeIcon = document.getElementById('themeIcon');
 const body = document.body;
 
 function applyTheme(dark) {
+  // Signal transition start — CSS uses this to suppress jank on complex elements
+  body.classList.add('is-theme-transitioning');
   if (dark) {
     body.classList.add('dark');
     if (themeIcon) themeIcon.className = 'fa-solid fa-moon';
@@ -61,7 +63,10 @@ function applyTheme(dark) {
     localStorage.setItem('logictech-theme', dark ? 'dark' : 'light');
     localStorage.setItem('lt-theme', dark ? 'dark' : 'light');
   } catch (e) {}
+  // Remove flag after transition completes
+  setTimeout(() => body.classList.remove('is-theme-transitioning'), 420);
 }
+
 
 const savedTheme = localStorage.getItem('logictech-theme') || localStorage.getItem('lt-theme');
 applyTheme(savedTheme === 'dark');

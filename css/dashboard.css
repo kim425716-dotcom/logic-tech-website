@@ -69,12 +69,22 @@ body.dark {
   letter-spacing: -0.02em;
 }
 
+/* Logo: smooth colour-mode transition + white-background removal */
 .sidebar-logo img {
   width: 34px;
   height: 34px;
   object-fit: contain;
   border-radius: 8px;
+  transition: filter 0.4s ease;
+  /* Light mode: multiply removes white PNG background against light surface */
+  mix-blend-mode: multiply;
 }
+/* Dark mode: reset blend mode so logo shows correctly on dark backgrounds */
+body.dark .sidebar-logo img {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 0 6px rgba(196, 158, 88, 0.4)) brightness(1.1);
+}
+
 
 .sidebar-brand-badge {
   font-size: 0.65rem;
