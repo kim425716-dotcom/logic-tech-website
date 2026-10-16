@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Logic Tech  Enterprise IT Solutions</title>
   <link rel="icon" href="assets/logo.png" />
-  <link rel="stylesheet" href="css/style.css?v=2.3" />
+  <link rel="stylesheet" href="css/style.css?v=2.4" />
   <link rel="stylesheet" href="css/flip-deck.css?v=2.4" />
   <link rel="stylesheet" href="css/chatbot.css?v=2.3" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
+
+  <!-- ========== SPECTRAL DRAPE — Full-page 3D dot background ========== -->
+  <canvas id="spectralDrapeCanvas" aria-hidden="true"></canvas>
 
   <!-- ========== NAVBAR ========== -->
   <header id="navbar">
@@ -522,5 +525,49 @@
   <script src="js/effects.js?v=2.2"></script>
   <script src="js/flip-deck.js?v=2.4"></script>
   <script src="js/chatbot.js?v=2.2"></script>
+  <script src="js/spectral-drape.js?v=1.0"></script>
+  <script>
+    /* ── Spectral Drape initialisation ───────────────────────────── */
+    (function () {
+      var isDark = document.body.classList.contains('dark');
+
+      // Logic Tech amber palette (light / dark)
+      var LIGHT = { dot: '#a6813e', glow: 'rgba(166,129,62,0.20)' };
+      var DARK  = { dot: '#c49e58', glow: 'rgba(196,158,88,0.22)' };
+
+      function palette() { return isDark ? DARK : LIGHT; }
+
+      SpectralDrape.init('#spectralDrapeCanvas', {
+        dotColor:      palette().dot,
+        glowColor:     palette().glow,
+        strands:       28,
+        rows:          16,
+        amplitude:     85,
+        tiltX:         28,
+        speed:         0.72,
+        brushRadius:   200,
+        brushStrength: 0.58,
+        dotSize:       2.4,
+        glowSize:      5.5,
+        waveFrequency: 0.34,
+        fadeEdges:     true
+      });
+
+      document.body.classList.add('has-spectral-drape');
+
+      // Re-colour the drape when the theme toggle fires
+      var themeBtn = document.getElementById('themeToggle');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', function () {
+          // The theme class toggles asynchronously; poll once after transition
+          setTimeout(function () {
+            isDark = document.body.classList.contains('dark');
+            var p = palette();
+            SpectralDrape.updateColors(p.dot, p.glow);
+          }, 50);
+        });
+      }
+    }());
+  </script>
 </body>
 </html>
