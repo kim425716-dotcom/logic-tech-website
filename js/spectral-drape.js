@@ -1,33 +1,33 @@
 /**
  * Spectral Drape — Vanilla JS / Canvas port
  * ──────────────────────────────────────────
- * Faithfully re-implements the React Bits Pro "Spectral Drape" component
- * (https://pro.reactbits.dev/docs/components/spectral-drape) as a zero-
- * dependency, pure JavaScript + Canvas 2D animation.
+ * Faithful, high-performance vanilla JS + Canvas 2D implementation of the
+ * React Bits Pro "Spectral Drape" component:
+ * https://pro.reactbits.dev/docs/components/spectral-drape
  *
- * A glowing drape of dots that folds in 3D, with a mouse-responsive
- * interactive brush that pushes the drape away from the cursor.
+ * A glowing drape of dots suspended in 3D that folds and ripples like liquid silk,
+ * with an interactive pointer brush that smoothly displaces dots on hover/touch.
  *
- * Props / Configuration (matches React Bits Pro API):
- *   dotColor        – hex/rgba  dot fill color         (default: "#c49e58" = amber-light)
- *   glowColor       – hex/rgba  radial glow behind dot (default: "rgba(196,158,88,0.18)")
- *   backgroundColor – hex/rgba  canvas background       (default: "transparent")
- *   strands         – int       columns of dots        (default: 24)
- *   rows            – int       rows of dots           (default: 14)
- *   amplitude       – float     peak z-displacement    (default: 80)
- *   tiltX           – degrees   global 3D tilt X-axis  (default: 28)
- *   tiltY           – degrees   global 3D tilt Y-axis  (default: 0)
- *   speed           – float     wave animation speed   (default: 0.8)
- *   brushRadius     – px        interactive brush size (default: 160)
- *   brushStrength   – 0–1       brush repulsion force  (default: 0.55)
- *   dotSize         – px        base dot radius        (default: 2.4)
- *   glowSize        – multiplier of dotSize            (default: 5)
- *   waveFrequency   – float     spatial wave tightness (default: 0.38)
- *   fadeEdges       – bool      fade dots near edges   (default: true)
- *
- * Usage:
- *   SpectralDrape.init('#spectral-drape-canvas', { speed: 1.2 });
- *   SpectralDrape.destroy();
+ * Matches the official React Bits Pro API:
+ *   colors          – [bodyColor, crestColor] (default: ['#c49e58', '#fae5b8'])
+ *   backgroundColor – string / 'transparent'
+ *   strands         – number of vertical flowing strands (default: 26)
+ *   rows            – dots per strand (default: 18)
+ *   amplitude       – lateral wave swing across drape (default: 1.0)
+ *   depth           – 3D fold height in Z axis (default: 1.0)
+ *   frequency       – wave ripple density along strand (default: 1.0)
+ *   tilt            – rotation X in degrees (default: -32)
+ *   turn            – rotation Y in degrees (default: -15)
+ *   roll            – rotation Z in degrees (default: 8)
+ *   dotSize         – base dot radius in px (default: 2.2)
+ *   softness        – glow halo spread (default: 0.6)
+ *   intensity       – dot brightness multiplier (default: 1.0)
+ *   colorShift      – crest highlight transition (default: 0.5)
+ *   speed           – wave cycle speed (default: 0.8)
+ *   interactive     – pointer repulsion enabled (default: true)
+ *   brush           – push strength multiplier (default: 1.0)
+ *   brushRadius     – interactive brush radius in px (default: 180)
+ *   fadeEdges       – smooth edge feathering (default: true)
  */
 
 /* global window, document, requestAnimationFrame, cancelAnimationFrame */
@@ -35,16 +35,16 @@
 var SpectralDrape = (function () {
   'use strict';
 
-  /* private state */
   var _canvas, _ctx, _raf, _opts, _mouse, _dots, _t;
   var _resizeObs;
+  var _glowSpriteBody, _glowSpriteCrest;
 
-  /* helpers */
   function lerp(a, b, t) { return a + (b - a) * t; }
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function deg2rad(d) { return d * Math.PI / 180; }
 
   function parseColor(str) {
+    if (!str || typeof str !== 'string') return { r: 196, g: 158, b: 88, a: 1 };
     str = str.trim();
     var hex = str.match(/^#([0-9a-f]{3,8})$/i);
     if (hex) {
@@ -67,135 +67,261 @@ var SpectralDrape = (function () {
     return { r: 196, g: 158, b: 88, a: 1 };
   }
 
+  function lerpColor(c1, c2, t) {
+    return {
+      r: Math.round(lerp(c1.r, c2.r, t)),
+      g: Math.round(lerp(c1.g, c2.g, t)),
+      b: Math.round(lerp(c1.b, c2.b, t)),
+      a: lerp(c1.a, c2.a, t)
+    };
+  }
+
   function rgba(c, alpha) {
-    return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + (alpha !== undefined ? alpha : c.a) + ')';
+    var a = alpha !== undefined ? alpha : c.a;
+    return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + clamp(a, 0, 1) + ')';
+  }
+
+  /**
+   * Pre-render a radial glow sprite onto an offscreen canvas for zero-GC,
+   * GPU-accelerated drawImage blitting.
+   */
+  function createGlowSprite(color) {
+    var size = 64;
+    var cvs = document.createElement('canvas');
+    cvs.width = size;
+    cvs.height = size;
+    var ctx = cvs.getContext('2d');
+    var half = size / 2;
+    var grad = ctx.createRadialGradient(half, half, 0, half, half, half);
+    grad.addColorStop(0, rgba(color, 0.85));
+    grad.addColorStop(0.35, rgba(color, 0.45));
+    grad.addColorStop(0.7, rgba(color, 0.15));
+    grad.addColorStop(1, rgba(color, 0));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    return cvs;
   }
 
   function buildDots(W, H, o) {
     var dots = [];
-    var cols = o.strands, rows = o.rows;
-    var padX = W * 0.07, padY = H * 0.1;
-    var spacingX = (W - padX * 2) / (cols - 1);
-    var spacingY = (H - padY * 2) / (rows - 1);
+    var cols = o.strands;
+    var rows = o.rows;
+    var padX = W * 0.04;
+    var padY = H * 0.06;
+    var spacingX = (W - padX * 2) / Math.max(1, cols - 1);
+    var spacingY = (H - padY * 2) / Math.max(1, rows - 1);
+
     for (var r = 0; r < rows; r++) {
+      var v = r / Math.max(1, rows - 1); // 0 (top) to 1 (bottom)
       for (var c = 0; c < cols; c++) {
+        var u = c / Math.max(1, cols - 1); // 0 (left) to 1 (right)
         dots.push({
-          gx: padX + c * spacingX,
-          gy: padY + r * spacingY,
+          baseX: padX + c * spacingX,
+          baseY: padY + r * spacingY,
           col: c,
           row: r,
+          u: u,
+          v: v,
+          phase: c * 0.42 + r * 0.18,
           offsetZ: 0,
-          phase: c * 0.41 + r * 0.23
+          offsetX: 0,
+          offsetY: 0,
+          // cached projection per frame
+          px: 0,
+          py: 0,
+          scale: 1,
+          depth: 0,
+          crestFactor: 0
         });
       }
     }
     return dots;
   }
 
-  function project(dot, W, H, z, o) {
-    var cx = W / 2, cy = H / 2;
-    var dx = dot.gx - cx, dy = dot.gy - cy;
-    var cosX = Math.cos(deg2rad(o.tiltX)), sinX = Math.sin(deg2rad(o.tiltX));
-    var cosY = Math.cos(deg2rad(o.tiltY)), sinY = Math.sin(deg2rad(o.tiltY));
-    var dy2 = dy * cosX - z * sinX;
-    var dz2 = dy * sinX + z * cosX;
-    var dx2 = dx * cosY + dz2 * sinY;
-    var dz3 = -dx * sinY + dz2 * cosY;
-    var fov = 700;
-    var scale = fov / (fov + dz3);
-    return { x: cx + dx2 * scale, y: cy + dy2 * scale, scale: scale, depth: dz3 };
-  }
+  function projectPoint(x, y, z, W, H, o) {
+    var cx = W / 2;
+    var cy = H / 2;
+    var dx = x - cx;
+    var dy = y - cy;
 
-  function waveZ(dot, t, o) {
-    var primary = Math.sin(dot.col * o.waveFrequency + t + dot.phase) *
-                  Math.cos(dot.row * o.waveFrequency * 0.6 + t * 0.5) *
-                  o.amplitude;
-    var secondary = Math.sin(dot.col * o.waveFrequency * 0.4 + t * 0.7 - dot.phase * 0.3) *
-                    o.amplitude * 0.35;
-    return primary + secondary;
+    // Roll (Z axis rotation in plane)
+    var rollRad = deg2rad(o.roll || 0);
+    var cosR = Math.cos(rollRad), sinR = Math.sin(rollRad);
+    var rx = dx * cosR - dy * sinR;
+    var ry = dx * sinR + dy * cosR;
+
+    // Tilt (X axis) & Turn (Y axis)
+    var tiltRad = deg2rad(o.tilt);
+    var turnRad = deg2rad(o.turn);
+    var cosX = Math.cos(tiltRad), sinX = Math.sin(tiltRad);
+    var cosY = Math.cos(turnRad), sinY = Math.sin(turnRad);
+
+    var dy2 = ry * cosX - z * sinX;
+    var dz2 = ry * sinX + z * cosX;
+
+    var dx2 = rx * cosY + dz2 * sinY;
+    var dz3 = -rx * sinY + dz2 * cosY;
+
+    var fov = 750;
+    var scale = fov / Math.max(80, fov + dz3);
+
+    return {
+      x: cx + dx2 * scale,
+      y: cy + dy2 * scale,
+      scale: scale,
+      depth: dz3
+    };
   }
 
   function frame() {
-    var W = _canvas.width / (window.devicePixelRatio || 1);
-    var H = _canvas.height / (window.devicePixelRatio || 1);
+    if (!_canvas || !_ctx || !_opts) return;
+
+    var dpr = window.devicePixelRatio || 1;
+    var W = _canvas.width / dpr;
+    var H = _canvas.height / dpr;
     var o = _opts;
-    var dotCol = o._dotCol, glowCol = o._glowCol;
 
-    _ctx.clearRect(0, 0, W * (window.devicePixelRatio || 1), H * (window.devicePixelRatio || 1));
+    _ctx.clearRect(0, 0, W, H);
 
-    _t += 0.016 * o.speed;
+    _t += 0.015 * o.speed;
 
-    var sorted = _dots.slice().sort(function (a, b) {
-      var zA = waveZ(a, _t, o) + a.offsetZ;
-      var zB = waveZ(b, _t, o) + b.offsetZ;
-      return project(a, W, H, zA, o).depth - project(b, W, H, zB, o).depth;
-    });
+    var mx = _mouse.x;
+    var my = _mouse.y;
+    var hasPointer = _mouse.inside && o.interactive;
 
-    var mx = _mouse.x, my = _mouse.y, inside = _mouse.inside;
+    var baseDepth = 85 * o.depth;
+    var baseAmp = 45 * o.amplitude;
 
-    sorted.forEach(function (dot) {
-      var wz = waveZ(dot, _t, o);
+    // 1. Compute 3D waves & pointer displacement
+    for (var i = 0; i < _dots.length; i++) {
+      var dot = _dots[i];
 
-      if (inside) {
-        var dx = dot.gx - mx, dy = dot.gy - my;
+      // Multi-frequency wave folds rippling through the drape
+      var w1 = Math.sin(dot.v * Math.PI * 2.2 * o.frequency + dot.col * 0.48 + _t);
+      var w2 = Math.cos(dot.v * Math.PI * 3.6 * o.frequency - dot.col * 0.32 + _t * 0.75);
+      var w3 = Math.sin(dot.u * Math.PI * 1.8 + _t * 0.5);
+
+      var foldZ = (w1 * 0.65 + w2 * 0.35 + w3 * 0.2) * baseDepth;
+      var swingX = Math.sin(dot.v * Math.PI * 1.6 + dot.phase + _t * 0.7) * baseAmp;
+
+      // Pointer interactive brush
+      if (hasPointer) {
+        var dx = dot.baseX - mx;
+        var dy = dot.baseY - my;
         var dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < o.brushRadius) {
-          var force = (1 - dist / o.brushRadius) * o.brushStrength;
-          var targetZ = force * o.amplitude * 1.5;
-          dot.offsetZ += (targetZ - dot.offsetZ) * 0.18;
+        var bRad = o.brushRadius;
+        if (dist < bRad) {
+          var tFactor = 1 - dist / bRad;
+          var falloff = tFactor * tFactor * (3 - 2 * tFactor); // smoothstep
+          var force = falloff * o.brush;
+          var targetZ = force * baseDepth * 1.6;
+          var targetX = (dx / (dist + 1)) * force * 50;
+          var targetY = (dy / (dist + 1)) * force * 30;
+          dot.offsetZ += (targetZ - dot.offsetZ) * 0.22;
+          dot.offsetX += (targetX - dot.offsetX) * 0.22;
+          dot.offsetY += (targetY - dot.offsetY) * 0.22;
         } else {
-          dot.offsetZ *= 0.88;
+          dot.offsetZ *= 0.90;
+          dot.offsetX *= 0.90;
+          dot.offsetY *= 0.90;
         }
       } else {
-        dot.offsetZ *= 0.88;
+        dot.offsetZ *= 0.90;
+        dot.offsetX *= 0.90;
+        dot.offsetY *= 0.90;
       }
 
-      var z = wz + dot.offsetZ;
-      var proj = project(dot, W, H, z, o);
+      var worldX = dot.baseX + swingX + dot.offsetX;
+      var worldY = dot.baseY + dot.offsetY;
+      var worldZ = foldZ + dot.offsetZ;
 
-      var alpha = 1;
-      if (o.fadeEdges) {
-        var ex = Math.min(proj.x / (W * 0.12), 1 - proj.x / (W * 0.88), 1);
-        var ey = Math.min(proj.y / (H * 0.12), 1 - proj.y / (H * 0.88), 1);
-        alpha = clamp(Math.min(ex, ey), 0, 1);
-      }
+      var proj = projectPoint(worldX, worldY, worldZ, W, H, o);
+      dot.px = proj.x;
+      dot.py = proj.y;
+      dot.scale = proj.scale;
+      dot.depth = proj.depth;
 
-      var depthAlpha = clamp(lerp(0.35, 1.0, (proj.scale - 0.55) / 0.55), 0, 1);
-      var finalAlpha = alpha * depthAlpha;
-      if (finalAlpha < 0.01) return;
+      // Crest factor: 0 in deep trough, 1 at peak crest
+      var normZ = (worldZ + baseDepth) / Math.max(1, baseDepth * 2);
+      dot.crestFactor = clamp(normZ, 0, 1);
+    }
 
-      var r = o.dotSize * proj.scale;
-      var glowR = r * o.glowSize;
-
-      var grad = _ctx.createRadialGradient(proj.x, proj.y, 0, proj.x, proj.y, glowR);
-      grad.addColorStop(0, rgba(glowCol, finalAlpha * 0.7));
-      grad.addColorStop(1, rgba(glowCol, 0));
-      _ctx.beginPath();
-      _ctx.arc(proj.x, proj.y, glowR, 0, Math.PI * 2);
-      _ctx.fillStyle = grad;
-      _ctx.fill();
-
-      _ctx.beginPath();
-      _ctx.arc(proj.x, proj.y, r, 0, Math.PI * 2);
-      _ctx.fillStyle = rgba(dotCol, finalAlpha);
-      _ctx.fill();
+    // 2. Sort dots by depth (painter's algorithm: back to front)
+    _dots.sort(function (a, b) {
+      return a.depth - b.depth;
     });
 
+    // 3. Render glowing dots & crest highlights
+    var cBody = o._colBody;
+    var cCrest = o._colCrest;
+    var dotRadius = o.dotSize;
+    var glowSpread = 8 * o.softness;
+    var intensity = o.intensity;
+
+    for (var j = 0; j < _dots.length; j++) {
+      var d = _dots[j];
+      var px = d.px;
+      var py = d.py;
+      var scale = d.scale;
+
+      // Symmetrical edge feathering on all 4 viewport margins
+      var alpha = 1;
+      if (o.fadeEdges) {
+        var edgeDistX = Math.min(px, W - px);
+        var edgeDistY = Math.min(py, H - py);
+        var fadeX = clamp(edgeDistX / (W * 0.08), 0, 1);
+        var fadeY = clamp(edgeDistY / (H * 0.08), 0, 1);
+        alpha = fadeX * fadeY;
+      }
+
+      // Depth perception alpha (nearer = brighter, farther = subtle)
+      var depthAlpha = clamp(lerp(0.35, 1.0, (scale - 0.5) / 0.65), 0.2, 1.0);
+      var finalAlpha = alpha * depthAlpha * intensity;
+      if (finalAlpha <= 0.015) continue;
+
+      // Interpolate color between body and crest highlight
+      var crestBlend = clamp(d.crestFactor * (o.colorShift * 1.5), 0, 1);
+      var dotColor = lerpColor(cBody, cCrest, crestBlend);
+
+      var r = Math.max(0.8, dotRadius * scale * (1 + crestBlend * 0.35));
+      var glowR = r * glowSpread;
+
+      // Soft radial glow halo via pre-rendered sprite
+      var sprite = crestBlend > 0.45 ? _glowSpriteCrest : _glowSpriteBody;
+      if (sprite && glowR > 2) {
+        _ctx.globalAlpha = finalAlpha * (0.45 + crestBlend * 0.4);
+        _ctx.drawImage(sprite, px - glowR, py - glowR, glowR * 2, glowR * 2);
+      }
+
+      // Crisp luminous core dot
+      _ctx.globalAlpha = finalAlpha;
+      _ctx.fillStyle = rgba(dotColor, finalAlpha);
+      _ctx.beginPath();
+      _ctx.arc(px, py, r, 0, Math.PI * 2);
+      _ctx.fill();
+    }
+
+    _ctx.globalAlpha = 1.0;
     _raf = requestAnimationFrame(frame);
   }
 
   function resize() {
-    if (!_canvas) return;
+    if (!_canvas || !_ctx) return;
     var parent = _canvas.parentElement;
     var W = parent ? parent.offsetWidth : window.innerWidth;
     var H = parent ? parent.offsetHeight : window.innerHeight;
     var dpr = window.devicePixelRatio || 1;
-    _canvas.width  = W * dpr;
-    _canvas.height = H * dpr;
-    _canvas.style.width  = W + 'px';
+
+    _canvas.width = Math.round(W * dpr);
+    _canvas.height = Math.round(H * dpr);
+    _canvas.style.width = W + 'px';
     _canvas.style.height = H + 'px';
+
     _ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    _dots = buildDots(W, H, _opts);
+
+    if (_opts) {
+      _dots = buildDots(W, H, _opts);
+    }
   }
 
   function init(target, options) {
@@ -203,34 +329,48 @@ var SpectralDrape = (function () {
 
     _canvas = typeof target === 'string' ? document.querySelector(target) : target;
     if (!_canvas || _canvas.tagName !== 'CANVAS') {
-      console.warn('[SpectralDrape] target must be a <canvas> element');
+      console.warn('[SpectralDrape] Target must be a <canvas> element');
       return;
     }
     _ctx = _canvas.getContext('2d');
 
+    // Default configuration matching React Bits Pro Spectral Drape spec
     _opts = Object.assign({
-      dotColor:        '#c49e58',
-      glowColor:       'rgba(196,158,88,0.22)',
+      colors:          ['#c49e58', '#f8e6bc'], // [body, crest]
+      dotColor:        null,                   // backwards-compatible single color
+      glowColor:       null,
       backgroundColor: 'transparent',
-      strands:         26,
-      rows:            15,
-      amplitude:       90,
-      tiltX:           30,
-      tiltY:           0,
-      speed:           0.75,
-      brushRadius:     180,
-      brushStrength:   0.6,
-      dotSize:         2.6,
-      glowSize:        5.5,
-      waveFrequency:   0.35,
-      fadeEdges:       true
+      strands:         28,                     // flowing vertical drape folds
+      rows:            18,                     // dots per strand
+      amplitude:       1.0,                    // lateral swing
+      depth:           1.0,                    // 3D fold height in Z
+      frequency:       1.0,                    // wave ripple density
+      tilt:            -30,                    // X rotation (degrees)
+      turn:            -12,                    // Y rotation (degrees)
+      roll:            6,                      // Z in-plane rotation (degrees)
+      dotSize:         2.4,                    // base dot radius in px
+      softness:        0.65,                   // glow halo spread
+      intensity:       1.0,                    // brightness
+      colorShift:      0.5,                    // highlight crest transition
+      speed:           0.75,                   // wave animation speed
+      interactive:     true,                   // pointer push
+      brush:           1.0,                    // push force
+      brushRadius:     190,                    // brush radius in px
+      fadeEdges:       true                    // edge feathering
     }, options || {});
 
-    _opts._dotCol  = parseColor(_opts.dotColor);
-    _opts._glowCol = parseColor(_opts.glowColor);
+    // Support legacy dotColor/glowColor or new colors array
+    var bodyHex = (_opts.colors && _opts.colors[0]) || _opts.dotColor || '#c49e58';
+    var crestHex = (_opts.colors && _opts.colors[1]) || _opts.glowColor || '#fae5b8';
+
+    _opts._colBody = parseColor(bodyHex);
+    _opts._colCrest = parseColor(crestHex);
+
+    _glowSpriteBody = createGlowSprite(_opts._colBody);
+    _glowSpriteCrest = createGlowSprite(_opts._colCrest);
 
     _mouse = { x: -9999, y: -9999, inside: false };
-    _t = Math.random() * 100;
+    _t = Math.random() * 50;
 
     function onMove(e) {
       var rect = _canvas.getBoundingClientRect();
@@ -238,7 +378,9 @@ var SpectralDrape = (function () {
       _mouse.y = e.clientY - rect.top;
       _mouse.inside = true;
     }
-    function onLeave() { _mouse.inside = false; }
+    function onLeave() {
+      _mouse.inside = false;
+    }
     function onTouch(e) {
       if (!e.touches.length) return;
       var rect = _canvas.getBoundingClientRect();
@@ -247,23 +389,13 @@ var SpectralDrape = (function () {
       _mouse.inside = true;
     }
 
-    _canvas.addEventListener('mousemove', onMove);
-    _canvas.addEventListener('mouseleave', onLeave);
-    _canvas.addEventListener('touchmove', onTouch, { passive: true });
-    _canvas.addEventListener('touchend', onLeave);
-
-    // Since the canvas has pointer-events:none (content sits on top),
-    // we track mouse on document so the brush works across the whole page.
+    // Pointer events on document so interaction functions seamlessly through overlay content
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseleave', onLeave);
     document.addEventListener('touchmove', onTouch, { passive: true });
     document.addEventListener('touchend', onLeave);
 
     _canvas._sdCleanup = function () {
-      _canvas.removeEventListener('mousemove', onMove);
-      _canvas.removeEventListener('mouseleave', onLeave);
-      _canvas.removeEventListener('touchmove', onTouch);
-      _canvas.removeEventListener('touchend', onLeave);
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseleave', onLeave);
       document.removeEventListener('touchmove', onTouch);
@@ -282,20 +414,38 @@ var SpectralDrape = (function () {
     _raf = requestAnimationFrame(frame);
   }
 
-  function updateColors(dotColor, glowColor) {
+  function updateColors(bodyColor, crestColor) {
     if (!_opts) return;
-    if (dotColor)  { _opts.dotColor  = dotColor;  _opts._dotCol  = parseColor(dotColor); }
-    if (glowColor) { _opts.glowColor = glowColor; _opts._glowCol = parseColor(glowColor); }
+    if (bodyColor) {
+      _opts._colBody = parseColor(bodyColor);
+      _glowSpriteBody = createGlowSprite(_opts._colBody);
+    }
+    if (crestColor) {
+      _opts._colCrest = parseColor(crestColor);
+      _glowSpriteCrest = createGlowSprite(_opts._colCrest);
+    }
   }
 
   function destroy() {
-    if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
-    if (_canvas && _canvas._sdCleanup) { _canvas._sdCleanup(); }
-    if (_resizeObs) { _resizeObs.disconnect(); _resizeObs = null; }
-    if (!window.ResizeObserver) { window.removeEventListener('resize', resize); }
+    if (_raf) {
+      cancelAnimationFrame(_raf);
+      _raf = null;
+    }
+    if (_canvas && _canvas._sdCleanup) {
+      _canvas._sdCleanup();
+    }
+    if (_resizeObs) {
+      _resizeObs.disconnect();
+      _resizeObs = null;
+    }
     _canvas = _ctx = _opts = _mouse = _dots = null;
+    _glowSpriteBody = _glowSpriteCrest = null;
     _t = 0;
   }
 
-  return { init: init, destroy: destroy, updateColors: updateColors };
+  return {
+    init: init,
+    destroy: destroy,
+    updateColors: updateColors
+  };
 }());
