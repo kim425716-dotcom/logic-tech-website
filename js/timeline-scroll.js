@@ -3,7 +3,7 @@
  * Powered by GSAP & ScrollTrigger (adapted from components/ui/timeline.tsx)
  */
 (function () {
-  const section = document.getElementById("journey-timeline");
+  const section = document.getElementById("how-it-works") || document.getElementById("journey-timeline");
   const slider = document.getElementById("journeySlider");
   const mainLine = document.querySelector(".journey-main-line");
 
@@ -14,16 +14,18 @@
   gsap.registerPlugin(ScrollTrigger);
 
   const isMobile = window.innerWidth < 600;
-  const slidePercent = isMobile ? -75 : -62;
+  const slidePercent = isMobile ? -78 : -65;
+
+  const stickyWrapper = document.querySelector(".journey-sticky-wrapper");
 
   // 1. Horizontal Scroll Scrub Timeline
   const mainTl = gsap.timeline({
     scrollTrigger: {
-      trigger: section,
-      start: "top top",
-      end: "bottom bottom",
+      trigger: stickyWrapper || section,
+      start: "top 70px",
+      end: () => `+=${section.offsetHeight - window.innerHeight}`,
       scrub: 1,
-      pin: ".journey-sticky-wrapper",
+      pin: stickyWrapper || true,
       anticipatePin: 1,
     },
     defaults: { ease: "none" }
@@ -36,11 +38,12 @@
   // 2. Animate central journey line width
   if (mainLine) {
     gsap.to(mainLine, {
-      width: "96%",
+      width: "98%",
       ease: "none",
       scrollTrigger: {
-        trigger: section,
-        start: "top top",
+        trigger: stickyWrapper || section,
+        start: "top 70px",
+        endTrigger: section,
         end: "bottom bottom",
         scrub: 1,
       }
@@ -60,8 +63,8 @@
       const itemTl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          start: `${12 + idx * 10}% top`,
-          end: `${24 + idx * 10}% top`,
+          start: `${10 + idx * 12}% top`,
+          end: `${22 + idx * 12}% top`,
           scrub: 0.5,
         }
       });
@@ -69,7 +72,7 @@
       itemTl
         .to(stem, { scaleY: 1, duration: 0.4, ease: "power1.out" })
         .to(dot, { scale: 1, duration: 0.3, ease: "back.out(2)" }, "<0.2")
-        .fromTo(content, { opacity: 0.3, y: isTop ? 15 : -15 }, { opacity: 1, y: 0, duration: 0.4 }, "<");
+        .fromTo(content, { opacity: 0.25, y: isTop ? 15 : -15 }, { opacity: 1, y: 0, duration: 0.4 }, "<");
     }
   });
 
