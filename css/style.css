@@ -382,6 +382,27 @@ body.dark .hero-grid {
   background: radial-gradient(ellipse at center, transparent 25%, var(--bg-950) 80%);
 }
 
+.orbital-sphere-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+#orbitalSphereCanvas {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+}
+
+
 .hero-content {
   position: relative;
   z-index: 2;
