@@ -377,9 +377,11 @@
                 </select>
                 <select id="inquiryBudgetFilter" class="dash-select" onchange="filterInquiries()">
                   <option value="all">All Budget Tiers</option>
-                  <option value="10k">Under $10,000</option>
-                  <option value="50k">$10k – $50k</option>
-                  <option value="enterprise">$50,000+ Enterprise</option>
+                  <option value="under50k">Under KSh 50,000</option>
+                  <option value="50k-150k">KSh 50,000 – 150,000</option>
+                  <option value="150k-250k">KSh 150,000 – 250,000</option>
+                  <option value="250k+">KSh 250,000+ (Larger Projects)</option>
+                  <option value="flexible">Flexible Budget</option>
                 </select>
               </div>
             </div>
@@ -1247,9 +1249,12 @@
         if (ndaFilter === 'standard') matchesNda = inq.ndaRequested === 0;
 
         let matchesBudget = true;
-        if (budgetFilter === '10k') matchesBudget = (inq.budget || '').includes('10k') || (inq.budget || '').includes('10,000');
-        if (budgetFilter === '50k') matchesBudget = (inq.budget || '').includes('50k') || (inq.budget || '').includes('50,000');
-        if (budgetFilter === 'enterprise') matchesBudget = (inq.budget || '').toLowerCase().includes('enterprise') || (inq.budget || '').includes('100');
+        const bText = (inq.budget || '').toLowerCase();
+        if (budgetFilter === 'under50k') matchesBudget = bText.includes('50,000') && (bText.includes('under') || bText.includes('<'));
+        else if (budgetFilter === '50k-150k') matchesBudget = bText.includes('50,000') && bText.includes('150,000');
+        else if (budgetFilter === '150k-250k') matchesBudget = bText.includes('150,000') && bText.includes('250,000');
+        else if (budgetFilter === '250k+') matchesBudget = bText.includes('250,000+') || bText.includes('larger');
+        else if (budgetFilter === 'flexible') matchesBudget = bText.includes('flexible') || bText.includes('recommend');
 
         return matchesQuery && matchesNda && matchesBudget;
       });
