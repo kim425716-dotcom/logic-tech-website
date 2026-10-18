@@ -144,7 +144,7 @@
     const glowGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, sphereRadius * 1.5);
     glowGrad.addColorStop(0, "rgba(168, 85, 247, 0.18)");
     glowGrad.addColorStop(0.45, "rgba(124, 58, 237, 0.08)");
-    glowGrad.addColorStop(1, "rgba(5, 3, 10, 0)");
+    glowGrad.addColorStop(1, "rgba(5, 2, 10, 0)");
     ctx.fillStyle = glowGrad;
     ctx.beginPath();
     ctx.arc(cx, cy, sphereRadius * 1.5, 0, Math.PI * 2);

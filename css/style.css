@@ -51,7 +51,7 @@
 
 /* Dark mode overrides (Authoritative Deep Navy Ink) */
 body.dark {
-  --bg-950: #0b121e;
+  --bg-950: #05020a;
   --bg-900: #111a28;
   --bg-800: #182335;
   --bg-700: #223249;
@@ -352,11 +352,12 @@ body:not(.dark) .mobile-menu { background: rgba(248,250,252,0.97); }
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: var(--bg-950);
+  background-color: #05020a;
 }
 .hero-bg {
   position: absolute;
   inset: 0;
+  background-color: #05020a;
 }
 .hero-grid {
   position: absolute;
@@ -379,12 +380,13 @@ body.dark .hero-grid {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 25%, var(--bg-950) 80%);
+  background: radial-gradient(ellipse at center, transparent 25%, #05020a 85%);
 }
 
 .orbital-sphere-container {
   position: absolute;
   inset: 0;
+  background-color: #05020a;
   pointer-events: none;
   overflow: hidden;
   display: flex;
