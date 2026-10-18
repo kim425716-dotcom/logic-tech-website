@@ -10,49 +10,49 @@
   // Exchange rate: 1 USD ~ 130 KES
   var KES_PER_USD = 130;
 
-  // Base Data Model
+  // Base Data Model — 100% Aligned with Logic Tech 6 Core Service Pillars
   var PRACTICE_AREAS = {
-    cloud: {
-      name: 'Cloud Architecture & Migration',
+    software: {
+      name: 'Custom Software Engineering',
       baseKES: 750000,
       weeks: 6,
-      stack: ['AWS / Azure', 'Docker & ECS', 'Terraform IaC', 'Cloudflare WAF', 'PostgreSQL Cluster'],
-      compliance: ['ISO 27001 Ready', 'SOC2 Aligned']
+      stack: ['React / Next.js', 'Node.js / Python', 'PostgreSQL / NoSQL', 'GraphQL & REST APIs', 'Docker Containers'],
+      compliance: ['Clean Architecture', 'Kenya ODPC Compliant']
     },
-    fintech: {
-      name: 'M-Pesa Daraja 3.0 & FinTech Rails',
-      baseKES: 850000,
+    cloud: {
+      name: 'Cloud Architecture & DevOps',
+      baseKES: 700000,
       weeks: 5,
-      stack: ['Daraja 3.0 API', 'Redis Queue', 'Node.js / Go Microservices', 'Webhook Signature Verifier', 'PostgreSQL'],
-      compliance: ['CBK Cybersecurity Guideline', 'PCI-DSS DSS 4.0']
-    },
-    software: {
-      name: 'Custom Enterprise ERP & Web Software',
-      baseKES: 950000,
-      weeks: 8,
-      stack: ['React / Next.js', 'Node.js Enterprise API', 'Postgres / Redis', 'Role-Based RBAC', 'Docker'],
-      compliance: ['Kenya ODPC Data Protection', 'Zero-Trust Architecture']
+      stack: ['AWS / Azure / GCP', 'Kubernetes (EKS/GKE)', 'Terraform IaC', 'GitHub Actions CI/CD', '99.99% High Availability'],
+      compliance: ['ISO 27001 Aligned', 'SOC 2 Ready']
     },
     cybersecurity: {
-      name: 'Cybersecurity, Pen-Testing & Audit',
+      name: 'Cybersecurity & Compliance',
       baseKES: 600000,
       weeks: 4,
-      stack: ['Burp Suite Pro', 'Nessus Pro', 'WAF Hardening', 'Zero-Trust Network Access', 'SIEM Logs'],
-      compliance: ['CBK Cybersecurity Guidance', 'ODPC Statutory Audit', 'ISO 27001']
+      stack: ['Burp Suite Pro', 'Nessus Pro Audits', 'Zero Trust IAM', 'Cloudflare WAF', 'SIEM & Wazuh Logging'],
+      compliance: ['CBK Cybersecurity Guideline', 'ODPC Statutory Audit', 'ISO 27001']
     },
-    data: {
-      name: 'High-Throughput Data & Streaming',
-      baseKES: 1100000,
-      weeks: 7,
-      stack: ['Apache Kafka', 'ClickHouse / BigQuery', 'Redis Sentinel', 'Python Streaming Engine', 'Grafana'],
-      compliance: ['Data Residency Guaranteed', 'ODPC Encryption Standard']
+    'ai-data': {
+      name: 'Data Engineering & AI Integration',
+      baseKES: 850000,
+      weeks: 6,
+      stack: ['Python & PyTorch', 'Apache Kafka / Airflow', 'BigQuery / Snowflake', 'Enterprise LLM & RAG', 'Power BI Dashboards'],
+      compliance: ['Enterprise AI Ethics', 'Data Residency Safeguards']
     },
-    devops: {
-      name: '24/7 Managed IT & DevOps Pod',
-      baseKES: 500000,
+    mobile: {
+      name: 'Mobile App Development',
+      baseKES: 650000,
+      weeks: 6,
+      stack: ['React Native / Flutter', 'Native Swift & Kotlin', 'M-Pesa / Stripe SDKs', 'Offline-First SQLite', 'App Store / Play Store'],
+      compliance: ['OWASP Mobile Top 10', 'Biometric Authentication']
+    },
+    consulting: {
+      name: 'Enterprise IT Consulting & Modernization',
+      baseKES: 450000,
       weeks: 4,
-      stack: ['Kubernetes / EKS', 'Prometheus & Grafana', 'PagerDuty On-Call', 'GitHub Actions CI/CD'],
-      compliance: ['99.99% Availability SLA', 'Automated DR Drills']
+      stack: ['Microservice Refactoring', 'Architecture Blueprints', 'Technical Due Diligence', 'Fractional CTO Advisory', 'Team Staffing'],
+      compliance: ['Enterprise Scalability Audit', 'Debt Remediation Roadmap']
     }
   };
 
@@ -85,10 +85,28 @@
 
   var ADDONS = {
     daraja: {
-      name: 'Safaricom M-Pesa STK & Reconciliation',
+      name: 'Safaricom M-Pesa Daraja 3.0 & Payments',
       costKES: 250000,
       extraWeeks: 1,
-      stack: ['Daraja B2C/C2B', 'Auto-Reconciliation Engine']
+      stack: ['Daraja 3.0 STK Push', 'B2C / C2B Ledger Engine', 'Webhook Signature Verifier']
+    },
+    ai_assistant: {
+      name: 'Enterprise LLM, RAG & AI Copilot',
+      costKES: 350000,
+      extraWeeks: 1.5,
+      stack: ['LangChain / LlamaIndex', 'Vector DB (pgvector / Pinecone)', 'Enterprise LLM API']
+    },
+    mobile_companion: {
+      name: 'Native iOS & Android Companion App',
+      costKES: 450000,
+      extraWeeks: 2,
+      stack: ['Flutter Cross-Platform', 'Push Notifications', 'Biometric Lock']
+    },
+    compliance: {
+      name: 'CBK & ODPC Regulatory Compliance Audit Pack',
+      costKES: 300000,
+      extraWeeks: 1.5,
+      stack: ['ODPC Data Protection Mapping', 'CBK Security Matrix', 'Pen-Test Certificate']
     },
     sso: {
       name: 'Enterprise SSO, Azure AD & MFA',
@@ -96,41 +114,23 @@
       extraWeeks: 1,
       stack: ['Azure AD / Okta', 'OAuth2 / OIDC', 'Biometric / TOTP']
     },
-    compliance: {
-      name: 'CBK & ODPC Regulatory Compliance Audit Pack',
-      costKES: 320000,
-      extraWeeks: 2,
-      stack: ['ODPC Data Mapping', 'CBK Security Matrix', 'Pen-Test Certificate']
-    },
     redis: {
-      name: 'Redis Distributed Cache & Rate Limiting',
+      name: 'Redis Sentinel Distributed Cache & Queues',
       costKES: 120000,
       extraWeeks: 0.5,
-      stack: ['Redis Sentinel', 'Token Bucket Limiter']
-    },
-    waf: {
-      name: 'Cloudflare Enterprise WAF & DDoS Shield',
-      costKES: 150000,
-      extraWeeks: 0.5,
-      stack: ['Cloudflare Enterprise', 'Bot Management']
+      stack: ['Redis Sentinel', 'Token Bucket Limiter', 'Pub/Sub Messaging']
     },
     cicd: {
       name: 'Automated CI/CD & Terraform IaC',
       costKES: 190000,
       extraWeeks: 1,
-      stack: ['GitHub Actions', 'Terraform AWS/Azure']
-    },
-    observability: {
-      name: 'Live Observability & SIEM (Prometheus/Grafana)',
-      costKES: 160000,
-      extraWeeks: 1,
-      stack: ['Prometheus', 'Grafana Dashboards', 'Centralized Logging']
+      stack: ['GitHub Actions / GitLab', 'Terraform AWS/Azure', 'Blue/Green Deployments']
     },
     sla24: {
-      name: '15-Minute Critical Response SLA Retainer',
+      name: '24/7 Critical Response SRE & 15-Min SLA Retainer',
       costKES: 280000,
       extraWeeks: 0,
-      stack: ['24/7 Dedicated Ops Callout', '99.99% Uptime SLA']
+      stack: ['24/7 Dedicated SRE Callout', '99.99% Uptime Guarantee', 'PagerDuty Escalation']
     }
   };
 
@@ -156,7 +156,7 @@
   var state = {
     step: 1,
     currency: 'KES', // 'KES' or 'USD'
-    practice: 'cloud',
+    practice: 'software',
     scale: 'growth',
     addons: ['daraja', 'compliance'],
     velocity: 'standard'
@@ -167,9 +167,41 @@
 
   function init() {
     cacheElements();
+    handleUrlServiceParam();
     bindEvents();
     renderStep();
     calculateEstimate();
+  }
+
+  function handleUrlServiceParam() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var reqService = params.get('service');
+      if (reqService) {
+        reqService = reqService.toLowerCase().trim();
+        if (reqService === 'data' || reqService === 'ai') reqService = 'ai-data';
+        if (PRACTICE_AREAS[reqService]) {
+          state.practice = reqService;
+          // Synchronize selection in DOM
+          document.querySelectorAll('[data-option="practice"]').forEach(function (c) {
+            c.classList.toggle('selected', c.getAttribute('data-val') === reqService);
+          });
+          // Highlight with toast/badge if possible
+          showServicePreselectedBadge(PRACTICE_AREAS[reqService].name);
+        }
+      }
+    } catch (e) {
+      console.warn('URL param parse error:', e);
+    }
+  }
+
+  function showServicePreselectedBadge(serviceName) {
+    var banner = document.getElementById('servicePreselectedBanner');
+    if (banner) {
+      banner.style.display = 'flex';
+      var txt = document.getElementById('preselectedServiceName');
+      if (txt) txt.textContent = serviceName;
+    }
   }
 
   function cacheElements() {
@@ -497,7 +529,7 @@
       '  <h2>Architecture Specs Transmitted Successfully!</h2>',
       '  <p style="color:var(--text-muted); max-width:540px; margin:0.5rem auto 1.5rem;">',
       '    Thank you, <strong>' + escapeHtml(name) + '</strong>. Your enterprise scope has been assigned reference <strong>#' + refNumber + '</strong>.',
-      '    Dr. Brian Kimani and our Principal Systems Architects in Nairobi will review your requirements and reach out at <strong>' + escapeHtml(email) + '</strong> within 1 business day.',
+      '    Our Solutions Engineering squad and Principal Architects will review your requirements and reach out at <strong>' + escapeHtml(email) + '</strong> within 1 business day.',
       '  </p>',
       '  <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin-bottom:2rem;">',
       '    <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save Spec Sheet (PDF)</button>',

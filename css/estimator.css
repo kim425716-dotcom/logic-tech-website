@@ -476,3 +476,42 @@
     color: #111111;
   }
 }
+
+/* Service Pre-selected Banner */
+.service-preselected-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(196, 158, 88, 0.12);
+  border: 1px solid rgba(196, 158, 88, 0.35);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  animation: fadeInStep 0.3s ease forwards;
+}
+
+.service-banner-link {
+  color: var(--amber-light, #d4a373);
+  text-decoration: underline;
+  margin-left: 0.25rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.service-banner-link:hover {
+  color: #ffffff;
+}
+
+body:not(.dark) .service-preselected-banner {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+body:not(.dark) .service-banner-link {
+  color: var(--amber, #a6813e);
+}
+
