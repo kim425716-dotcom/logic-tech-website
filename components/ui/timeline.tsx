@@ -76,8 +76,9 @@ type Month = keyof typeof monthOrder;
 type JourneyItem = {
   id: string;
   year: string;
-  month: Month;
+  month: string;
   content: string;
+  order?: number;
 };
 
 type SplitTextInstance = InstanceType<typeof SplitText>;
@@ -128,49 +129,49 @@ function usePrefersReducedMotion() {
 
 const topJourneyData: JourneyItem[] = [
   {
-    id: "2020-march",
-    year: "2020",
-    month: "March",
-    content: "Signal research turns scattered notes into a clear product thesis",
+    id: "phase-01",
+    year: "Phase 01",
+    month: "· Week 1",
+    order: 1,
+    content: "Discovery, Scoping & Architecture Design — Comprehensive SRS, DB schema, API specs, and system blueprint before code is written.",
   },
   {
-    id: "2021-july",
-    year: "2021",
-    month: "July",
-    content: "Founding release ships with the first live customer journeys",
+    id: "phase-03",
+    year: "Phase 03",
+    month: "· Weeks 2–8+",
+    order: 3,
+    content: "Agile Sprints & Test-Driven Engineering — 2-week sprint cadence, peer code reviews, and >85% automated test coverage with live sandbox visibility.",
   },
   {
-    id: "2023-april",
-    year: "2023",
-    month: "April",
-    content: "Automation layer connects insight, publishing, and sales motion",
-  },
-  {
-    id: "2026-may",
-    year: "2026",
-    month: "May",
-    content: "New markets open with localized launches and faster onboarding",
+    id: "phase-05",
+    year: "Phase 05",
+    month: "· Launch Day",
+    order: 5,
+    content: "Production Deployment & Zero-Downtime Cutover — Blue/green rollout, global CDN caching, and automated migrations with 24/7 telemetry.",
   },
 ];
 
 const bottomJourneyData: JourneyItem[] = [
   {
-    id: "2020-november",
-    year: "2020",
-    month: "November",
-    content: "Prototype sprint validates the experience with real operators",
+    id: "phase-02",
+    year: "Phase 02",
+    month: "· Weeks 1–2",
+    order: 2,
+    content: "UI/UX Prototyping & Technical Foundation — Interactive Figma prototypes, design tokens, CI/CD pipelines, and cloud sandboxes.",
   },
   {
-    id: "2022-october",
-    year: "2022",
-    month: "October",
-    content: "Community feedback reshapes the roadmap into sharper releases",
+    id: "phase-04",
+    year: "Phase 04",
+    month: "· Pre-Launch",
+    order: 4,
+    content: "Security Audits & Automated CI/CD QA — OWASP Top 10 vulnerability remediation, SAST static analysis, and 100K-user load testing.",
   },
   {
-    id: "2025-september",
-    year: "2025",
-    month: "September",
-    content: "Companion mobile workflows make the timeline travel-ready",
+    id: "phase-06",
+    year: "Phase 06",
+    month: "· Post-Launch",
+    order: 6,
+    content: "Handover, 100% IP Transfer & SLA Support — 100% IP assignment, full documentation, 60-day warranty, and 24/7 SLA maintenance tiers.",
   },
 ];
 
@@ -178,18 +179,19 @@ const allJourneyItems: JourneyItem[] = [
   ...topJourneyData,
   ...bottomJourneyData,
 ].sort((a, b) => {
+  if (a.order && b.order) return a.order - b.order;
   const yearDiff = Number(a.year) - Number(b.year);
-  if (yearDiff !== 0) return yearDiff;
-  return monthOrder[a.month] - monthOrder[b.month];
+  if (!isNaN(yearDiff) && yearDiff !== 0) return yearDiff;
+  return 0;
 });
 
 export default function Timeline({
-  title = "Product Storyline",
-  periodLabel = "2020-2026",
-  textColor = "var(--color-foreground, #000000)",
-  mutedTextColor = "var(--color-muted-foreground, #3f3f46)",
+  title = "The 6-Phase Engineering Lifecycle",
+  periodLabel = "End-to-End Workflow",
+  textColor = "var(--color-foreground, #ffffff)",
+  mutedTextColor = "var(--color-muted-foreground, #a1a1aa)",
   activeColor = "#ff5f00",
-  backgroundColor = "var(--color-background, #ffffff)",
+  backgroundColor = "var(--color-background, #05020a)",
   imageUrl = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
   imageAlt = "Modern engineering team collaboration",
   duration,

@@ -19,15 +19,13 @@
 }
 
 .journey-sticky-wrapper {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  width: 100vw;
+  position: relative;
+  height: calc(100vh - 70px);
+  width: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 3vw;
 }
 
 .journey-slider {
@@ -269,7 +267,7 @@
 }
 
 .journey-desc {
-  font-size: 1.1vw;
+  font-size: 1.05vw;
   line-height: 1.35;
   color: #d4d4d8;
 }
@@ -277,3 +275,85 @@
 @media (max-width: 600px) {
   .journey-desc { font-size: 3.8vw; line-height: 1.4; }
 }
+
+/* Phase Badges & Deliverables */
+.journey-phase-tag {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 0.75vw;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ff5f00;
+  background: rgba(255, 95, 0, 0.1);
+  border: 1px solid rgba(255, 95, 0, 0.25);
+  padding: 0.2vw 0.6vw;
+  border-radius: 9999px;
+  margin-bottom: 0.4vw;
+  width: fit-content;
+}
+
+@media (max-width: 600px) {
+  .journey-phase-tag {
+    font-size: 3vw;
+    padding: 1vw 2.5vw;
+    margin-bottom: 1.5vw;
+  }
+}
+
+.journey-deliverables {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35vw;
+  margin-top: 0.6vw;
+}
+
+.journey-deliverables span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45vw;
+  font-size: 0.85vw;
+  color: #a1a1aa;
+}
+
+.journey-deliverables span .green {
+  color: #10b981;
+  font-size: 0.75vw;
+}
+
+@media (max-width: 600px) {
+  .journey-deliverables {
+    gap: 1.2vw;
+    margin-top: 2vw;
+  }
+  .journey-deliverables span {
+    font-size: 3.2vw;
+    gap: 1.5vw;
+  }
+  .journey-deliverables span .green {
+    font-size: 3vw;
+  }
+}
+
+.timeline-hint {
+  margin-top: 1.2rem;
+  color: #ff5f00;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 95, 0, 0.08);
+  border: 1px solid rgba(255, 95, 0, 0.25);
+  padding: 0.45rem 1.2rem;
+  border-radius: 9999px;
+}
+
+.timeline-hint i {
+  animation: bounceRight 1.5s infinite;
+}
+
+@keyframes bounceRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
