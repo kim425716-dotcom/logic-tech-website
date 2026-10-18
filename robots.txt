@@ -1,0 +1,14 @@
+# robots.txt for Logic Tech (https://logictech.co.ke)
+User-agent: *
+Allow: /
+
+# Disallow private dashboards, admin portals, and auth endpoints from search engine indexing
+Disallow: /backend/
+Disallow: /dashboard-admin.html
+Disallow: /dashboard-client.html
+Disallow: /login.html
+Disallow: /register.html
+Disallow: /forgot-password.html
+
+# XML Sitemap Location
+Sitemap: https://logictech.co.ke/sitemap.xml

@@ -96,6 +96,33 @@ router.post(
   }
 );
 
+// ── POST /api/auth/google ───────────────────────────────────────────
+router.post(
+  '/google',
+  rateLimit('google-auth', 15, 60 * 1000),
+  async (req, res, next) => {
+    try {
+      const email = validEmail(req.body.email);
+      const name = req.body.name ? stringField(req.body.name, 'Name', 120) : email.split('@')[0];
+
+      let user = statements.userByEmail.get(email);
+      if (!user) {
+        // Register new Google OAuth user with random high-entropy token
+        const dummyPass = await hashPassword(generateToken() + 'OAuthGoogle2026!');
+        const result = db.prepare(
+          'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)'
+        ).run(name, email, dummyPass);
+        user = statements.userById.get(Number(result.lastInsertRowid));
+      }
+
+      createSession(res, user.id);
+      res.json({ user: publicUser(user) });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // ── POST /api/auth/logout ───────────────────────────────────────────
 router.post('/logout', (req, res) => {
   clearSession(req, res);
