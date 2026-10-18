@@ -80,14 +80,12 @@
 
   <!-- ========== END-TO-END WORKFLOW: THE 6-PHASE ENGINEERING LIFECYCLE (INTERACTIVE GSAP TIMELINE) ========== -->
   <section id="how-it-works" class="journey-timeline-section">
-    <div class="container text-center" style="padding: 4.5rem 1.5rem 1.5rem; max-width: 900px; margin: 0 auto; text-align: center;">
+    <div class="container text-center timeline-section-header">
       <div class="badge-outline amber"><i class="fa-solid fa-layer-group"></i> End-to-End Workflow</div>
-      <h2 style="font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; margin: 1rem 0 0.6rem; color: #ffffff;">The 6-Phase Engineering Lifecycle</h2>
-      <p style="color: #a1a1aa; font-size: clamp(0.95rem, 1.4vw, 1.15rem); line-height: 1.6;">
-        We combine agile flexibility with enterprise engineering discipline to ensure every milestone is predictable and auditable.
-      </p>
+      <h2>The 6-Phase Engineering Lifecycle</h2>
+      <p>We combine agile flexibility with enterprise engineering discipline to ensure every milestone is predictable and auditable.</p>
       <div class="timeline-hint">
-        <span>Scroll vertically to advance through the lifecycle</span>
+        <span>Scroll vertically to advance through phases</span>
         <i class="fa-solid fa-arrow-right"></i>
       </div>
     </div>
@@ -100,9 +98,9 @@
           <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80" alt="Logic Tech Engineering Team" class="journey-lead-img" />
           <div class="journey-lead-overlay">
             <span class="journey-lead-tag">End-to-End Workflow</span>
-            <h3 class="journey-lead-title">The 6-Phase Engineering Lifecycle</h3>
-            <p style="color: #d4d4d8; font-size: 0.9vw; margin-top: 0.4vw; line-height: 1.4;">
-              Agile flexibility meets enterprise discipline.
+            <h3 class="journey-lead-title">The 6-Phase Lifecycle</h3>
+            <p class="journey-lead-desc">
+              Agile flexibility meets enterprise engineering discipline.
             </p>
           </div>
         </div>
@@ -112,72 +110,92 @@
           
           <!-- Central Expanding Line -->
           <div class="journey-center-line-wrap">
-            <div class="journey-line-dot"></div>
+            <div class="journey-line-dot start-dot"></div>
             <div class="journey-main-line"></div>
-            <div class="journey-line-dot"></div>
+            <div class="journey-line-dot end-dot"></div>
           </div>
 
           <!-- Top Row: Phase 01, Phase 03, Phase 05 -->
-          <div class="journey-row-top">
+          <div class="journey-row journey-row-top">
             
             <!-- Phase 01 -->
-            <div class="journey-item">
-              <div class="journey-stem-top"></div>
-              <div class="journey-stem-dot-top"></div>
-              <div class="journey-content-wrap">
-                <div class="journey-phase-tag">Phase 01 · Week 1</div>
-                <div class="journey-date">Discovery &amp; Architecture</div>
-                <p class="journey-desc">Comprehensive SRS, database schema, and system architecture blueprint before a single line of code is written.</p>
+            <div class="journey-item" data-phase="1">
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <span class="journey-phase-tag">Phase 01</span>
+                  <span class="journey-duration-tag"><i class="fa-regular fa-clock"></i> Week 1</span>
+                </div>
+                <h4 class="journey-card-title">Discovery &amp; Architecture</h4>
+                <p class="journey-desc">Comprehensive SRS, database schema, and system architecture blueprint before code is written.</p>
                 <div class="journey-deliverables">
                   <span><i class="fa-solid fa-check green"></i> System ERD &amp; API Specs</span>
-                  <span><i class="fa-solid fa-check green"></i> Signed NDA &amp; IP Agreement</span>
+                  <span><i class="fa-solid fa-check green"></i> Signed Mutual NDA &amp; IP Agreement</span>
                 </div>
+              </div>
+              <div class="journey-stem journey-stem-top">
+                <div class="journey-stem-line"></div>
+                <div class="journey-stem-dot"></div>
               </div>
             </div>
 
             <!-- Phase 03 -->
-            <div class="journey-item">
-              <div class="journey-stem-top"></div>
-              <div class="journey-stem-dot-top"></div>
-              <div class="journey-content-wrap">
-                <div class="journey-phase-tag">Phase 03 · Weeks 2 – 8+</div>
-                <div class="journey-date">Agile Sprints &amp; TDD</div>
-                <p class="journey-desc">Rapid 2-week sprint cadence, peer code reviews, continuous automated testing, and live staging visibility.</p>
+            <div class="journey-item" data-phase="3">
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <span class="journey-phase-tag">Phase 03</span>
+                  <span class="journey-duration-tag"><i class="fa-regular fa-clock"></i> Weeks 2 – 8+</span>
+                </div>
+                <h4 class="journey-card-title">Agile Sprints &amp; TDD</h4>
+                <p class="journey-desc">Rapid 2-week sprint cadence, peer code reviews, continuous automated testing, and staging sandbox visibility.</p>
                 <div class="journey-deliverables">
                   <span><i class="fa-solid fa-check green"></i> Bi-Weekly Video Demos</span>
-                  <span><i class="fa-solid fa-check green"></i> Unit &amp; Integration Tests (>85%)</span>
+                  <span><i class="fa-solid fa-check green"></i> Unit &amp; Integration Tests (&gt;85%)</span>
                 </div>
+              </div>
+              <div class="journey-stem journey-stem-top">
+                <div class="journey-stem-line"></div>
+                <div class="journey-stem-dot"></div>
               </div>
             </div>
 
             <!-- Phase 05 -->
-            <div class="journey-item">
-              <div class="journey-stem-top"></div>
-              <div class="journey-stem-dot-top"></div>
-              <div class="journey-content-wrap">
-                <div class="journey-phase-tag">Phase 05 · Launch Day</div>
-                <div class="journey-date">Production Deployment</div>
+            <div class="journey-item" data-phase="5">
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <span class="journey-phase-tag">Phase 05</span>
+                  <span class="journey-duration-tag"><i class="fa-regular fa-clock"></i> Launch Day</span>
+                </div>
+                <h4 class="journey-card-title">Production Deployment</h4>
                 <p class="journey-desc">Seamless blue/green zero-downtime release, automated migrations, CDN distribution, and 24/7 telemetry.</p>
                 <div class="journey-deliverables">
                   <span><i class="fa-solid fa-check green"></i> Blue/Green Cutover</span>
-                  <span><i class="fa-solid fa-check green"></i> Datadog / Cloud Monitoring</span>
+                  <span><i class="fa-solid fa-check green"></i> Datadog / Cloud Telemetry</span>
                 </div>
+              </div>
+              <div class="journey-stem journey-stem-top">
+                <div class="journey-stem-line"></div>
+                <div class="journey-stem-dot"></div>
               </div>
             </div>
 
           </div>
 
           <!-- Bottom Row: Phase 02, Phase 04, Phase 06 -->
-          <div class="journey-row-bottom">
+          <div class="journey-row journey-row-bottom">
             
             <!-- Phase 02 -->
-            <div class="journey-item">
-              <div class="journey-stem-bottom"></div>
-              <div class="journey-stem-dot-bottom"></div>
-              <div class="journey-content-wrap">
-                <div class="journey-phase-tag">Phase 02 · Weeks 1 – 2</div>
-                <div class="journey-date">UI/UX &amp; Foundation</div>
-                <p class="journey-desc">Interactive Figma wireframes, design token systems, cloud sandbox infrastructure, and CI/CD code quality tooling.</p>
+            <div class="journey-item" data-phase="2">
+              <div class="journey-stem journey-stem-bottom">
+                <div class="journey-stem-dot"></div>
+                <div class="journey-stem-line"></div>
+              </div>
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <span class="journey-phase-tag">Phase 02</span>
+                  <span class="journey-duration-tag"><i class="fa-regular fa-clock"></i> Weeks 1 – 2</span>
+                </div>
+                <h4 class="journey-card-title">UI/UX &amp; Foundation</h4>
+                <p class="journey-desc">Interactive Figma wireframes, design token systems, cloud sandbox infrastructure, and CI/CD quality tooling.</p>
                 <div class="journey-deliverables">
                   <span><i class="fa-solid fa-check green"></i> Interactive Figma Prototypes</span>
                   <span><i class="fa-solid fa-check green"></i> Cloud Staging Sandbox Setup</span>
@@ -186,27 +204,37 @@
             </div>
 
             <!-- Phase 04 -->
-            <div class="journey-item">
-              <div class="journey-stem-bottom"></div>
-              <div class="journey-stem-dot-bottom"></div>
-              <div class="journey-content-wrap">
-                <div class="journey-phase-tag">Phase 04 · Pre-Launch</div>
-                <div class="journey-date">Security &amp; CI/CD QA</div>
+            <div class="journey-item" data-phase="4">
+              <div class="journey-stem journey-stem-bottom">
+                <div class="journey-stem-dot"></div>
+                <div class="journey-stem-line"></div>
+              </div>
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <span class="journey-phase-tag">Phase 04</span>
+                  <span class="journey-duration-tag"><i class="fa-regular fa-clock"></i> Pre-Launch</span>
+                </div>
+                <h4 class="journey-card-title">Security &amp; CI/CD QA</h4>
                 <p class="journey-desc">Automated vulnerability scans, static code analysis (SAST), and 100,000-user high-load stress testing.</p>
                 <div class="journey-deliverables">
                   <span><i class="fa-solid fa-check green"></i> OWASP Top 10 Audit</span>
-                  <span><i class="fa-solid fa-check green"></i> Stress Testing Report</span>
+                  <span><i class="fa-solid fa-check green"></i> High-Load Stress Testing Report</span>
                 </div>
               </div>
             </div>
 
             <!-- Phase 06 -->
-            <div class="journey-item">
-              <div class="journey-stem-bottom"></div>
-              <div class="journey-stem-dot-bottom"></div>
-              <div class="journey-content-wrap">
-                <div class="journey-phase-tag">Phase 06 · Post-Launch</div>
-                <div class="journey-date">100% IP Transfer &amp; SLA</div>
+            <div class="journey-item" data-phase="6">
+              <div class="journey-stem journey-stem-bottom">
+                <div class="journey-stem-dot"></div>
+                <div class="journey-stem-line"></div>
+              </div>
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <span class="journey-phase-tag">Phase 06</span>
+                  <span class="journey-duration-tag"><i class="fa-regular fa-clock"></i> Post-Launch</span>
+                </div>
+                <h4 class="journey-card-title">100% IP Transfer &amp; SLA</h4>
                 <p class="journey-desc">Complete transfer of all source repositories, cloud keys, 60-day warranty, and 24/7 SLA maintenance tiers.</p>
                 <div class="journey-deliverables">
                   <span><i class="fa-solid fa-check green"></i> 100% IP Assignment</span>
