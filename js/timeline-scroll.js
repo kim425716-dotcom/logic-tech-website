@@ -15,12 +15,17 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  // Dynamic scroll distance calculation for comfortable scrub pacing
+  const getScrollDistance = () => {
+    return window.innerWidth <= 600 ? window.innerHeight * 3.2 : window.innerHeight * 2.2;
+  };
+
   // 1. Horizontal Scroll Scrub Timeline
   const mainTl = gsap.timeline({
     scrollTrigger: {
       trigger: stickyWrapper || section,
       start: "top 70px",
-      end: () => `+=${section.offsetHeight - window.innerHeight}`,
+      end: () => `+=${getScrollDistance()}`,
       scrub: 1,
       pin: stickyWrapper || true,
       anticipatePin: 1,
@@ -42,7 +47,7 @@
       scrollTrigger: {
         trigger: stickyWrapper || section,
         start: "top 70px",
-        end: () => `+=${section.offsetHeight - window.innerHeight}`,
+        end: () => `+=${getScrollDistance()}`,
         scrub: 1,
       }
     });
@@ -61,8 +66,8 @@
 
     ScrollTrigger.create({
       trigger: stickyWrapper || section,
-      start: () => `top+=${(section.offsetHeight - window.innerHeight) * (startPercent / 100)} 70px`,
-      end: () => `top+=${(section.offsetHeight - window.innerHeight) * (endPercent / 100)} 70px`,
+      start: () => `top+=${getScrollDistance() * (startPercent / 100)} 70px`,
+      end: () => `top+=${getScrollDistance() * (endPercent / 100)} 70px`,
       onToggle: (self) => {
         if (self.isActive) {
           item.classList.add("is-active");
