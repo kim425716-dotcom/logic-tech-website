@@ -46,6 +46,6 @@ After uploading:
        • Startup file: backend/server.js (or app.js if you prefer the wrapper)
        • Set the environment variables (copy from backend/.env).
   3. Run "npm ci" from the Terminal (or click the “npm Install” button in the UI).
-  4. Restart the app and verify https://yourdomain.com/logic-tech/api/health returns {"status":"ok"}.
+  4. Restart the app and verify https://logictech.co.ke/api/health returns {"status":"ok"}.
 
 EOF
