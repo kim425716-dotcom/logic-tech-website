@@ -4,81 +4,109 @@
 
 /* ---- CSS Variables / Tokens ---- */
 :root {
-  /* Surface & Base (Clean, Confident, Light Base) */
-  --bg-950: #fafafa;
-  --bg-900: #ffffff;
-  --bg-800: #f4f6f9;
-  --bg-700: #eaeff5;
+  /* ── New Design Palette ── */
+  --bg:           #0B1220;
+  --surface:      #111B2E;
+  --border-color: #1E2A40;
+  --gold:         #C9A45C;
+  --gold-light:   #E0BC74;
+  --text:         #F1F5F9;
+  --text-soft:    #A8B3C7;
+  --text-muted:   #7C8AA3;
+  --success:      #34D399;
+  --link:         #60A5FA;
+  --progress:     #F97316;
 
-  /* Typography (Dominant Deep Navy & Supporting Neutral Gray) */
-  --text-primary: #0b1f3a;
-  --text-secondary: #5b6470;
-  --text-muted: #7e8b9b;
-  --border: rgba(11, 31, 58, 0.09);
+  /* ── Mapped to existing token names (keeps all downstream CSS working) ── */
+  --bg-950: #0B1220;
+  --bg-900: #111B2E;
+  --bg-800: #172036;
+  --bg-700: #1E2A40;
 
-  /* Single Accent: Muted Gold (Seniority, Premium Positioning) */
-  --amber: #a6813e;
-  --amber-light: #c49e58;
-  --amber-dark: #8c6a2e;
-  --accent: #a6813e;
-  --accent-light: #c49e58;
-  --accent-dark: #8c6a2e;
+  --text-primary:   #F1F5F9;
+  --text-secondary: #A8B3C7;
+  --text-muted:     #7C8AA3;
+  --border: rgba(30, 42, 64, 0.9);
 
-  /* Data Visualization Secondary Suite (Distinct from UI Accent) */
-  --data-1: #2d4b73;
-  --data-2: #4d8076;
-  --data-3: #d49b55;
-  --data-4: #8c738a;
+  /* Accent: Gold */
+  --amber:        #C9A45C;
+  --amber-light:  #E0BC74;
+  --amber-dark:   #A6813E;
+  --accent:       #C9A45C;
+  --accent-light: #E0BC74;
+  --accent-dark:  #A6813E;
+
+  /* Data Visualization Suite */
+  --data-1: #60A5FA;
+  --data-2: #34D399;
+  --data-3: #C9A45C;
+  --data-4: #F97316;
 
   /* Functional Status Colors */
-  --violet: #5c4eb7;
-  --cyan: #0f5c57;
-  --green: #108565;
-  --blue: #2d4b73;
-  --red: #c53030;
+  --violet: #818CF8;
+  --cyan:   #22D3EE;
+  --green:  #34D399;
+  --blue:   #60A5FA;
+  --red:    #F87171;
 
-  /* Typography Tokens (Editorial Strategy Pairing) */
+  /* Typography */
   --font-serif: 'Newsreader', 'Lora', 'Georgia', 'Times New Roman', serif;
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:  'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  --nav-h: 64px;
-  --radius: 12px;
+  --nav-h:     64px;
+  --radius:    12px;
   --radius-sm: 8px;
-  --shadow-sm: 0 2px 8px rgba(11, 31, 58, 0.04);
-  --shadow-md: 0 8px 24px -4px rgba(11, 31, 58, 0.08);
-  --shadow-lg: 0 20px 40px -12px rgba(11, 31, 58, 0.12);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Dark mode overrides (Authoritative Deep Navy Ink) */
+/* Dark mode — primary look (matches new palette exactly) */
 body.dark {
-  --bg-950: #05020a;
-  --bg-900: #111a28;
-  --bg-800: #182335;
-  --bg-700: #223249;
-  --text-primary: #f4f6fa;
-  --text-secondary: #9eabbc;
-  --text-muted: #6b7a8d;
-  --border: rgba(255, 255, 255, 0.08);
-  --amber: #c49e58;
-  --amber-light: #d8b574;
-  --amber-dark: #a6813e;
-  --accent: #c49e58;
-  --accent-light: #d8b574;
-  --accent-dark: #a6813e;
-  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --bg:           #0B1220;
+  --surface:      #111B2E;
+  --border-color: #1E2A40;
+  --bg-950: #0B1220;
+  --bg-900: #111B2E;
+  --bg-800: #172036;
+  --bg-700: #1E2A40;
+  --text-primary:   #F1F5F9;
+  --text-secondary: #A8B3C7;
+  --text-muted:     #7C8AA3;
+  --border: rgba(30, 42, 64, 0.9);
+  --amber:        #C9A45C;
+  --amber-light:  #E0BC74;
+  --amber-dark:   #A6813E;
+  --accent:       #C9A45C;
+  --accent-light: #E0BC74;
+  --accent-dark:  #A6813E;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
 }
 
-/* Legacy support for non-dark */
+/* Light mode — accessible inversion of the new palette */
 body:not(.dark) {
-  --bg-950: #fafafa;
-  --bg-900: #ffffff;
-  --bg-800: #f4f6f9;
-  --bg-700: #eaeff5;
-  --text-primary: #0b1f3a;
-  --text-secondary: #5b6470;
-  --text-muted: #7e8b9b;
-  --border: rgba(11, 31, 58, 0.09);
-  --shadow-lg: 0 20px 40px -12px rgba(11, 31, 58, 0.12);
+  --bg:           #F1F5F9;
+  --surface:      #FFFFFF;
+  --border-color: #D1DCF0;
+  --bg-950: #F1F5F9;
+  --bg-900: #FFFFFF;
+  --bg-800: #E8EDF7;
+  --bg-700: #D1DCF0;
+  --text-primary:   #0B1220;
+  --text-secondary: #3A4A64;
+  --text-muted:     #7C8AA3;
+  --border: rgba(11, 18, 32, 0.1);
+  --amber:        #A6813E;
+  --amber-light:  #C9A45C;
+  --amber-dark:   #8A6A2E;
+  --accent:       #A6813E;
+  --accent-light: #C9A45C;
+  --accent-dark:  #8A6A2E;
+  --shadow-sm: 0 2px 8px rgba(11, 18, 32, 0.06);
+  --shadow-md: 0 8px 24px -4px rgba(11, 18, 32, 0.10);
+  --shadow-lg: 0 20px 40px -12px rgba(11, 18, 32, 0.14);
 }
 
 /* ---- Reset & Base Typography ---- */
