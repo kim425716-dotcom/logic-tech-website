@@ -69,7 +69,8 @@ function applyTheme(dark) {
 
 
 const savedTheme = localStorage.getItem('logictech-theme') || localStorage.getItem('lt-theme');
-applyTheme(savedTheme === 'dark');
+const isDark = savedTheme ? savedTheme === 'dark' : true;
+applyTheme(isDark);
 
 themeToggle?.addEventListener('click', () => {
   applyTheme(!body.classList.contains('dark'));

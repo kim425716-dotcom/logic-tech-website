@@ -279,7 +279,7 @@ body.dark .badge-outline.blue { background: rgba(45,75,115,0.2); border-color: r
   z-index: 100;
 }
 .nav-inner {
-  background: rgba(2,6,23,0.85);
+  background: rgba(5,2,10,0.85);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   max-width: 100%;
@@ -346,7 +346,7 @@ body:not(.dark) .nav-links { background: rgba(0,0,0,0.04); }
   display: none;
   flex-direction: column;
   gap: 0.25rem;
-  background: rgba(2,6,23,0.97);
+  background: rgba(5,2,10,0.97);
   border-bottom: 1px solid var(--border);
   padding: 1rem 1.5rem;
   backdrop-filter: blur(20px);
@@ -474,7 +474,7 @@ body.dark .hero-grid {
 /* ============================================================
    STATS
    ============================================================ */
-.stats-section { padding: 5rem 0; background: var(--bg-900); }
+.stats-section { padding: 5rem 0; background: var(--bg-950); }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
 .stat-card {
   text-align: center;
@@ -544,7 +544,7 @@ body.dark .hero-grid {
 /* ============================================================
    HOW IT WORKS
    ============================================================ */
-.how-section { padding: 6rem 0; background: linear-gradient(to bottom, var(--bg-950), var(--bg-900)); }
+.how-section { padding: 6rem 0; background: var(--bg-950); }
 .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
 .step-card {
   position: relative;
@@ -585,7 +585,7 @@ body.dark .hero-grid {
 /* ============================================================
    TESTIMONIALS
    ============================================================ */
-.testimonials-section { padding: 6rem 0; background: linear-gradient(to bottom, var(--bg-900), var(--bg-950)); overflow: hidden; }
+.testimonials-section { padding: 6rem 0; background: var(--bg-950); overflow: hidden; }
 .marquee-wrapper { overflow: hidden; margin-top: 2rem; }
 .marquee-track {
   display: flex;
