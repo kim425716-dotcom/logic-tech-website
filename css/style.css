@@ -5,7 +5,7 @@
 /* ---- CSS Variables / Tokens ---- */
 :root {
   /* ── New Design Palette ── */
-  --bg:           #0B1220;
+  --bg:           #05020a;
   --surface:      #111B2E;
   --border-color: #1E2A40;
   --gold:         #C9A45C;
@@ -18,7 +18,7 @@
   --progress:     #F97316;
 
   /* ── Mapped to existing token names (keeps all downstream CSS working) ── */
-  --bg-950: #0B1220;
+  --bg-950: #05020a;
   --bg-900: #111B2E;
   --bg-800: #172036;
   --bg-700: #1E2A40;
@@ -63,10 +63,10 @@
 
 /* Dark mode — primary look (matches new palette exactly) */
 body.dark {
-  --bg:           #0B1220;
+  --bg:           #05020a;
   --surface:      #111B2E;
   --border-color: #1E2A40;
-  --bg-950: #0B1220;
+  --bg-950: #05020a;
   --bg-900: #111B2E;
   --bg-800: #172036;
   --bg-700: #1E2A40;

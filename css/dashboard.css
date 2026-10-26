@@ -27,7 +27,7 @@
 
 body.dark {
   --dash-card-bg: #111B2E;
-  --dash-surface: #0B1220;
+  --dash-surface: #05020a;
   --dash-border: rgba(30, 42, 64, 0.9);
   --dash-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
   --dash-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
