@@ -534,7 +534,775 @@
         padding: 0 1rem !important;
       }
     }
-  </style>
+  
+
+    /* ── 8. LIGHT THEME OVERRIDES ─────────────────────────── */
+    body.light {
+      --navy-950: #f8fafc;
+      --navy-900: #ffffff;
+      --navy-850: #f1f5f9;
+      --navy-800: #e2e8f0;
+      --navy-700: #cbd5e1;
+      --dash-card-bg: #ffffff;
+      --dash-surface: #f8fafc;
+      --dash-border: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --card-border: 1px solid rgba(0, 0, 0, 0.08);
+      --dash-shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+    body.light .sidebar {
+      background: #ffffff !important;
+      border-right-color: #e2e8f0 !important;
+    }
+    body.light .dash-welcome,
+    body.light .dstat-card,
+    body.light .dash-card,
+    body.light .pipeline-bar-card,
+    body.light .modal-content,
+    body.light .slide-over-drawer {
+      background: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+    body.light .dstat-value {
+      color: #0f172a !important;
+    }
+
+    /* ── 8. COLLAPSIBLE SIDEBAR (DESKTOP) ──────────────────── */
+    .sidebar.sidebar-collapsed {
+      width: 72px !important;
+    }
+    .sidebar.sidebar-collapsed .sidebar-logo a span,
+    .sidebar.sidebar-collapsed .sidebar-brand-badge,
+    .sidebar.sidebar-collapsed .sidebar-section-title,
+    .sidebar.sidebar-collapsed .sidebar-system-card,
+    .sidebar.sidebar-collapsed .sidebar-link span:not(.sidebar-badge) {
+      display: none !important;
+    }
+    .sidebar.sidebar-collapsed .sidebar-logo {
+      justify-content: center !important;
+      padding: 1.25rem 0.5rem !important;
+    }
+    .sidebar.sidebar-collapsed .sidebar-link {
+      justify-content: center !important;
+      padding: 0.85rem 0.5rem !important;
+      font-size: 1.15rem !important;
+      position: relative !important;
+    }
+    .sidebar.sidebar-collapsed .sidebar-link i {
+      margin: 0 !important;
+    }
+    .dash-main.main-expanded {
+      margin-left: 72px !important;
+    }
+
+    /* ── 7. NOTIFICATIONS DROPDOWN ────────────────────────── */
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      border-radius: 9999px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      border: 2px solid var(--navy-900);
+      pointer-events: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .notif-badge.hidden {
+      display: none !important;
+    }
+    .notifications-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 350px;
+      max-width: calc(100vw - 32px);
+      background: var(--navy-900);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+      z-index: 500;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: fadeInDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .notifications-dropdown.hidden {
+      display: none !important;
+    }
+    @keyframes fadeInDropdown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .notif-header {
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .notif-mark-all {
+      background: none;
+      border: none;
+      color: var(--gold-light, #E0BC74);
+      font-size: 0.725rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+    .notif-mark-all:hover {
+      background: rgba(201, 164, 92, 0.12);
+    }
+    .notif-list {
+      max-height: 320px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+    .notif-item {
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      position: relative;
+    }
+    .notif-item:hover {
+      background: rgba(201, 164, 92, 0.06);
+    }
+    .notif-item.unread {
+      background: rgba(201, 164, 92, 0.04);
+      border-left: 3px solid var(--gold-primary);
+    }
+    .notif-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+    .notif-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .notif-item-title {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .notif-item-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .notif-item-time {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ── 7. MULTI-TOAST STACKING SYSTEM ───────────────────── */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+      max-width: 420px;
+      width: calc(100vw - 48px);
+    }
+    .toast-card {
+      pointer-events: auto;
+      background: #0d1627;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0.85rem 1.1rem;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+      animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .toast-card.toast-hiding {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .toast-card.toast-success {
+      border-left: 4px solid #10b981;
+    }
+    .toast-card.toast-error {
+      border-left: 4px solid #f87171;
+    }
+    .toast-card.toast-info {
+      border-left: 4px solid var(--gold-primary);
+    }
+    .toast-card-icon {
+      font-size: 1.15rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .toast-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .toast-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .toast-card-text {
+      font-size: 0.785rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .toast-card-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0 0 4px 6px;
+      line-height: 1;
+      transition: color 0.15s ease;
+    }
+    .toast-card-close:hover {
+      color: var(--text-primary);
+    }
+    .toast-progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--gold-primary);
+      width: 100%;
+      transform-origin: left;
+    }
+
+    /* ── 1. COMMAND PALETTE HIGHLIGHTS ────────────────────── */
+    .cmd-match {
+      background: rgba(201, 164, 92, 0.35);
+      color: #ffffff;
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .cmd-palette-item.active {
+      background: rgba(201, 164, 92, 0.14) !important;
+      color: var(--gold-light, #E0BC74) !important;
+      border-left: 3px solid var(--gold-primary);
+    }
+    .cmd-section-label {
+      padding: 0.5rem 0.85rem 0.25rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* ── 2. STAT CARDS ACTIVE FILTER RING ─────────────────── */
+    .dstat-card.active-filter {
+      outline: 2px solid var(--gold-primary) !important;
+      outline-offset: 3px !important;
+      box-shadow: 0 0 24px var(--gold-glow), 0 16px 36px rgba(0,0,0,0.65) !important;
+      border-color: rgba(201, 164, 92, 0.5) !important;
+    }
+    .btn-clear-filter {
+      background: none;
+      border: none;
+      color: var(--gold-light, #E0BC74);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-left: 0.5rem;
+      padding: 0;
+    }
+    .btn-clear-filter:hover {
+      color: #ffffff;
+    }
+
+    /* ── 4. PROJECTS VIEW MODE & INLINE DETAILS ───────────── */
+    .projects-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .view-mode-toggle {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 2px;
+    }
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 30px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .view-btn.active {
+      background: var(--navy-800);
+      color: var(--gold-primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .view-btn:hover:not(.active) {
+      color: var(--text-primary);
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 1.25rem;
+      padding: 1.25rem 0;
+    }
+    .project-grid-card {
+      background: var(--navy-900);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+    }
+    .project-grid-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .project-grid-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+    .project-grid-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      line-height: 1.35;
+    }
+    .project-grid-title:hover {
+      color: var(--gold-light);
+    }
+
+    /* Inline expandable details */
+    .inline-details-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      opacity: 0;
+    }
+    .inline-details-wrapper.expanded {
+      max-height: 900px;
+      opacity: 1;
+    }
+    .inline-details-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin: 0.75rem 0;
+    }
+    .stage-stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 1.25rem 0 1.5rem;
+    }
+    .stage-stepper::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      z-index: 1;
+    }
+    .stage-step {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .stage-step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--navy-800);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      transition: all 0.2s ease;
+    }
+    .stage-step.completed .stage-step-dot {
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
+    }
+    .stage-step.active .stage-step-dot {
+      background: var(--gold-primary);
+      border-color: var(--gold-light);
+      color: #05020a;
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+    .stage-step.active {
+      color: var(--gold-light);
+    }
+    .stage-step.completed {
+      color: #10b981;
+    }
+
+    /* ── 5. REQUEST DELIVERABLE SLIDE-OVER DRAWER ─────────── */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 2, 10, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .drawer-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .slide-over-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(620px, 100vw);
+      background: var(--navy-900);
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -15px 0 45px rgba(0, 0, 0, 0.75);
+    }
+    .slide-over-drawer.open {
+      transform: translateX(0);
+    }
+    .drawer-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 1.75rem;
+      scrollbar-width: thin;
+    }
+    .drawer-footer {
+      padding: 1rem 1.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.02);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wizard-progress {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .wizard-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .wizard-tab.active {
+      color: var(--gold-light, #E0BC74);
+    }
+    .wizard-tab.completed {
+      color: #10b981;
+    }
+    .wizard-tab-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+    }
+    .wizard-tab.active .wizard-tab-num {
+      background: var(--gold-primary);
+      color: #05020a;
+      font-weight: 800;
+    }
+    .wizard-tab.completed .wizard-tab-num {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    /* Deliverable Type Cards */
+    .type-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .type-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.1rem;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .type-card:hover {
+      border-color: rgba(201, 164, 92, 0.4);
+      background: rgba(201, 164, 92, 0.04);
+      transform: translateY(-2px);
+    }
+    .type-card.selected {
+      border-color: var(--gold-primary);
+      background: rgba(201, 164, 92, 0.08);
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    /* Drag and Drop zone */
+    .wizard-dropzone {
+      border: 2px dashed rgba(201, 164, 92, 0.35);
+      border-radius: 12px;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(201, 164, 92, 0.02);
+      transition: all 0.2s ease;
+    }
+    .wizard-dropzone.dragover {
+      background: rgba(201, 164, 92, 0.09);
+      border-color: var(--gold-primary);
+      transform: scale(1.01);
+    }
+    .file-preview-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      color: var(--text-primary);
+    }
+    .file-chip-remove {
+      background: none;
+      border: none;
+      color: #f87171;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 0 0 0 4px;
+    }
+
+    /* ── 6. COST ESTIMATOR MODAL ──────────────────────────── */
+    .slider-group {
+      margin-bottom: 1.5rem;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .slider-input {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--gold-primary);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .switch-toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      transition: 0.3s;
+    }
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    input:checked + .switch-slider {
+      background-color: var(--gold-primary);
+    }
+    input:checked + .switch-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* ── KEYBOARD SHORTCUTS MODAL KEY BADGES ──────────────── */
+    .kbd-key {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold-light, #E0BC74);
+      font-family: monospace;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+    }
+    .shortcut-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    /* ── 10. BUTTON RIPPLE & MICRO-INTERACTIONS ───────────── */
+    .btn {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .btn:active {
+      transform: scale(0.98) !important;
+    }
+    .gold-ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: goldRippleAnim 0.6s linear;
+      background: rgba(201, 164, 92, 0.4);
+      pointer-events: none;
+    }
+    @keyframes goldRippleAnim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    .dash-sync-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+    }
+
+</style>
 </head>
 <body class="dark">
 
@@ -605,7 +1373,7 @@
     <!-- Top Bar -->
     <header class="dash-topbar">
       <div class="dash-topbar-left">
-        <button class="icon-btn" onclick="toggleSidebarMobile()" title="Toggle Sidebar">
+        <button class="icon-btn" id="sidebarToggle" onclick="toggleSidebarFull()" title="Toggle Sidebar">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="dash-breadcrumb">
@@ -628,17 +1396,43 @@
 
       <!-- Top Right Controls -->
       <div class="dash-topbar-right">
+        <div class="dash-sync-indicator" id="liveSyncStatus" title="Auto-refreshes every 60 seconds">
+          <span class="pulse-dot"></span>
+          <span id="syncTimeAgo">Updated just now</span>
+        </div>
         <div class="dash-clock-widget" id="clientClockWidget" title="Current Time & Date">
           <i class="fa-regular fa-clock" style="color:var(--dash-accent);"></i>
           <span id="clientLiveTime">--:--:--</span>
           <span class="clock-date-part" id="clientLiveDate" style="opacity:0.8; font-size:0.725rem; margin-left:2px; border-left:1px solid var(--dash-border); padding-left:6px;">--</span>
         </div>
-        <button class="btn btn-sm btn-primary btn-new-request" onclick="switchClientTab('request')" title="New Deliverable Request">
+        <button class="btn btn-sm btn-primary btn-new-request" onclick="openRequestWizard()" title="New Deliverable Request (N)">
           <i class="fa-solid fa-plus"></i> <span class="btn-new-request-label">New Request</span>
         </button>
-        <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+        <!-- Notifications Bell & Dropdown -->
+        <div class="notifications-wrapper" style="position:relative;">
+          <button class="icon-btn" id="notificationsBtn" onclick="toggleNotificationsDropdown()" title="Notifications" aria-expanded="false" aria-haspopup="true">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notif-badge" id="notifBadge">3</span>
+          </button>
+          <div class="notifications-dropdown hidden" id="notificationsDropdown">
+            <div class="notif-header">
+              <span style="font-weight:700; font-size:0.875rem;"><i class="fa-regular fa-bell" style="color:var(--dash-accent);"></i> Notifications</span>
+              <button type="button" class="notif-mark-all" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="notif-list" id="notificationsList">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+        </div>
+        <!-- Theme Toggle -->
+        <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle Theme (T)">
           <i class="fa-solid fa-moon" id="themeIcon"></i>
         </button>
+        <!-- Keyboard Shortcuts Helper -->
+        <button class="icon-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts (?)">
+          <i class="fa-solid fa-keyboard"></i>
+        </button>
+        <!-- User Profile Block -->
         <div class="dash-user" onclick="switchClientTab('account')" style="cursor:pointer;" title="View Account Profile">
           <div class="dash-avatar" id="dashAvatar">CL</div>
           <div class="dash-user-info">
@@ -826,22 +1620,43 @@
             </div>
           </div>
 
-          <div class="dash-toolbar">
-            <div class="dash-search">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="overviewSearch" placeholder="Search deliverables, scope, milestones..." oninput="filterOverviewProjects()" />
+          <div class="dash-toolbar" style="gap:1rem; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+            <div style="display:flex; gap:0.75rem; flex:1; min-width:280px; align-items:center;">
+              <div class="dash-search" style="flex:1;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="overviewSearch" placeholder="Search deliverables, scope, milestones..." oninput="filterOverviewProjects()" />
+              </div>
+              <div class="dash-filters">
+                <select class="dash-select" id="overviewStatusFilter" onchange="filterOverviewProjects()">
+                  <option value="all">All Stages</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Review">In Review</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
             </div>
-            <div class="dash-filters">
-              <select class="dash-select" id="overviewStatusFilter" onchange="filterOverviewProjects()">
-                <option value="all">All Stages</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Review">In Review</option>
-                <option value="Pending">Pending</option>
-                <option value="Completed">Completed</option>
+            <div class="projects-toolbar-actions">
+              <select class="dash-select" id="overviewSortSelect" onchange="handleProjectSort(this.value)" title="Sort Deliverables" style="font-size:0.8rem; padding:0.45rem 0.85rem;">
+                <option value="newest">Sort: Newest First</option>
+                <option value="dueDate">Sort: Due Date</option>
+                <option value="status">Sort: Status</option>
+                <option value="progress">Sort: Progress</option>
               </select>
+              <div class="view-mode-toggle" role="group" aria-label="View Mode">
+                <button type="button" class="view-btn active" id="btnViewList-overview" onclick="setProjectsViewMode('list')" title="List View" aria-pressed="true">
+                  <i class="fa-solid fa-list"></i>
+                </button>
+                <button type="button" class="view-btn" id="btnViewGrid-overview" onclick="setProjectsViewMode('grid')" title="Grid View" aria-pressed="false">
+                  <i class="fa-solid fa-table-cells-large"></i>
+                </button>
+              </div>
             </div>
           </div>
-
+          <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.35rem 0.5rem 0.75rem; font-size:0.785rem; color:var(--text-muted);">
+            <span id="overviewProjectCountDisplay">Showing all deliverables</span>
+            <button type="button" id="overviewClearFilterBtn" class="btn-clear-filter" onclick="clearKpiFilter()" style="display:none;">Clear filter</button>
+          </div>
           <div class="table-wrap">
             <table class="dash-table">
               <thead>
@@ -874,22 +1689,43 @@
             </button>
           </div>
 
-          <div class="dash-toolbar">
-            <div class="dash-search">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="projectsFullSearch" placeholder="Filter projects by title or scope..." oninput="filterFullProjects()" />
+          <div class="dash-toolbar" style="gap:1rem; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+            <div style="display:flex; gap:0.75rem; flex:1; min-width:280px; align-items:center;">
+              <div class="dash-search" style="flex:1;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="projectsFullSearch" placeholder="Filter projects by title or scope..." oninput="filterFullProjects()" />
+              </div>
+              <div class="dash-filters">
+                <select class="dash-select" id="projectsFullStatusFilter" onchange="filterFullProjects()">
+                  <option value="all">All Stages</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Review">In Review</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
             </div>
-            <div class="dash-filters">
-              <select class="dash-select" id="projectsFullStatusFilter" onchange="filterFullProjects()">
-                <option value="all">All Stages</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Review">In Review</option>
-                <option value="Pending">Pending</option>
-                <option value="Completed">Completed</option>
+            <div class="projects-toolbar-actions">
+              <select class="dash-select" id="fullSortSelect" onchange="handleProjectSort(this.value)" title="Sort Deliverables" style="font-size:0.8rem; padding:0.45rem 0.85rem;">
+                <option value="newest">Sort: Newest First</option>
+                <option value="dueDate">Sort: Due Date</option>
+                <option value="status">Sort: Status</option>
+                <option value="progress">Sort: Progress</option>
               </select>
+              <div class="view-mode-toggle" role="group" aria-label="View Mode">
+                <button type="button" class="view-btn active" id="btnViewList-full" onclick="setProjectsViewMode('list')" title="List View" aria-pressed="true">
+                  <i class="fa-solid fa-list"></i>
+                </button>
+                <button type="button" class="view-btn" id="btnViewGrid-full" onclick="setProjectsViewMode('grid')" title="Grid View" aria-pressed="false">
+                  <i class="fa-solid fa-table-cells-large"></i>
+                </button>
+              </div>
             </div>
           </div>
-
+          <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.35rem 0.5rem 0.75rem; font-size:0.785rem; color:var(--text-muted);">
+            <span id="fullProjectCountDisplay">Showing all deliverables</span>
+            <button type="button" id="fullClearFilterBtn" class="btn-clear-filter" onclick="clearKpiFilter()" style="display:none;">Clear filter</button>
+          </div>
           <div class="table-wrap">
             <table class="dash-table">
               <thead>
@@ -1289,49 +2125,353 @@
     </div>
   </div>
 
-  <!-- ════ MODAL 3: CLIENT COMMAND PALETTE (CTRL + K) ════ -->
-  <div id="cmdPaletteModal" class="modal-overlay hidden" onclick="if(event.target===this) closeClientCmdPalette();">
-    <div class="modal-content" style="max-width: 540px; padding: 0; overflow:hidden;">
-      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--dash-border); display: flex; align-items: center; gap: 0.75rem;">
-        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
-        <input type="text" id="cmdPaletteInput" placeholder="Type a command or jump to section..." style="border:none; background:transparent; width:100%; outline:none; font-size:0.95rem; color:var(--text-primary);" oninput="filterCmdPalette()" />
+    <!-- ════ MODAL 3: CLIENT COMMAND PALETTE (CTRL + K) ════ -->
+  <div id="cmdPaletteModal" class="modal-overlay hidden" onclick="if(event.target===this) closeClientCmdPalette();" role="dialog" aria-modal="true" aria-labelledby="cmdPaletteInput">
+    <div class="modal-content" style="max-width: 580px; padding: 0; overflow:hidden; border-radius:14px; box-shadow:0 24px 60px rgba(0,0,0,0.8); border:1px solid rgba(201,164,92,0.3);">
+      <div style="padding: 1.1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.75rem; background:rgba(255,255,255,0.02);">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--gold-primary); font-size:1.1rem;"></i>
+        <input type="text" id="cmdPaletteInput" placeholder="Search pages, projects, actions... (↑↓ to navigate, Enter to select)" style="border:none; background:transparent; width:100%; outline:none; font-size:0.95rem; color:var(--text-primary); font-family:var(--font-sans);" oninput="filterCmdPalette()" onkeydown="handleCmdKeyDown(event)" autocomplete="off" />
         <span class="cmd-badge">ESC</span>
       </div>
-      <div id="cmdPaletteResults" style="max-height: 320px; overflow-y: auto; padding: 0.5rem;">
-        <div class="cmd-palette-item" onclick="execClientCmd('overview')">
-          <i class="fa-solid fa-gauge-high"></i> Jump to Overview
+      <div id="cmdPaletteResults" style="max-height: 380px; overflow-y: auto; padding: 0.5rem; scrollbar-width:thin;">
+        <!-- Populated dynamically via JS with Recent Searches, Pages, Projects, and Actions -->
+      </div>
+      <div style="padding:0.6rem 1.25rem; background:rgba(0,0,0,0.25); border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted);">
+        <span><kbd class="kbd-key">↑</kbd> <kbd class="kbd-key">↓</kbd> Navigate</span>
+        <span><kbd class="kbd-key">Enter</kbd> Select</span>
+        <span><kbd class="kbd-key">Esc</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ TOAST NOTIFICATION CONTAINER ════ -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- ════ 5. REQUEST DELIVERABLE WIZARD (SLIDE-OVER DRAWER) ════ -->
+  <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeRequestWizard()"></div>
+  <aside id="requestWizardDrawer" class="slide-over-drawer" aria-labelledby="drawerWizardTitle" role="dialog" aria-modal="true">
+    <div class="drawer-header">
+      <div>
+        <h3 id="drawerWizardTitle" style="font-size:1.15rem; margin:0;"><i class="fa-solid fa-file-signature" style="color:var(--dash-accent);"></i> Request Deliverable</h3>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Fast-track enterprise engineering scoping with dedicated squad</div>
+      </div>
+      <button class="icon-btn" onclick="closeRequestWizard()" title="Close Drawer (Esc)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- 3-Step Progress Indicator -->
+    <div style="padding:1rem 1.75rem 0; background:rgba(255,255,255,0.01);">
+      <div class="wizard-progress">
+        <div class="wizard-tab active" id="wTab-1">
+          <div class="wizard-tab-num">1</div>
+          <span>Type</span>
         </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('projects')">
-          <i class="fa-solid fa-cubes"></i> Jump to My Projects
+        <i class="fa-solid fa-chevron-right" style="font-size:0.65rem; color:var(--text-dim);"></i>
+        <div class="wizard-tab" id="wTab-2">
+          <div class="wizard-tab-num">2</div>
+          <span>Details</span>
         </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('estimator')">
-          <i class="fa-solid fa-calculator"></i> Open Architecture & Cost Estimator
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('sandbox')">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sandbox Workspace Deliverables
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('export')">
-          <i class="fa-solid fa-file-arrow-down"></i> Export Executive Project Report
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('request')">
-          <i class="fa-solid fa-file-signature"></i> Request New Deliverable / RFP
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('faqs')">
-          <i class="fa-solid fa-circle-question"></i> Search Help & FAQs
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('account')">
-          <i class="fa-solid fa-user-shield"></i> View Account & SLA Guarantees
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('theme')">
-          <i class="fa-solid fa-circle-half-stroke"></i> Toggle Dark / Light Theme
-        </div>
-        <div class="cmd-palette-item" onclick="execClientCmd('logout')" style="color:#f87171;">
-          <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        <i class="fa-solid fa-chevron-right" style="font-size:0.65rem; color:var(--text-dim);"></i>
+        <div class="wizard-tab" id="wTab-3">
+          <div class="wizard-tab-num">3</div>
+          <span>Review</span>
         </div>
       </div>
-      <div class="cmd-palette-footer">
-        <span>Use arrow keys or click to select</span>
-        <span>Logic Tech Portal</span>
+    </div>
+
+    <div class="drawer-body">
+      <!-- STEP 1: DELIVERABLE TYPE -->
+      <div id="wStep-1" class="wizard-step-pane">
+        <h4 style="font-size:1rem; margin-bottom:0.4rem;">Select Technical Engagement Type</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.25rem;">Choose the core architectural domain for this sprint or deliverable.</p>
+
+        <div class="type-cards-grid">
+          <div class="type-card selected" onclick="selectWizardType(this, 'Web Application', 'Custom enterprise portals, dashboard apps, and API frontends.')">
+            <i class="fa-solid fa-globe" style="font-size:1.5rem; color:var(--dash-indigo); margin-bottom:0.65rem; display:block;"></i>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--text-primary); margin-bottom:2px;">Web Platform</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Custom enterprise portals, dashboard apps, and API frontends.</div>
+          </div>
+          <div class="type-card" onclick="selectWizardType(this, 'Mobile Application', 'Native iOS / Android & cross-platform Flutter/React Native.')">
+            <i class="fa-solid fa-mobile-screen-button" style="font-size:1.5rem; color:var(--dash-emerald); margin-bottom:0.65rem; display:block;"></i>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--text-primary); margin-bottom:2px;">Mobile App</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Native iOS / Android & cross-platform Flutter/React Native solutions.</div>
+          </div>
+          <div class="type-card" onclick="selectWizardType(this, 'Cloud Architecture & DevOps', 'High-availability infrastructure, multi-region failover, Kubernetes.')">
+            <i class="fa-solid fa-cloud" style="font-size:1.5rem; color:var(--dash-cyan); margin-bottom:0.65rem; display:block;"></i>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--text-primary); margin-bottom:2px;">Cloud & DevOps</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">High-availability infrastructure, multi-region failover, Kubernetes.</div>
+          </div>
+          <div class="type-card" onclick="selectWizardType(this, 'Security Audit & Compliance', 'Zero-Trust vulnerability assessment and regulatory compliance.')">
+            <i class="fa-solid fa-shield-halved" style="font-size:1.5rem; color:var(--dash-rose); margin-bottom:0.65rem; display:block;"></i>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--text-primary); margin-bottom:2px;">Security & Audit</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Zero-Trust vulnerability assessment and regulatory compliance.</div>
+          </div>
+          <div class="type-card" onclick="selectWizardType(this, 'AI & Automation Workflow', 'Autonomous agents, intelligent document extraction, enterprise ML.')">
+            <i class="fa-solid fa-microchip" style="font-size:1.5rem; color:var(--dash-amber); margin-bottom:0.65rem; display:block;"></i>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--text-primary); margin-bottom:2px;">AI & Automation</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Autonomous agents, intelligent document extraction, enterprise ML.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: TECHNICAL DETAILS -->
+      <div id="wStep-2" class="wizard-step-pane hidden">
+        <h4 style="font-size:1rem; margin-bottom:0.4rem;">Specifications & Technical Scope</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.25rem;">Provide title, requirements, timeline, and any design/architecture attachments.</p>
+
+        <div style="margin-bottom:1.15rem;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.35rem;">Deliverable Title *</label>
+          <input type="text" id="wInputTitle" placeholder="e.g. Distributed Core Banking API Gateway" style="width:100%; padding:0.75rem 0.9rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-size:0.875rem;" />
+          <div id="wTitleError" style="font-size:0.72rem; color:#f87171; display:none; margin-top:3px;">Please enter a deliverable title.</div>
+        </div>
+
+        <div style="margin-bottom:1.15rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+            <label style="font-size:0.8rem; font-weight:700;">Technical Scope & Requirements *</label>
+            <span id="wCharCount" style="font-size:0.7rem; color:var(--text-muted);">0 / 3,000</span>
+          </div>
+          <textarea id="wInputDesc" rows="4" maxlength="3000" placeholder="Describe microservices, data schema, SLAs, integrations..." style="width:100%; padding:0.75rem 0.9rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-size:0.85rem; line-height:1.5;" oninput="document.getElementById('wCharCount').textContent = this.value.length + ' / 3,000'"></textarea>
+          <div id="wDescError" style="font-size:0.72rem; color:#f87171; display:none; margin-top:3px;">Please specify the technical scope requirements.</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.15rem;">
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.35rem;">Target Due Date</label>
+            <input type="date" id="wInputDate" style="width:100%; padding:0.7rem 0.85rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-size:0.85rem;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.35rem;">Engagement Priority</label>
+            <select id="wInputPriority" style="width:100%; padding:0.7rem 0.85rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-size:0.85rem;">
+              <option value="Standard">Standard Sprint</option>
+              <option value="High">High Velocity (Accelerated)</option>
+              <option value="Critical">Critical Mission (SLA Dedicated)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- File Drag and Drop Zone -->
+        <div style="margin-bottom:1rem;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.35rem;">Architecture Specs & Wireframes (Drag & Drop)</label>
+          <div class="wizard-dropzone" id="wizardDropZone" onclick="document.getElementById('wizardFileInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.75rem; color:var(--dash-accent); margin-bottom:0.5rem; display:block;"></i>
+            <div style="font-weight:600; font-size:0.85rem; color:var(--text-primary); margin-bottom:2px;">Drop files here or click to browse</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">PDF, OpenAPI YAML, PNG, Figma exports up to 25MB</div>
+            <input type="file" id="wizardFileInput" multiple style="display:none;" onchange="handleWizardFiles(this.files)" />
+          </div>
+          <div class="file-preview-wrap" id="wizardFilePreviews"></div>
+        </div>
+      </div>
+
+      <!-- STEP 3: REVIEW & CONFIRM -->
+      <div id="wStep-3" class="wizard-step-pane hidden">
+        <h4 style="font-size:1rem; margin-bottom:0.4rem;">Review Deliverable Scope</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.25rem;">Verify specifications before dispatching to the engineering lead architect.</p>
+
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:0.65rem;">
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Engagement Type</span>
+            <span id="wReviewType" style="font-weight:700; color:var(--gold-light);">Web Platform</span>
+          </div>
+          <div style="margin-bottom:0.85rem;">
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; display:block; margin-bottom:2px;">Title</span>
+            <div id="wReviewTitle" style="font-weight:700; color:#fff; font-size:1rem;">--</div>
+          </div>
+          <div style="margin-bottom:0.85rem;">
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; display:block; margin-bottom:2px;">Technical Scope</span>
+            <div id="wReviewDesc" style="color:var(--text-secondary); font-size:0.825rem; line-height:1.5; white-space:pre-wrap;">--</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(255,255,255,0.06);">
+            <div>
+              <span style="font-size:0.72rem; color:var(--text-muted); display:block;">Target Timeline</span>
+              <span id="wReviewDate" style="font-size:0.825rem; font-weight:600; color:#fff;">--</span>
+            </div>
+            <div>
+              <span style="font-size:0.72rem; color:var(--text-muted); display:block;">Priority Tier</span>
+              <span id="wReviewPriority" style="font-size:0.825rem; font-weight:600; color:var(--gold-light);">Standard Sprint</span>
+            </div>
+          </div>
+          <div id="wReviewFilesWrap" style="margin-top:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(255,255,255,0.06); display:none;">
+            <span style="font-size:0.72rem; color:var(--text-muted); display:block; margin-bottom:4px;">Attached Artifacts:</span>
+            <div id="wReviewFilesList" style="display:flex; flex-wrap:wrap; gap:4px;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.785rem; color:var(--text-secondary); background:rgba(201,164,92,0.06); padding:0.75rem; border-radius:8px; border:1px solid rgba(201,164,92,0.2);">
+          <i class="fa-solid fa-shield-check" style="color:var(--gold-primary);"></i>
+          <span>Direct dispatch to Logic Tech Westlands squad lead with guaranteed SLA initial review within 4 business hours.</span>
+        </div>
+      </div>
+
+      <!-- SUCCESS CONFIRMATION STATE -->
+      <div id="wStepSuccess" class="wizard-step-pane hidden" style="text-align:center; padding:2rem 1rem;">
+        <div style="width:64px; height:64px; border-radius:50%; background:rgba(16,185,129,0.15); color:#10b981; display:inline-flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:1.25rem; box-shadow:0 0 24px rgba(16,185,129,0.3);">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h3 style="font-size:1.35rem; color:#fff; margin-bottom:0.5rem;">Deliverable Request Dispatched!</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); max-width:380px; margin:0 auto 1.5rem; line-height:1.5;">Your technical engagement has been assigned to a technical architect. We have initialized milestone tracking.</p>
+
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1rem; max-width:340px; margin:0 auto 1.75rem;">
+          <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Engagement Reference Number</div>
+          <div id="wSuccessRef" style="font-size:1.25rem; font-family:monospace; font-weight:700; color:var(--gold-light); letter-spacing:1px; margin:4px 0 8px;">LT-REQ-2026-0000</div>
+          <button type="button" class="btn btn-sm btn-outline" onclick="copyRefToClipboard()" style="font-size:0.72rem; padding:0.25rem 0.65rem;">
+            <i class="fa-regular fa-copy"></i> Copy Reference
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="closeRequestWizard(); switchClientTab('projects');">
+          <i class="fa-solid fa-cubes"></i> View in My Deliverables
+        </button>
+      </div>
+    </div>
+
+    <div class="drawer-footer" id="wizardFooterButtons">
+      <button type="button" class="btn btn-sm btn-outline" id="wizardBackBtn" onclick="prevWizardStep()" disabled>
+        <i class="fa-solid fa-arrow-left"></i> Back
+      </button>
+      <div style="display:flex; gap:0.5rem;">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeRequestWizard()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-primary" id="wizardNextBtn" onclick="nextWizardStep()">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════ 6. COST ESTIMATOR MODAL ════ -->
+  <div id="costEstimatorModal" class="modal-overlay hidden" onclick="if(event.target===this) closeEstimatorModal();">
+    <div class="modal-content" style="max-width: 620px; padding: 2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+        <div>
+          <h3 style="margin:0; font-size:1.25rem;"><i class="fa-solid fa-calculator" style="color:var(--dash-accent);"></i> Interactive Architecture Cost Estimator</h3>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Real-time engineering sprint and infrastructure modeling</div>
+        </div>
+        <button class="icon-btn" onclick="closeEstimatorModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Live Price / Duration Banner -->
+      <div style="background:linear-gradient(135deg, rgba(201,164,92,0.15), rgba(99,102,241,0.1)); border:1px solid rgba(201,164,92,0.3); border-radius:12px; padding:1.25rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Estimated Investment Range</div>
+          <div id="modalEstPrice" style="font-size:1.75rem; font-weight:700; font-family:var(--font-serif); color:#ffffff; line-height:1.1;">$18,500 – $28,000</div>
+          <div id="modalEstKes" style="font-size:0.75rem; color:var(--gold-light);">KES 2,400,000 – 3,640,000</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Sprint Duration</div>
+          <div id="modalEstDuration" style="font-size:1.25rem; font-weight:700; color:#fff;">6 – 8 Weeks</div>
+          <div style="font-size:0.75rem; color:#10b981;"><i class="fa-solid fa-check"></i> Enterprise SLA Ready</div>
+        </div>
+      </div>
+
+      <!-- Sliders -->
+      <div class="slider-group">
+        <div class="slider-header">
+          <span style="font-weight:600; color:var(--text-primary);">Concurrency & User Scale</span>
+          <span id="valScale" style="font-weight:700; color:var(--gold-light);">10,000 Users</span>
+        </div>
+        <input type="range" class="slider-input" id="sliderScale" min="1" max="4" value="2" oninput="calcModalEstimate()" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span style="font-weight:600; color:var(--text-primary);">Engineering Squad Allocation</span>
+          <span id="valTeam" style="font-weight:700; color:var(--gold-light);">4 Senior Engineers</span>
+        </div>
+        <input type="range" class="slider-input" id="sliderTeam" min="1" max="4" value="2" oninput="calcModalEstimate()" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span style="font-weight:600; color:var(--text-primary);">Delivery Timeline</span>
+          <span id="valTimeline" style="font-weight:700; color:var(--gold-light);">Standard (6-8 Weeks)</span>
+        </div>
+        <input type="range" class="slider-input" id="sliderTimeline" min="1" max="3" value="2" oninput="calcModalEstimate()" />
+      </div>
+
+      <!-- Toggles -->
+      <div style="margin-bottom:1.5rem;">
+        <div class="toggle-row">
+          <div>
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">High-Availability & Multi-Region Cloud</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">99.98% uptime topology with automated failover</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="toggleCloud" checked onchange="calcModalEstimate()" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">Safaricom M-Pesa & Payment Gateways</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Daraja 3.0 B2C/C2B, Card, and instant settlement</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="toggleMpesa" checked onchange="calcModalEstimate()" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">Zero-Trust Security & Regulatory Compliance</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Penetration audit, SOC-2 readiness, and encryption at rest</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="toggleSecurity" onchange="calcModalEstimate()" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-outline" onclick="closeEstimatorModal()">Close</button>
+        <button type="button" class="btn btn-primary" onclick="transferModalEstimateToWizard()">
+          <i class="fa-solid fa-paper-plane"></i> Request a Formal Quote
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ KEYBOARD SHORTCUTS HELP MODAL ════ -->
+  <div id="shortcutsHelpModal" class="modal-overlay hidden" onclick="if(event.target===this) closeShortcutsModal();">
+    <div class="modal-content" style="max-width: 480px; padding: 1.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+        <h3 style="margin:0; font-size:1.15rem;"><i class="fa-solid fa-keyboard" style="color:var(--dash-accent);"></i> Keyboard Shortcuts</h3>
+        <button class="icon-btn" onclick="closeShortcutsModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div>
+        <div class="shortcut-row">
+          <span>Search & Command Palette</span>
+          <span><span class="kbd-key">Ctrl</span> + <span class="kbd-key">K</span></span>
+        </div>
+        <div class="shortcut-row">
+          <span>Request Deliverable Wizard</span>
+          <span class="kbd-key">N</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Navigate to My Deliverables</span>
+          <span><span class="kbd-key">G</span> then <span class="kbd-key">P</span></span>
+        </div>
+        <div class="shortcut-row">
+          <span>Navigate to Overview</span>
+          <span><span class="kbd-key">G</span> then <span class="kbd-key">O</span></span>
+        </div>
+        <div class="shortcut-row">
+          <span>Toggle Dark / Light Theme</span>
+          <span class="kbd-key">T</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Show this Shortcuts Guide</span>
+          <span class="kbd-key">?</span>
+        </div>
+        <div class="shortcut-row">
+          <span>Close any active modal or drawer</span>
+          <span class="kbd-key">Esc</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem; text-align:right;">
+        <button class="btn btn-sm btn-primary" onclick="closeShortcutsModal()">Got It</button>
       </div>
     </div>
   </div>
@@ -1340,104 +2480,338 @@
   <script src="js/api.js"></script>
   <script src="js/main.js?v=2.2"></script>
   <script>
+    /* =====================================================================
+       LOGIC TECH ENTERPRISE CLIENT PORTAL — INTERACTIVE SUITE
+       ===================================================================== */
     const clientState = {
       user: null,
       projects: [],
       stats: {},
       faqs: [],
       currentTab: 'overview',
-      activeKpiFilter: null
+      activeKpiFilter: null,
+      projectsViewMode: localStorage.getItem('lt_projects_view_mode') || 'list',
+      projectSort: 'newest',
+      activeInlineDetailsId: null,
+      notifications: [],
+      recentSearches: JSON.parse(localStorage.getItem('lt_recent_client_searches') || '["Overview", "My Deliverables", "Cost Estimator"]'),
+      isSidebarCollapsed: localStorage.getItem('lt_sidebar_collapsed') === 'true',
+      lastSyncTime: Date.now(),
+      wizardStep: 1,
+      wizardType: 'Web Application',
+      wizardTypeDesc: 'Custom enterprise portals, dashboard apps, and API frontends.',
+      wizardFiles: []
     };
 
     const escapeHtml = value => String(value || '').replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[c]);
 
-    // Mobile Sidebar Drawer
+    /* ── 8. THEME MANAGEMENT ─────────────────────────────────────────── */
+    function applyInitialTheme() {
+      const saved = localStorage.getItem('lt_theme');
+      const isLight = saved === 'light' || (!saved && window.matchMedia('(prefers-color-scheme: light)').matches);
+      if (isLight) {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = 'fa-solid fa-sun';
+      } else {
+        document.body.classList.add('dark');
+        document.body.classList.remove('light');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = 'fa-solid fa-moon';
+      }
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light');
+      document.body.classList.toggle('dark', !isLight);
+      localStorage.setItem('lt_theme', isLight ? 'light' : 'dark');
+      const icon = document.getElementById('themeIcon');
+      if (icon) icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      showToast(`Switched to ${isLight ? 'Light' : 'Dark'} theme`, 'info', 'Theme');
+    }
+    window.toggleTheme = toggleTheme;
+
+    /* ── 8. SIDEBAR COLLAPSE & MOBILE DRAWER ─────────────────────────── */
+    function toggleSidebarFull() {
+      if (window.innerWidth <= 1024) {
+        toggleSidebarMobile();
+        return;
+      }
+      const sb = document.getElementById('sidebar');
+      const main = document.querySelector('.dash-main');
+      const isCollapsed = sb.classList.toggle('sidebar-collapsed');
+      if (main) main.classList.toggle('main-expanded', isCollapsed);
+      localStorage.setItem('lt_sidebar_collapsed', isCollapsed);
+    }
+    window.toggleSidebarFull = toggleSidebarFull;
+
+    function applyInitialSidebar() {
+      if (window.innerWidth > 1024 && clientState.isSidebarCollapsed) {
+        const sb = document.getElementById('sidebar');
+        const main = document.querySelector('.dash-main');
+        if (sb) sb.classList.add('sidebar-collapsed');
+        if (main) main.classList.add('main-expanded');
+      }
+    }
+
     function toggleSidebarMobile() {
       const sb = document.getElementById('sidebar');
       const backdrop = document.getElementById('sidebarBackdrop');
       const isOpen = sb.classList.toggle('sidebar-open');
-      backdrop.classList.toggle('active', isOpen);
+      if (backdrop) backdrop.classList.toggle('active', isOpen);
     }
+    window.toggleSidebarMobile = toggleSidebarMobile;
 
     function closeSidebarMobile() {
       const sb = document.getElementById('sidebar');
       const backdrop = document.getElementById('sidebarBackdrop');
-      sb.classList.remove('sidebar-open');
-      backdrop.classList.remove('active');
+      if (sb) sb.classList.remove('sidebar-open');
+      if (backdrop) backdrop.classList.remove('active');
     }
+    window.closeSidebarMobile = closeSidebarMobile;
 
-    // Modal Helpers
+    /* ── MODALS GENERIC ──────────────────────────────────────────────── */
     function openModal(id) {
       const m = document.getElementById(id);
-      if (m) m.classList.remove('hidden');
-    }
-    function closeModal(id) {
-      const m = document.getElementById(id);
-      if (m) m.classList.add('hidden');
+      if (m) {
+        m.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
     }
     window.openModal = openModal;
+
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) {
+        m.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
     window.closeModal = closeModal;
 
-    // Live Clock
+    /* ── 9. LIVE CLOCK (RENDERS IMMEDIATELY) ─────────────────────────── */
     function updateLiveClock() {
-      const el = document.getElementById('clientLiveTime');
-      if (el) {
-        el.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+      const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+      const liveTime = document.getElementById('clientLiveTime');
+      if (liveTime) liveTime.textContent = timeStr;
+      const liveDate = document.getElementById('clientLiveDate');
+      if (liveDate) liveDate.textContent = dateStr;
+
+      const heroClock = document.getElementById('welcomeLiveClock');
+      if (heroClock) heroClock.textContent = timeStr;
+      const heroDate = document.getElementById('welcomeLiveDate');
+      if (heroDate) heroDate.textContent = dateStr;
+    }
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
+
+    /* ── 9. AUTO-REFRESH EVERY 60S & RELATIVE TIME TICK ─────────────── */
+    function updateSyncTimeAgo() {
+      const diffSec = Math.floor((Date.now() - clientState.lastSyncTime) / 1000);
+      const el = document.getElementById('syncTimeAgo');
+      if (!el) return;
+      if (diffSec < 15) {
+        el.textContent = 'Updated just now';
+      } else if (diffSec < 60) {
+        el.textContent = `Updated ${diffSec}s ago`;
+      } else {
+        const m = Math.floor(diffSec / 60);
+        el.textContent = `Updated ${m}m ago`;
       }
     }
-    setInterval(updateLiveClock, 1000);
-    updateLiveClock();
+    setInterval(updateSyncTimeAgo, 10000);
 
-    // Theme Toggle
-    const themeBtn = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', toggleTheme);
+    setInterval(() => {
+      loadDashboard(true);
+    }, 60000);
+
+    /* ── 7. MULTI-TOAST STACKING SYSTEM ──────────────────────────────── */
+    function showToast(message, type = 'info', title = '') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `toast-card toast-${type}`;
+
+      const icons = {
+        success: 'fa-circle-check" style="color:#10b981;',
+        error: 'fa-circle-xmark" style="color:#f87171;',
+        info: 'fa-circle-info" style="color:var(--gold-primary);'
+      };
+      const defTitles = { success: 'Success', error: 'Error', info: 'Notification' };
+
+      toast.innerHTML = `
+        <i class="fa-solid ${icons[type] || icons.info} toast-card-icon"></i>
+        <div class="toast-card-body">
+          <div class="toast-card-title">${escapeHtml(title || defTitles[type] || 'Notice')}</div>
+          <div class="toast-card-text">${escapeHtml(message)}</div>
+        </div>
+        <button type="button" class="toast-card-close" aria-label="Close Toast">&times;</button>
+        <div class="toast-progress-bar"></div>
+      `;
+
+      container.appendChild(toast);
+
+      let remainingTime = 4000;
+      let startTime = Date.now();
+      let timer = null;
+
+      const startTimer = () => {
+        startTime = Date.now();
+        timer = setTimeout(() => dismissToast(toast), remainingTime);
+      };
+
+      const pauseTimer = () => {
+        clearTimeout(timer);
+        remainingTime -= (Date.now() - startTime);
+      };
+
+      toast.addEventListener('mouseenter', pauseTimer);
+      toast.addEventListener('mouseleave', startTimer);
+      toast.querySelector('.toast-card-close').addEventListener('click', () => dismissToast(toast));
+
+      startTimer();
     }
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-      const isDark = document.body.classList.contains('dark');
-      if (themeIcon) themeIcon.className = isDark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-      localStorage.setItem('logictech-theme', isDark ? 'dark' : 'light');
-    }
-    // Restore saved theme
-    if (localStorage.getItem('logictech-theme') === 'light') {
-      document.body.classList.remove('dark');
-      if (themeIcon) themeIcon.className = 'fa-solid fa-sun';
+    window.showToast = showToast;
+
+    function dismissToast(toast) {
+      if (!toast || toast.classList.contains('toast-hiding')) return;
+      toast.classList.add('toast-hiding');
+      setTimeout(() => toast.remove(), 260);
     }
 
-    // Tab Switching
+    /* ── 7. NOTIFICATIONS DROPDOWN & MOCK API ────────────────────────── */
+    /* === MOCK API CALL: Fetch notifications === */
+    function mockFetchNotifications() {
+      return [
+        { id: 'notif-1', title: 'Sprint Milestone Approved', desc: 'Enterprise ERP Architecture signed off by technical lead.', time: '12m ago', unread: true, icon: 'fa-certificate', color: '#10b981' },
+        { id: 'notif-2', title: 'New Deliverable Ready for Review', desc: 'Silk & Stone CMS microservices API specs deployed to staging environment.', time: '1h ago', unread: true, icon: 'fa-code-pull-request', color: '#6366f1' },
+        { id: 'notif-3', title: 'High Availability SLA Telemetry', desc: 'All Node.js native database clusters running at 99.98% uptime.', time: '3h ago', unread: true, icon: 'fa-bolt', color: 'var(--gold-primary)' }
+      ];
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById('notificationsList');
+      const badge = document.getElementById('notifBadge');
+      if (!list) return;
+
+      if (!clientState.notifications.length) {
+        clientState.notifications = mockFetchNotifications();
+      }
+
+      const unreadCount = clientState.notifications.filter(n => n.unread).length;
+      if (badge) {
+        badge.textContent = unreadCount;
+        badge.classList.toggle('hidden', unreadCount === 0);
+      }
+
+      list.innerHTML = clientState.notifications.map(n => `
+        <div class="notif-item ${n.unread ? 'unread' : ''}" onclick="handleNotificationClick('${n.id}')">
+          <div class="notif-item-icon" style="color:${n.color};">
+            <i class="fa-solid ${n.icon}"></i>
+          </div>
+          <div class="notif-item-content">
+            <div class="notif-item-title">${escapeHtml(n.title)}</div>
+            <div class="notif-item-desc">${escapeHtml(n.desc)}</div>
+            <div class="notif-item-time"><i class="fa-regular fa-clock" style="font-size:0.65rem;"></i> ${n.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* === MOCK API CALL: Mark notification read === */
+    function handleNotificationClick(id) {
+      const notif = clientState.notifications.find(n => n.id === id);
+      if (notif) {
+        notif.unread = false;
+        renderNotifications();
+        showToast(`Opened: ${notif.title}`, 'info', 'Notification');
+        closeNotificationsDropdown();
+        switchClientTab('projects');
+      }
+    }
+    window.handleNotificationClick = handleNotificationClick;
+
+    /* === MOCK API CALL: Mark all notifications read === */
+    function markAllNotificationsRead() {
+      clientState.notifications.forEach(n => n.unread = false);
+      renderNotifications();
+      showToast('All notifications marked as read', 'success');
+    }
+    window.markAllNotificationsRead = markAllNotificationsRead;
+
+    function toggleNotificationsDropdown() {
+      const dd = document.getElementById('notificationsDropdown');
+      const btn = document.getElementById('notificationsBtn');
+      if (!dd) return;
+      const isOpen = dd.classList.toggle('hidden');
+      if (btn) btn.setAttribute('aria-expanded', !isOpen);
+      if (!isOpen) renderNotifications();
+    }
+    window.toggleNotificationsDropdown = toggleNotificationsDropdown;
+
+    function closeNotificationsDropdown() {
+      const dd = document.getElementById('notificationsDropdown');
+      if (dd) dd.classList.add('hidden');
+    }
+
+    /* ── 2. NUMBER COUNT-UP ANIMATION ───────────────────────────────── */
+    function animateCountUp(elId, target, duration = 600) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (isReduced) {
+        el.textContent = target;
+        return;
+      }
+      const start = 0;
+      const startTime = performance.now();
+      const numTarget = Number(target) || 0;
+
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = Math.floor(start + (numTarget - start) * (1 - Math.pow(1 - progress, 3)));
+        el.textContent = current;
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.textContent = numTarget;
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    /* ── NAVIGATION & TABS ───────────────────────────────────────────── */
     function switchClientTab(tabId) {
       clientState.currentTab = tabId;
-      const tabs = ['overview', 'projects', 'estimator', 'request', 'faqs', 'account'];
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      const activePane = document.getElementById(`tab-client-${tabId}`);
+      if (activePane) activePane.classList.remove('hidden');
 
-      tabs.forEach(t => {
-        const pane = document.getElementById(`tab-client-${t}`);
-        const sideLink = document.getElementById(`sideLink-${t}`);
-        if (pane) pane.classList.toggle('hidden', t !== tabId);
-        if (sideLink) sideLink.classList.toggle('active', t !== tabId);
-      });
+      document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+      const activeLink = document.getElementById(`sideLink-${tabId}`);
+      if (activeLink) activeLink.classList.add('active');
 
-      const breadcrumbMap = {
+      const titleMap = {
         overview: 'Overview',
-        projects: 'My Projects Pipeline',
-        estimator: 'Architecture & Cost Estimator',
+        projects: 'My Deliverables',
+        estimator: 'Architecture Estimator',
         request: 'Request Deliverable',
-        faqs: 'Knowledge & FAQs',
+        faqs: 'Help & FAQs',
         account: 'Account & SLA'
       };
-      document.getElementById('clientBreadcrumb').textContent = breadcrumbMap[tabId] || 'Portal';
+      const breadcrumb = document.getElementById('clientBreadcrumb');
+      if (breadcrumb) breadcrumb.textContent = titleMap[tabId] || 'Portal';
 
-      if (tabId === 'estimator') {
-        calcInteractiveEstimate();
-      }
-      if (tabId === 'request') {
-        const startInput = document.getElementById('projectStartDate');
-        if (startInput && !startInput.value) {
-          startInput.value = new Date().toISOString().slice(0, 10);
-        }
+      if (tabId === 'projects') {
+        renderFullProjects(clientState.projects);
       }
       if (tabId === 'faqs' && !clientState.faqs.length) {
         loadClientFaqs();
@@ -1446,10 +2820,11 @@
     }
     window.switchClientTab = switchClientTab;
 
-    // Load Dashboard Core Data
-    async function loadDashboard() {
+    /* ── 9. LOAD DASHBOARD WITH SKELETON LOADERS & ERROR STATE ──────── */
+    async function loadDashboard(isSilent = false) {
       const overview = document.getElementById('tab-client-overview');
-      overview?.classList.add('is-loading-data');
+      if (!isSilent) overview?.classList.add('is-loading-data');
+
       try {
         const response = await apiFetch('/api/dashboard');
         if (response.status === 401) {
@@ -1462,6 +2837,8 @@
         clientState.user = result.user;
         clientState.projects = result.projects || [];
         clientState.stats = result.stats || {};
+        clientState.lastSyncTime = Date.now();
+        updateSyncTimeAgo();
 
         // Admin Portal Link in Sidebar if user is admin
         if (result.user && result.user.role === 'admin') {
@@ -1478,31 +2855,36 @@
         }
 
         // Render User Header
-        const firstName = (result.user.name || 'Client').split(' ')[0];
+        const firstName = (result.user.name || 'Partner').split(' ')[0];
         const initials = (result.user.name || 'CL').split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
-        
+
         document.getElementById('dashAvatar').textContent = initials;
         document.getElementById('dashName').textContent = result.user.name;
         document.getElementById('welcomeClientName').textContent = firstName;
-        document.getElementById('accountAvatar').textContent = initials;
-        document.getElementById('accountName').textContent = result.user.name;
-        document.getElementById('accountEmail').textContent = result.user.email;
+        const accAvatar = document.getElementById('accountAvatar');
+        if (accAvatar) accAvatar.textContent = initials;
+        const accName = document.getElementById('accountName');
+        if (accName) accName.textContent = result.user.name;
+        const accEmail = document.getElementById('accountEmail');
+        if (accEmail) accEmail.textContent = result.user.email;
 
-        // Stats Counters
-        document.getElementById('activeProjects').textContent = result.stats.active || 0;
-        document.getElementById('completedProjects').textContent = result.stats.completed || 0;
-        document.getElementById('pendingProjects').textContent = result.stats.pending || 0;
+        // Animated Stats Counters
+        animateCountUp('activeProjects', result.stats.active || 0);
+        animateCountUp('completedProjects', result.stats.completed || 0);
+        animateCountUp('pendingProjects', result.stats.pending || 0);
 
         const inReviewCount = clientState.projects.filter(p => p.status === 'Review' || p.status === 'In Review').length;
-        document.getElementById('reviewProjects').textContent = inReviewCount;
+        animateCountUp('reviewProjects', inReviewCount);
 
         // Sidebar Project Badge
         const badge = document.getElementById('clientProjectBadge');
-        if (clientState.projects.length) {
-          badge.textContent = clientState.projects.length;
-          badge.style.display = 'inline-flex';
-        } else {
-          badge.style.display = 'none';
+        if (badge) {
+          if (clientState.projects.length) {
+            badge.textContent = clientState.projects.length;
+            badge.style.display = 'inline-flex';
+          } else {
+            badge.style.display = 'none';
+          }
         }
 
         // Sandbox Banner Visibility
@@ -1511,58 +2893,119 @@
           sandboxBanner.style.display = clientState.projects.length === 0 ? 'flex' : 'none';
         }
 
-        // Render Pipeline Distribution Bar
+        // Render Pipeline Distribution Bar & Tables
         renderClientPipelineBar(clientState.projects);
-
-        // Render Project Tables
         renderOverviewProjects(clientState.projects);
         renderFullProjects(clientState.projects);
 
+        if (!isSilent) showToast('Portal synchronized with latest engineering records', 'success', 'Synced');
+
       } catch (error) {
+        console.error('loadDashboard error:', error);
         showToast(error.message || 'Unable to sync dashboard data.', 'error');
+        renderDashboardErrorState(error.message);
       } finally {
-        overview?.classList.remove('is-loading-data');
+        if (!isSilent) overview?.classList.remove('is-loading-data');
+      }
+    }
+    window.loadDashboard = loadDashboard;
+
+    function renderDashboardErrorState(msg) {
+      const tbody = document.getElementById('overviewProjectList');
+      if (tbody && !clientState.projects.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state" style="padding:2.5rem 1rem;">
+                <div class="empty-icon" style="color:#f87171;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="empty-title">Connection Interrupted</div>
+                <div class="empty-desc">${escapeHtml(msg || 'Unable to connect to Logic Tech telemetry backend.')}</div>
+                <button class="btn btn-sm btn-primary" onclick="loadDashboard()" style="margin-top:0.75rem;">
+                  <i class="fa-solid fa-arrows-rotate"></i> Try Again
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
       }
     }
 
-    // Render Pipeline Distribution
+    /* ── 3. INTERACTIVE PIPELINE BAR ─────────────────────────────────── */
+    function togglePipelineStage(stage) {
+      if (!clientState.hiddenStages) clientState.hiddenStages = new Set();
+      if (clientState.hiddenStages.has(stage)) {
+        clientState.hiddenStages.delete(stage);
+      } else {
+        if (clientState.hiddenStages.size >= 3) {
+          showToast('At least one pipeline stage must remain visible', 'info', 'Pipeline');
+          return;
+        }
+        clientState.hiddenStages.add(stage);
+      }
+      
+      const stageMap = {
+        'Pending': 'legendPending',
+        'In Progress': 'legendInProgress',
+        'Review': 'legendReview',
+        'Completed': 'legendCompleted'
+      };
+      Object.entries(stageMap).forEach(([st, id]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          const isOff = clientState.hiddenStages.has(st);
+          el.style.opacity = isOff ? '0.35' : '1';
+          el.style.textDecoration = isOff ? 'line-through' : 'none';
+        }
+      });
+      renderClientPipelineBar(clientState.projects);
+    }
+    window.togglePipelineStage = togglePipelineStage;
+
     function renderClientPipelineBar(projects) {
       const total = projects.length;
       const totalEl = document.getElementById('clientPipelineTotalCount');
-      if (totalEl) totalEl.textContent = `${total} Total ${total === 1 ? 'Project' : 'Projects'}`;
+      if (totalEl) totalEl.textContent = `${total} Total ${total === 1 ? 'Deliverable' : 'Deliverables'}`;
 
-      const pending = projects.filter(p => p.status === 'Pending').length;
-      const inProgress = projects.filter(p => p.status === 'In Progress').length;
-      const review = projects.filter(p => p.status === 'Review' || p.status === 'In Review').length;
-      const completed = projects.filter(p => p.status === 'Completed').length;
+      const counts = {
+        pending: projects.filter(p => p.status === 'Pending').length,
+        inProgress: projects.filter(p => p.status === 'In Progress').length,
+        review: projects.filter(p => p.status === 'Review' || p.status === 'In Review').length,
+        completed: projects.filter(p => p.status === 'Completed').length,
+      };
 
       const countPending = document.getElementById('clientCountPending');
-      if (countPending) countPending.textContent = pending;
+      if (countPending) countPending.textContent = counts.pending;
       const countInProgress = document.getElementById('clientCountInProgress');
-      if (countInProgress) countInProgress.textContent = inProgress;
+      if (countInProgress) countInProgress.textContent = counts.inProgress;
       const countReview = document.getElementById('clientCountReview');
-      if (countReview) countReview.textContent = review;
+      if (countReview) countReview.textContent = counts.review;
       const countCompleted = document.getElementById('clientCountCompleted');
-      if (countCompleted) countCompleted.textContent = completed;
+      if (countCompleted) countCompleted.textContent = counts.completed;
 
       const bar = document.getElementById('clientPipelineSegmentsBar');
       if (!bar) return;
 
       const defs = [
-        { key: 'pending', label: 'Pending', count: pending, color: '#f59e0b' },
-        { key: 'inProgress', label: 'In Progress', count: inProgress, color: '#6366f1' },
-        { key: 'review', label: 'In Review', count: review, color: '#06b6d4' },
-        { key: 'completed', label: 'Completed', count: completed, color: '#10b981' }
-      ];
+        { key: 'pending', label: 'Pending Planning', filterKey: 'Pending', count: counts.pending, color: '#f59e0b' },
+        { key: 'inProgress', label: 'In Progress', filterKey: 'In Progress', count: counts.inProgress, color: '#6366f1' },
+        { key: 'review', label: 'In Review / QA', filterKey: 'Review', count: counts.review, color: '#06b6d4' },
+        { key: 'completed', label: 'Completed', filterKey: 'Completed', count: counts.completed, color: '#10b981' }
+      ].filter(d => !(clientState.hiddenStages && clientState.hiddenStages.has(d.filterKey)));
 
       bar.innerHTML = defs.map(d => {
         const isZero = d.count === 0;
         const flexVal = isZero ? (total === 0 ? '1' : '0.22') : String(d.count);
         const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
-        const tooltip = `${d.label}: ${d.count}${total > 0 ? ` (${pct}%)` : ''}`;
+        
+        const stageProjects = projects.filter(p => {
+          if (d.filterKey === 'Review') return p.status === 'Review' || p.status === 'In Review';
+          return p.status === d.filterKey;
+        });
+        const nameList = stageProjects.slice(0, 3).map(p => escapeHtml(p.name)).join(', ');
+        const tooltip = `${d.label}: ${d.count} (${pct}%)${nameList ? ` • ${nameList}` : ''}`;
 
         return `
-          <div class="pipeline-segment-col" style="flex: ${flexVal};" data-tooltip="${tooltip}">
+          <div class="pipeline-segment-col" style="flex: ${flexVal}; cursor:pointer;" data-tooltip="${tooltip}" onclick="filterByKpi('${d.filterKey}')">
             <div class="pipeline-segment-count ${isZero ? 'is-zero' : ''}">${d.count}</div>
             <div class="pipeline-segment ${isZero ? 'is-zero-segment' : ''}" style="${isZero ? '' : `background:${d.color}; box-shadow:0 0 10px ${d.color}40;`}"></div>
           </div>
@@ -1589,11 +3032,16 @@
         'Completed': '#10b981',
         'Pending': '#f59e0b',
         'Cancelled': '#ef4444'
-      }[status] || 'var(--dash-accent)';
+      }[status] || '#C9A45C';
     }
 
-    // Interactive KPI Filtering
+    /* ── 2. CLICKABLE STAT CARDS AS TOGGLE FILTERS ──────────────────── */
     function filterByKpi(stage) {
+      if (clientState.activeKpiFilter === stage) {
+        clearKpiFilter();
+        return;
+      }
+
       clientState.activeKpiFilter = stage;
       ['active', 'completed', 'review', 'pending'].forEach(k => {
         const card = document.getElementById(`kpiCard-${k}`);
@@ -1608,14 +3056,23 @@
       };
       const activeCardId = cardMap[stage];
       if (activeCardId) {
-        document.getElementById(`kpiCard-${activeCardId}`).classList.add('active-filter');
+        const el = document.getElementById(`kpiCard-${activeCardId}`);
+        if (el) el.classList.add('active-filter');
       }
 
-      document.getElementById('overviewStatusFilter').value = stage;
-      document.getElementById('activeFilterNotice').style.display = 'inline-flex';
-      document.getElementById('activeFilterName').textContent = stage;
+      const overFilter = document.getElementById('overviewStatusFilter');
+      if (overFilter) overFilter.value = stage;
+      const fullFilter = document.getElementById('projectsFullStatusFilter');
+      if (fullFilter) fullFilter.value = stage;
+
+      const notice = document.getElementById('activeFilterNotice');
+      if (notice) notice.style.display = 'inline-flex';
+      const name = document.getElementById('activeFilterName');
+      if (name) name.textContent = stage;
 
       filterOverviewProjects();
+      filterFullProjects();
+
       const tableCard = document.querySelector('#tab-client-overview .dash-card:last-child');
       if (tableCard) tableCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -1627,142 +3084,1133 @@
         const card = document.getElementById(`kpiCard-${k}`);
         if (card) card.classList.remove('active-filter');
       });
-      document.getElementById('overviewStatusFilter').value = 'all';
-      document.getElementById('activeFilterNotice').style.display = 'none';
+      const overFilter = document.getElementById('overviewStatusFilter');
+      if (overFilter) overFilter.value = 'all';
+      const fullFilter = document.getElementById('projectsFullStatusFilter');
+      if (fullFilter) fullFilter.value = 'all';
+
+      const notice = document.getElementById('activeFilterNotice');
+      if (notice) notice.style.display = 'none';
+
       filterOverviewProjects();
+      filterFullProjects();
     }
     window.clearKpiFilter = clearKpiFilter;
 
-    // Render Overview Table
+    /* ── 4. SORT & VIEW MODE (LIST VS GRID) ─────────────────────────── */
+    function setProjectsViewMode(mode) {
+      clientState.projectsViewMode = mode;
+      localStorage.setItem('lt_projects_view_mode', mode);
+
+      ['overview', 'full'].forEach(pfx => {
+        const btnList = document.getElementById(`btnViewList-${pfx}`);
+        const btnGrid = document.getElementById(`btnViewGrid-${pfx}`);
+        if (btnList && btnGrid) {
+          btnList.classList.toggle('active', mode === 'list');
+          btnList.setAttribute('aria-pressed', mode === 'list');
+          btnGrid.classList.toggle('active', mode === 'grid');
+          btnGrid.setAttribute('aria-pressed', mode === 'grid');
+        }
+      });
+
+      filterOverviewProjects();
+      filterFullProjects();
+    }
+    window.setProjectsViewMode = setProjectsViewMode;
+
+    function handleProjectSort(criteria) {
+      clientState.projectSort = criteria;
+      const overSort = document.getElementById('overviewSortSelect');
+      if (overSort) overSort.value = criteria;
+      const fullSort = document.getElementById('fullSortSelect');
+      if (fullSort) fullSort.value = criteria;
+      filterOverviewProjects();
+      filterFullProjects();
+    }
+    window.handleProjectSort = handleProjectSort;
+
+    function sortProjectsList(list) {
+      const arr = [...list];
+      if (clientState.projectSort === 'newest') {
+        arr.sort((a, b) => (b.id || 0) - (a.id || 0));
+      } else if (clientState.projectSort === 'dueDate') {
+        arr.sort((a, b) => new Date(a.dueDate || '2099-01-01') - new Date(b.dueDate || '2099-01-01'));
+      } else if (clientState.projectSort === 'status') {
+        arr.sort((a, b) => String(a.status).localeCompare(String(b.status)));
+      } else if (clientState.projectSort === 'progress') {
+        arr.sort((a, b) => (b.progress || 0) - (a.progress || 0));
+      }
+      return arr;
+    }
+
+    /* ── 4. INLINE EXPANDABLE DETAILS PANEL ─────────────────────────── */
+    function toggleInlineDetails(id) {
+      if (clientState.activeInlineDetailsId === id) {
+        clientState.activeInlineDetailsId = null;
+      } else {
+        clientState.activeInlineDetailsId = id;
+      }
+      filterOverviewProjects();
+      filterFullProjects();
+    }
+    window.toggleInlineDetails = toggleInlineDetails;
+
+    function renderInlineDetailsPanelHtml(p) {
+      const isExpanded = clientState.activeInlineDetailsId === p.id;
+      const progress = p.progress || 0;
+
+      return `
+        <div class="inline-details-wrapper ${isExpanded ? 'expanded' : ''}" id="inline-details-${p.id}" role="region" aria-label="Deliverable details for ${escapeHtml(p.name)}">
+          <div class="inline-details-box">
+            <!-- Stage Stepper -->
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">
+              <i class="fa-solid fa-timeline" style="color:var(--dash-accent);"></i> Engineering Stage Stepper
+            </div>
+            <div class="stage-stepper">
+              <div class="stage-step ${progress >= 10 ? 'completed' : 'active'}">
+                <div class="stage-step-dot">${progress >= 10 ? '<i class="fa-solid fa-check"></i>' : '1'}</div>
+                <span>Scoping & Specs</span>
+              </div>
+              <div class="stage-step ${progress >= 55 ? 'completed' : (progress >= 10 ? 'active' : '')}">
+                <div class="stage-step-dot">${progress >= 55 ? '<i class="fa-solid fa-check"></i>' : '2'}</div>
+                <span>Sprint Dev</span>
+              </div>
+              <div class="stage-step ${progress >= 80 ? 'completed' : (progress >= 55 ? 'active' : '')}">
+                <div class="stage-step-dot">${progress >= 80 ? '<i class="fa-solid fa-check"></i>' : '3'}</div>
+                <span>QA & Hardening</span>
+              </div>
+              <div class="stage-step ${progress >= 100 ? 'completed' : (progress >= 80 ? 'active' : '')}">
+                <div class="stage-step-dot">${progress >= 100 ? '<i class="fa-solid fa-check"></i>' : '4'}</div>
+                <span>Production SLA</span>
+              </div>
+            </div>
+
+            <!-- Milestones, Squad, Deliverables Grid -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem; margin-top:1.25rem;">
+              <!-- Milestones Checklist -->
+              <div>
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">
+                  <i class="fa-solid fa-list-check" style="color:var(--dash-emerald);"></i> Active Milestones
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px; font-size:0.8rem;">
+                  <div style="display:flex; align-items:center; gap:0.4rem; color:${progress >= 20 ? '#10b981' : 'var(--text-muted)'};">
+                    <i class="fa-solid ${progress >= 20 ? 'fa-circle-check' : 'fa-circle'}"></i> <span>M1: Architecture & Data Schema</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0.4rem; color:${progress >= 50 ? '#10b981' : 'var(--text-muted)'};">
+                    <i class="fa-solid ${progress >= 50 ? 'fa-circle-check' : 'fa-circle'}"></i> <span>M2: Core API Endpoints & Auth</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0.4rem; color:${progress >= 80 ? '#10b981' : 'var(--text-muted)'};">
+                    <i class="fa-solid ${progress >= 80 ? 'fa-circle-check' : 'fa-circle'}"></i> <span>M3: Security Audit & Staging QA</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Assigned Engineers Squad -->
+              <div>
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">
+                  <i class="fa-solid fa-user-group" style="color:var(--dash-indigo);"></i> Assigned Technical Squad
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px; font-size:0.785rem;">
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <div style="width:20px; height:20px; border-radius:50%; background:var(--gold-primary); color:#000; font-size:0.65rem; font-weight:700; display:flex; align-items:center; justify-content:center;">BK</div>
+                    <span>Brian K. <span style="color:var(--text-muted); font-size:0.72rem;">(Lead Solutions Architect)</span></span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <div style="width:20px; height:20px; border-radius:50%; background:var(--dash-indigo); color:#fff; font-size:0.65rem; font-weight:700; display:flex; align-items:center; justify-content:center;">AM</div>
+                    <span>Alex M. <span style="color:var(--text-muted); font-size:0.72rem;">(Senior Full-Stack Engineer)</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Deliverable Actions -->
+              <div style="display:flex; flex-direction:column; justify-content:space-between; gap:0.75rem;">
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">
+                  <i class="fa-solid fa-box-archive" style="color:var(--dash-cyan);"></i> Scope Actions
+                </div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+                    <i class="fa-solid fa-comments"></i> Message Squad
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="mockApproveDeliverable(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+                    <i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Approve
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* === MOCK API CALL: Approve deliverable === */
+    function mockApproveDeliverable(id, title) {
+      showToast(`Deliverable "${title}" has been signed off and recorded in the audit log.`, 'success', 'Approved');
+      const p = clientState.projects.find(item => item.id === id);
+      if (p) {
+        p.progress = Math.min(100, (p.progress || 0) + 20);
+        if (p.progress >= 100) p.status = 'Completed';
+        filterOverviewProjects();
+        filterFullProjects();
+      }
+    }
+    window.mockApproveDeliverable = mockApproveDeliverable;
+
+    /* ── RENDER OVERVIEW PROJECTS (LIST & GRID) ──────────────────────── */
     function renderOverviewProjects(list) {
       const tbody = document.getElementById('overviewProjectList');
+      const grid = document.getElementById('overviewProjectGrid');
+      const countEl = document.getElementById('overviewProjectCountDisplay');
+      const clearBtn = document.getElementById('overviewClearFilterBtn');
+      const tableWrap = document.querySelector('#tab-client-overview .table-wrap');
+
+      const total = clientState.projects.length;
+      const filtered = list.length;
+      if (countEl) {
+        countEl.textContent = clientState.activeKpiFilter
+          ? `Showing ${filtered} of ${total} deliverables (Filtered: ${clientState.activeKpiFilter})`
+          : `Showing all ${filtered} deliverables`;
+      }
+      if (clearBtn) {
+        clearBtn.style.display = clientState.activeKpiFilter ? 'inline-block' : 'none';
+      }
+
       if (!list.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5">
-              <div class="empty-state">
-                <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
-                <div class="empty-title">No deliverables found</div>
-                <div class="empty-desc">Submit your first technical scope or RFP to initiate engineering sprints with our squad.</div>
-                <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')" style="margin-top:0.75rem;">
-                  <i class="fa-solid fa-plus"></i> Request Deliverable
+        const emptyHtml = `
+          <div class="empty-state" style="padding:3rem 1rem;">
+            <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+            <div class="empty-title">No deliverables found</div>
+            <div class="empty-desc">No software projects match the active stage criteria. Request a new deliverable to begin.</div>
+            <button class="btn btn-sm btn-primary" onclick="openRequestWizard()" style="margin-top:0.75rem;">
+              <i class="fa-solid fa-plus"></i> Request Deliverable
+            </button>
+          </div>
+        `;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5">${emptyHtml}</td></tr>`;
+        if (grid) grid.innerHTML = emptyHtml;
+        return;
+      }
+
+      const isGrid = clientState.projectsViewMode === 'grid';
+      if (tableWrap) tableWrap.style.display = isGrid ? 'none' : 'block';
+      if (grid) grid.style.display = isGrid ? 'grid' : 'none';
+
+      // 1. Render Table (List view)
+      if (tbody) {
+        tbody.innerHTML = list.slice(0, 6).map(p => {
+          const isExpanded = clientState.activeInlineDetailsId === p.id;
+          return `
+            <tr class="${isExpanded ? 'active-expanded-row' : ''}">
+              <td>
+                <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.2rem; cursor:pointer;" onclick="toggleInlineDetails(${p.id})" aria-expanded="${isExpanded}">
+                  <i class="fa-solid fa-chevron-${isExpanded ? 'down' : 'right'}" style="color:var(--dash-accent); font-size:0.75rem; margin-right:0.35rem; transition:transform 0.2s;"></i>
+                  ${escapeHtml(p.name)}
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-muted); max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                  ${escapeHtml(p.description)}
+                </div>
+              </td>
+              <td><span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+              <td style="min-width:140px;">
+                <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+                <div class="progress-label">${p.progress}% Complete</div>
+              </td>
+              <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
+                ${p.startDate ? `<div style="margin-bottom:0.2rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${escapeHtml(p.startDate)}</div>` : ''}
+                <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Due:</span> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</div>
+              </td>
+              <td style="text-align:right;">
+                <div style="display:inline-flex; gap:0.4rem;">
+                  <button class="btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" title="Toggle Scope Details" aria-expanded="${isExpanded}">
+                    <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> Details
+                  </button>
+                  <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Open Discussion Thread">
+                    <i class="fa-solid fa-comments"></i> Chat
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5" style="padding:0; border:none;">
+                ${renderInlineDetailsPanelHtml(p)}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 2. Render Cards (Grid view)
+      if (grid) {
+        grid.innerHTML = list.slice(0, 6).map(p => {
+          const isExpanded = clientState.activeInlineDetailsId === p.id;
+          return `
+            <div class="project-grid-card">
+              <div>
+                <div class="project-grid-card-top">
+                  <span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span>
+                  <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</span>
+                </div>
+                <div class="project-grid-title" onclick="toggleInlineDetails(${p.id})">${escapeHtml(p.name)}</div>
+                <div style="font-size:0.785rem; color:var(--text-muted); line-height:1.4; margin:0.4rem 0 0.85rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                  ${escapeHtml(p.description)}
+                </div>
+                <div style="margin-bottom:0.75rem;">
+                  <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:4px;">
+                    <span style="color:var(--text-muted);">Progress</span>
+                    <span style="font-weight:700; color:#fff;">${p.progress}%</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+                </div>
+                ${renderInlineDetailsPanelHtml(p)}
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.75rem; margin-top:0.75rem;">
+                <button type="button" class="btn btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" style="font-size:0.75rem;">
+                  <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> ${isExpanded ? 'Close' : 'Details'}
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" style="font-size:0.75rem;">
+                  <i class="fa-solid fa-comments"></i> Chat
                 </button>
               </div>
-            </td>
-          </tr>
-        `;
-        return;
+            </div>
+          `;
+        }).join('');
       }
-
-      tbody.innerHTML = list.slice(0, 6).map(p => `
-        <tr>
-          <td>
-            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.2rem; cursor:pointer;" onclick="openProjectDetails(${p.id})">
-              <i class="fa-solid fa-code" style="color:var(--dash-accent); margin-right:0.35rem; font-size:0.85rem;"></i> ${escapeHtml(p.name)}
-            </div>
-            <div style="font-size:0.75rem; color:var(--text-muted); max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-              ${escapeHtml(p.description)}
-            </div>
-          </td>
-          <td><span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
-          <td style="min-width:140px;">
-            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
-            <div class="progress-label">${p.progress}% Complete</div>
-          </td>
-          <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
-            ${p.startDate ? `<div style="margin-bottom:0.2rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${escapeHtml(p.startDate)}</div>` : ''}
-            <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Due:</span> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</div>
-          </td>
-          <td style="text-align:right;">
-            <div style="display:inline-flex; gap:0.4rem;">
-              <button class="btn-sm btn-outline" onclick="openProjectDetails(${p.id})" title="View Scope & Roadmap">
-                <i class="fa-solid fa-eye"></i> Scope
-              </button>
-              <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Open Discussion Thread">
-                <i class="fa-solid fa-comments"></i> Chat
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
     }
 
-    // Filter Overview Table
     function filterOverviewProjects() {
-      const q = (document.getElementById('overviewSearch').value || '').toLowerCase().trim();
-      const status = document.getElementById('overviewStatusFilter').value;
+      const q = (document.getElementById('overviewSearch')?.value || '').toLowerCase();
+      const status = document.getElementById('overviewStatusFilter')?.value || 'all';
 
-      const filtered = clientState.projects.filter(p => {
-        const matchesQ = !q || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
-        const matchesStatus = status === 'all' || p.status === status;
-        return matchesQ && matchesStatus;
+      let filtered = clientState.projects.filter(p => {
+        const matchesQuery = !q || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
+        const matchesStatus = status === 'all' || p.status === status || (status === 'Review' && p.status === 'In Review');
+        return matchesQuery && matchesStatus;
       });
+
+      filtered = sortProjectsList(filtered);
       renderOverviewProjects(filtered);
     }
+    window.filterOverviewProjects = filterOverviewProjects;
 
-    // Render Full Projects Table
+    /* ── RENDER FULL PROJECTS (TAB 2) ────────────────────────────────── */
     function renderFullProjects(list) {
       const tbody = document.getElementById('fullProjectList');
+      const grid = document.getElementById('fullProjectGrid');
+      const countEl = document.getElementById('fullProjectCountDisplay');
+      const clearBtn = document.getElementById('fullClearFilterBtn');
+      const tableWrap = document.querySelector('#tab-client-projects .table-wrap');
+
+      const total = clientState.projects.length;
+      const filtered = list.length;
+      if (countEl) {
+        countEl.textContent = clientState.activeKpiFilter
+          ? `Showing ${filtered} of ${total} deliverables (Filtered: ${clientState.activeKpiFilter})`
+          : `Showing all ${filtered} deliverables`;
+      }
+      if (clearBtn) {
+        clearBtn.style.display = clientState.activeKpiFilter ? 'inline-block' : 'none';
+      }
+
       if (!list.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5">
-              <div class="empty-state">
-                <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
-                <div class="empty-title">No deliverables match filter</div>
-                <div class="empty-desc">Clear your search parameters or request a new deliverable.</div>
-              </div>
-            </td>
-          </tr>
+        const emptyHtml = `
+          <div class="empty-state" style="padding:3rem 1rem;">
+            <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+            <div class="empty-title">No deliverables found</div>
+            <div class="empty-desc">No software projects match the active stage criteria. Request a new deliverable to begin.</div>
+            <button class="btn btn-sm btn-primary" onclick="openRequestWizard()" style="margin-top:0.75rem;">
+              <i class="fa-solid fa-plus"></i> Request Deliverable
+            </button>
+          </div>
         `;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5">${emptyHtml}</td></tr>`;
+        if (grid) grid.innerHTML = emptyHtml;
         return;
       }
 
-      tbody.innerHTML = list.map(p => `
-        <tr>
-          <td>
-            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.25rem; cursor:pointer;" onclick="openProjectDetails(${p.id})">
-              <i class="fa-solid fa-cubes" style="color:var(--dash-accent); margin-right:0.35rem; font-size:0.85rem;"></i> ${escapeHtml(p.name)}
+      const isGrid = clientState.projectsViewMode === 'grid';
+      if (tableWrap) tableWrap.style.display = isGrid ? 'none' : 'block';
+      if (grid) grid.style.display = isGrid ? 'grid' : 'none';
+
+      // 1. List View Table
+      if (tbody) {
+        tbody.innerHTML = list.map(p => {
+          const isExpanded = clientState.activeInlineDetailsId === p.id;
+          return `
+            <tr class="${isExpanded ? 'active-expanded-row' : ''}">
+              <td>
+                <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.2rem; cursor:pointer;" onclick="toggleInlineDetails(${p.id})">
+                  <i class="fa-solid fa-chevron-${isExpanded ? 'down' : 'right'}" style="color:var(--dash-accent); font-size:0.75rem; margin-right:0.35rem;"></i>
+                  ${escapeHtml(p.name)}
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-muted); max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                  ${escapeHtml(p.description)}
+                </div>
+              </td>
+              <td><span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+              <td style="min-width:140px;">
+                <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+                <div class="progress-label">${p.progress}% Complete</div>
+              </td>
+              <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
+                ${p.startDate ? `<div style="margin-bottom:0.2rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${escapeHtml(p.startDate)}</div>` : ''}
+                <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Due:</span> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</div>
+              </td>
+              <td style="text-align:right;">
+                <div style="display:inline-flex; gap:0.4rem;">
+                  <button class="btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" title="Scope Details">
+                    <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> Details
+                  </button>
+                  <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Chat">
+                    <i class="fa-solid fa-comments"></i> Chat
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5" style="padding:0; border:none;">
+                ${renderInlineDetailsPanelHtml(p)}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 2. Grid View
+      if (grid) {
+        grid.innerHTML = list.map(p => {
+          const isExpanded = clientState.activeInlineDetailsId === p.id;
+          return `
+            <div class="project-grid-card">
+              <div>
+                <div class="project-grid-card-top">
+                  <span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span>
+                  <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</span>
+                </div>
+                <div class="project-grid-title" onclick="toggleInlineDetails(${p.id})">${escapeHtml(p.name)}</div>
+                <div style="font-size:0.785rem; color:var(--text-muted); line-height:1.4; margin:0.4rem 0 0.85rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                  ${escapeHtml(p.description)}
+                </div>
+                <div style="margin-bottom:0.75rem;">
+                  <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:4px;">
+                    <span style="color:var(--text-muted);">Progress</span>
+                    <span style="font-weight:700; color:#fff;">${p.progress}%</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+                </div>
+                ${renderInlineDetailsPanelHtml(p)}
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.75rem; margin-top:0.75rem;">
+                <button type="button" class="btn btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" style="font-size:0.75rem;">
+                  <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> ${isExpanded ? 'Close' : 'Details'}
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" style="font-size:0.75rem;">
+                  <i class="fa-solid fa-comments"></i> Chat
+                </button>
+              </div>
             </div>
-            <div style="font-size:0.775rem; color:var(--text-muted); line-height:1.4; max-width:420px;">
-              ${escapeHtml(p.description)}
-            </div>
-          </td>
-          <td><span class="status-badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
-          <td style="min-width:160px;">
-            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
-            <div class="progress-label">${p.progress}% Complete</div>
-          </td>
-          <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
-            ${p.startDate ? `<div style="margin-bottom:0.25rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${escapeHtml(p.startDate)}</div>` : ''}
-            <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Target:</span> ${p.dueDate ? escapeHtml(new Date(p.dueDate).toLocaleDateString()) : 'Ongoing'}</div>
-          </td>
-          <td style="text-align:right;">
-            <div style="display:inline-flex; gap:0.4rem;">
-              <button class="btn-sm btn-outline" onclick="openProjectDetails(${p.id})" title="Inspect Scope & Roadmap">
-                <i class="fa-solid fa-eye"></i> Scope
-              </button>
-              <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Collaborate with Engineering Squad">
-                <i class="fa-solid fa-comments"></i> Chat
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+          `;
+        }).join('');
+      }
     }
 
     function filterFullProjects() {
-      const q = (document.getElementById('projectsFullSearch').value || '').toLowerCase().trim();
-      const status = document.getElementById('projectsFullStatusFilter').value;
+      const q = (document.getElementById('projectsFullSearch')?.value || '').toLowerCase();
+      const status = document.getElementById('projectsFullStatusFilter')?.value || 'all';
 
-      const filtered = clientState.projects.filter(p => {
-        const matchesQ = !q || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
-        const matchesStatus = status === 'all' || p.status === status;
-        return matchesQ && matchesStatus;
+      let filtered = clientState.projects.filter(p => {
+        const matchesQuery = !q || (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q));
+        const matchesStatus = status === 'all' || p.status === status || (status === 'Review' && p.status === 'In Review');
+        return matchesQuery && matchesStatus;
       });
+
+      filtered = sortProjectsList(filtered);
       renderFullProjects(filtered);
     }
+    window.filterFullProjects = filterFullProjects;
 
+    /* ── 5. REQUEST DELIVERABLE WIZARD (SLIDE-OVER DRAWER) ───────────── */
+    function openRequestWizard() {
+      const drawer = document.getElementById('requestWizardDrawer');
+      const backdrop = document.getElementById('drawerBackdrop');
+      if (drawer && backdrop) {
+        drawer.classList.add('open');
+        backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      setWizardStep(1);
+    }
+    window.openRequestWizard = openRequestWizard;
+
+    function closeRequestWizard() {
+      const drawer = document.getElementById('requestWizardDrawer');
+      const backdrop = document.getElementById('drawerBackdrop');
+      if (drawer) drawer.classList.remove('open');
+      if (backdrop) backdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    window.closeRequestWizard = closeRequestWizard;
+
+    function setWizardStep(step) {
+      clientState.wizardStep = step;
+      [1, 2, 3].forEach(s => {
+        const pane = document.getElementById(`wStep-${s}`);
+        if (pane) pane.classList.toggle('hidden', s !== step);
+        const tab = document.getElementById(`wTab-${s}`);
+        if (tab) {
+          tab.classList.toggle('active', s === step);
+          tab.classList.toggle('completed', s < step);
+        }
+      });
+      const successPane = document.getElementById('wStepSuccess');
+      if (successPane) successPane.classList.add('hidden');
+
+      const footer = document.getElementById('wizardFooterButtons');
+      if (footer) footer.style.display = 'flex';
+
+      const backBtn = document.getElementById('wizardBackBtn');
+      if (backBtn) backBtn.disabled = step === 1;
+
+      const nextBtn = document.getElementById('wizardNextBtn');
+      if (nextBtn) {
+        if (step === 3) {
+          nextBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Deliverable Request';
+        } else {
+          nextBtn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
+        }
+      }
+    }
+
+    function selectWizardType(el, type, desc) {
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      clientState.wizardType = type;
+      clientState.wizardTypeDesc = desc;
+    }
+    window.selectWizardType = selectWizardType;
+
+    function prevWizardStep() {
+      if (clientState.wizardStep > 1) {
+        setWizardStep(clientState.wizardStep - 1);
+      }
+    }
+    window.prevWizardStep = prevWizardStep;
+
+    function nextWizardStep() {
+      if (clientState.wizardStep === 1) {
+        setWizardStep(2);
+      } else if (clientState.wizardStep === 2) {
+        const title = (document.getElementById('wInputTitle')?.value || '').trim();
+        const desc = (document.getElementById('wInputDesc')?.value || '').trim();
+        let valid = true;
+
+        const titleErr = document.getElementById('wTitleError');
+        if (!title) {
+          if (titleErr) titleErr.style.display = 'block';
+          valid = false;
+        } else if (titleErr) {
+          titleErr.style.display = 'none';
+        }
+
+        const descErr = document.getElementById('wDescError');
+        if (!desc) {
+          if (descErr) descErr.style.display = 'block';
+          valid = false;
+        } else if (descErr) {
+          descErr.style.display = 'none';
+        }
+
+        if (!valid) return;
+
+        const revType = document.getElementById('wReviewType');
+        if (revType) revType.textContent = clientState.wizardType;
+        const revTitle = document.getElementById('wReviewTitle');
+        if (revTitle) revTitle.textContent = title;
+        const revDesc = document.getElementById('wReviewDesc');
+        if (revDesc) revDesc.textContent = desc;
+
+        const dateVal = document.getElementById('wInputDate')?.value;
+        const revDate = document.getElementById('wReviewDate');
+        if (revDate) revDate.textContent = dateVal ? new Date(dateVal).toLocaleDateString() : 'Continuous Sprint';
+
+        const priorityVal = document.getElementById('wInputPriority')?.value || 'Standard';
+        const revPriority = document.getElementById('wReviewPriority');
+        if (revPriority) revPriority.textContent = priorityVal;
+
+        const filesWrap = document.getElementById('wReviewFilesWrap');
+        const filesList = document.getElementById('wReviewFilesList');
+        if (filesWrap && filesList) {
+          if (clientState.wizardFiles.length) {
+            filesWrap.style.display = 'block';
+            filesList.innerHTML = clientState.wizardFiles.map(f => `<span class="file-chip">${escapeHtml(f.name)}</span>`).join('');
+          } else {
+            filesWrap.style.display = 'none';
+          }
+        }
+
+        setWizardStep(3);
+      } else if (clientState.wizardStep === 3) {
+        submitWizardDeliverableRequest();
+      }
+    }
+    window.nextWizardStep = nextWizardStep;
+
+    function setupWizardDragDrop() {
+      const dropZone = document.getElementById('wizardDropZone');
+      if (!dropZone) return;
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove('dragover');
+        });
+      });
+      dropZone.addEventListener('drop', e => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleWizardFiles(files);
+      });
+    }
+
+    function handleWizardFiles(files) {
+      if (!files || !files.length) return;
+      for (let i = 0; i < files.length; i++) {
+        clientState.wizardFiles.push(files[i]);
+      }
+      renderWizardFilePreviews();
+    }
+    window.handleWizardFiles = handleWizardFiles;
+
+    function renderWizardFilePreviews() {
+      const container = document.getElementById('wizardFilePreviews');
+      if (!container) return;
+      container.innerHTML = clientState.wizardFiles.map((f, idx) => `
+        <div class="file-chip">
+          <i class="fa-solid fa-paperclip" style="font-size:0.7rem; color:var(--gold-primary);"></i>
+          <span>${escapeHtml(f.name)} (${Math.round(f.size / 1024)} KB)</span>
+          <button type="button" class="file-chip-remove" onclick="removeWizardFile(${idx})">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    function removeWizardFile(idx) {
+      clientState.wizardFiles.splice(idx, 1);
+      renderWizardFilePreviews();
+    }
+    window.removeWizardFile = removeWizardFile;
+
+    /* === MOCK API CALL: Submit Deliverable Request === */
+    async function submitWizardDeliverableRequest() {
+      const title = document.getElementById('wInputTitle')?.value;
+      const desc = document.getElementById('wInputDesc')?.value;
+      const dueDate = document.getElementById('wInputDate')?.value || null;
+      const priority = document.getElementById('wInputPriority')?.value || 'Standard';
+
+      const payload = {
+        name: title,
+        description: `[${clientState.wizardType}] ${desc}`,
+        dueDate: dueDate,
+        startDate: new Date().toISOString().split('T')[0],
+        status: 'Pending',
+        progress: 10
+      };
+
+      const nextBtn = document.getElementById('wizardNextBtn');
+      if (nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      }
+
+      try {
+        let createdProject = null;
+        try {
+          const res = await apiFetch('/api/projects', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            createdProject = data.project;
+          }
+        } catch (e) {
+          // Fallback to local mock data if endpoint is not implemented
+        }
+
+        if (!createdProject) {
+          createdProject = {
+            id: Date.now(),
+            name: payload.name,
+            description: payload.description,
+            status: 'Pending',
+            progress: 10,
+            startDate: payload.startDate,
+            dueDate: payload.dueDate
+          };
+        }
+
+        clientState.projects.unshift(createdProject);
+        clientState.stats.pending = (clientState.stats.pending || 0) + 1;
+
+        const refNum = 'LT-REQ-2026-' + Math.floor(1000 + Math.random() * 9000);
+        const refEl = document.getElementById('wSuccessRef');
+        if (refEl) refEl.textContent = refNum;
+
+        [1, 2, 3].forEach(s => document.getElementById(`wStep-${s}`)?.classList.add('hidden'));
+        document.getElementById('wStepSuccess')?.classList.remove('hidden');
+        const footer = document.getElementById('wizardFooterButtons');
+        if (footer) footer.style.display = 'none';
+
+        renderClientPipelineBar(clientState.projects);
+        filterOverviewProjects();
+        filterFullProjects();
+
+        showToast(`Engagement request submitted! Reference: ${refNum}`, 'success', 'Request Dispatched');
+
+      } catch (err) {
+        showToast('Failed to submit deliverable request. Please try again.', 'error');
+      } finally {
+        if (nextBtn) {
+          nextBtn.disabled = false;
+          nextBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Deliverable Request';
+        }
+      }
+    }
+
+    function copyRefToClipboard() {
+      const ref = document.getElementById('wSuccessRef')?.textContent || '';
+      navigator.clipboard.writeText(ref).then(() => {
+        showToast(`Copied "${ref}" to clipboard`, 'info');
+      });
+    }
+    window.copyRefToClipboard = copyRefToClipboard;
+
+    /* ── 6. COST ESTIMATOR MODAL ─────────────────────────────────────── */
+    function openEstimatorModal() {
+      openModal('costEstimatorModal');
+      calcModalEstimate();
+    }
+    window.openEstimatorModal = openEstimatorModal;
+
+    function closeEstimatorModal() {
+      closeModal('costEstimatorModal');
+    }
+    window.closeEstimatorModal = closeEstimatorModal;
+
+    function calcModalEstimate() {
+      const scale = Number(document.getElementById('sliderScale')?.value || 2);
+      const team = Number(document.getElementById('sliderTeam')?.value || 2);
+      const timeline = Number(document.getElementById('sliderTimeline')?.value || 2);
+      const cloud = document.getElementById('toggleCloud')?.checked || false;
+      const mpesa = document.getElementById('toggleMpesa')?.checked || false;
+      const security = document.getElementById('toggleSecurity')?.checked || false;
+
+      const scaleLabels = ['1,000 Users', '10,000 Users', '100,000 Users', '1M+ Enterprise Scale'];
+      const teamLabels = ['2 Senior Engineers', '4 Full-Stack Squad', '6 Dedicated Engineers', '8+ Multi-disciplinary Squad'];
+      const timelineLabels = ['Express (3-4 Weeks)', 'Standard (6-8 Weeks)', 'Comprehensive (12-16 Weeks)'];
+
+      const vScale = document.getElementById('valScale');
+      if (vScale) vScale.textContent = scaleLabels[scale - 1];
+      const vTeam = document.getElementById('valTeam');
+      if (vTeam) vTeam.textContent = teamLabels[team - 1];
+      const vTimeline = document.getElementById('valTimeline');
+      if (vTimeline) vTimeline.textContent = timelineLabels[timeline - 1];
+
+      let baseMin = 12000 + (scale * 2500) + (team * 3500);
+      let baseMax = baseMin * 1.5;
+
+      if (cloud) { baseMin += 3000; baseMax += 4500; }
+      if (mpesa) { baseMin += 2500; baseMax += 3500; }
+      if (security) { baseMin += 4000; baseMax += 6000; }
+
+      const kesRate = 130;
+      const priceEl = document.getElementById('modalEstPrice');
+      if (priceEl) priceEl.textContent = `$${baseMin.toLocaleString()} – $${baseMax.toLocaleString()}`;
+
+      const kesEl = document.getElementById('modalEstKes');
+      if (kesEl) kesEl.textContent = `KES ${Math.round(baseMin * kesRate).toLocaleString()} – ${Math.round(baseMax * kesRate).toLocaleString()}`;
+
+      const durEl = document.getElementById('modalEstDuration');
+      const durations = ['3 – 4 Weeks', '6 – 8 Weeks', '12 – 16 Weeks'];
+      if (durEl) durEl.textContent = durations[timeline - 1];
+    }
+    window.calcModalEstimate = calcModalEstimate;
+
+    function transferModalEstimateToWizard() {
+      closeEstimatorModal();
+      openRequestWizard();
+      setWizardStep(2);
+
+      const price = document.getElementById('modalEstPrice')?.textContent || '';
+      const scaleText = document.getElementById('valScale')?.textContent || '';
+      const teamText = document.getElementById('valTeam')?.textContent || '';
+      const durText = document.getElementById('modalEstDuration')?.textContent || '';
+
+      const titleInput = document.getElementById('wInputTitle');
+      if (titleInput) titleInput.value = 'Enterprise Cloud Architecture & API Platform';
+
+      const descInput = document.getElementById('wInputDesc');
+      if (descInput) {
+        descInput.value = `Architecture Estimate Reference:\n• Scale: ${scaleText}\n• Squad Allocation: ${teamText}\n• Target Duration: ${durText}\n• Estimated Budget: ${price}\n• Technical Scope: High-availability cloud topology with M-Pesa integration and zero-trust audit compliance.`;
+      }
+      showToast('Estimator specifications loaded into Deliverable Wizard', 'info', 'Quote Pre-filled');
+    }
+    window.transferModalEstimateToWizard = transferModalEstimateToWizard;
+
+    /* ── KEYBOARD SHORTCUTS MODAL ────────────────────────────────────── */
+    function openShortcutsModal() {
+      openModal('shortcutsHelpModal');
+    }
+    window.openShortcutsModal = openShortcutsModal;
+
+    function closeShortcutsModal() {
+      closeModal('shortcutsHelpModal');
+    }
+    window.closeShortcutsModal = closeShortcutsModal;
+
+    /* ── 1. COMMAND PALETTE WITH SEARCH, RECENT & HIGHLIGHTING ───────── */
+    let cmdActiveIndex = 0;
+    let cmdCurrentItems = [];
+
+    function openClientCmdPalette() {
+      openModal('cmdPaletteModal');
+      const input = document.getElementById('cmdPaletteInput');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      renderCmdPaletteResults('');
+    }
+    window.openClientCmdPalette = openClientCmdPalette;
+
+    function closeClientCmdPalette() {
+      closeModal('cmdPaletteModal');
+    }
+    window.closeClientCmdPalette = closeClientCmdPalette;
+
+    function filterCmdPalette() {
+      const q = (document.getElementById('cmdPaletteInput')?.value || '').trim();
+      renderCmdPaletteResults(q);
+    }
+    window.filterCmdPalette = filterCmdPalette;
+
+    function renderCmdPaletteResults(query) {
+      const container = document.getElementById('cmdPaletteResults');
+      if (!container) return;
+      cmdActiveIndex = 0;
+      cmdCurrentItems = [];
+
+      const q = query.toLowerCase();
+
+      const pages = [
+        { type: 'page', title: 'Overview', desc: 'Main telemetry & engineering status', icon: 'fa-gauge-high', action: () => switchClientTab('overview') },
+        { type: 'page', title: 'My Projects', desc: 'All assigned deliverables & milestones', icon: 'fa-cubes', action: () => switchClientTab('projects') },
+        { type: 'page', title: 'Architecture Cost Estimator', desc: 'Interactive pricing & topology builder', icon: 'fa-calculator', action: () => openEstimatorModal() },
+        { type: 'page', title: 'Request Deliverable', desc: 'New engineering sprint RFP wizard', icon: 'fa-file-signature', action: () => openRequestWizard() },
+        { type: 'page', title: 'Help & FAQs', desc: 'Platform knowledge base & SLA specs', icon: 'fa-circle-question', action: () => switchClientTab('faqs') },
+        { type: 'page', title: 'Account Profile & SLA', desc: 'Client credentials and SLA tier', icon: 'fa-user-shield', action: () => switchClientTab('account') }
+      ];
+
+      const actions = [
+        { type: 'action', title: 'Request Deliverable (Wizard)', desc: 'Open 3-step project request drawer', icon: 'fa-plus', action: () => openRequestWizard() },
+        { type: 'action', title: 'Export Executive Summary', desc: 'Download comprehensive PDF/HTML audit report', icon: 'fa-file-arrow-down', action: () => exportExecutiveSummary() },
+        { type: 'action', title: 'Toggle Theme', desc: 'Switch Dark/Light color mode', icon: 'fa-circle-half-stroke', action: () => toggleTheme() },
+        { type: 'action', title: 'Keyboard Shortcuts Help', desc: 'View complete list of hotkeys (?)', icon: 'fa-keyboard', action: () => openShortcutsModal() },
+        { type: 'action', title: 'Sign Out', desc: 'Securely terminate enterprise session', icon: 'fa-right-from-bracket', action: () => logout() }
+      ];
+
+      const projects = (clientState.projects || []).map(p => ({
+        type: 'project',
+        title: p.name,
+        desc: `[${p.status}] ${p.description || ''}`,
+        icon: 'fa-code-branch',
+        action: () => {
+          switchClientTab('projects');
+          toggleInlineDetails(p.id);
+        }
+      }));
+
+      const highlight = text => {
+        if (!q) return escapeHtml(text);
+        const escaped = escapeHtml(text);
+        const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return escaped.replace(regex, '<mark class="cmd-match">$1</mark>');
+      };
+
+      if (!q) {
+        let recentHtml = '';
+        if (clientState.recentSearches.length) {
+          recentHtml = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="cmd-section-label"><i class="fa-solid fa-clock-rotate-left"></i> Recent Searches</div>
+              <button type="button" onclick="clearRecentSearches()" style="background:none; border:none; color:var(--text-muted); font-size:0.7rem; cursor:pointer; padding:0 8px;">Clear</button>
+            </div>
+          `;
+          clientState.recentSearches.slice(0, 4).forEach(r => {
+            cmdCurrentItems.push({
+              title: r,
+              action: () => {
+                const inp = document.getElementById('cmdPaletteInput');
+                if (inp) {
+                  inp.value = r;
+                  renderCmdPaletteResults(r);
+                }
+              }
+            });
+            const idx = cmdCurrentItems.length - 1;
+            recentHtml += `
+              <div class="cmd-palette-item ${idx === 0 ? 'active' : ''}" data-idx="${idx}" onclick="execCmdItem(${idx})">
+                <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i>
+                <div style="flex:1;">${escapeHtml(r)}</div>
+              </div>
+            `;
+          });
+        }
+
+        let quickHtml = '<div class="cmd-section-label"><i class="fa-solid fa-bolt"></i> Quick Pages & Actions</div>';
+        [...pages.slice(0, 3), actions[0], actions[1]].forEach(item => {
+          cmdCurrentItems.push(item);
+          const idx = cmdCurrentItems.length - 1;
+          quickHtml += `
+            <div class="cmd-palette-item ${idx === 0 && !clientState.recentSearches.length ? 'active' : ''}" data-idx="${idx}" onclick="execCmdItem(${idx})">
+              <i class="fa-solid ${item.icon}" style="color:var(--dash-accent);"></i>
+              <div style="flex:1;">
+                <div style="font-weight:600; font-size:0.85rem;">${escapeHtml(item.title)}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${escapeHtml(item.desc)}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = recentHtml + quickHtml;
+        return;
+      }
+
+      const matchedPages = pages.filter(p => p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+      const matchedProjects = projects.filter(p => p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+      const matchedActions = actions.filter(a => a.title.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q));
+
+      if (!matchedPages.length && !matchedProjects.length && !matchedActions.length) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:2.5rem 1rem; color:var(--text-muted); font-size:0.85rem;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:1.75rem; margin-bottom:0.5rem; opacity:0.4; display:block;"></i>
+            No results found for "${escapeHtml(query)}"
+          </div>
+        `;
+        return;
+      }
+
+      let resultHtml = '';
+
+      if (matchedPages.length) {
+        resultHtml += '<div class="cmd-section-label"><i class="fa-solid fa-compass"></i> Pages</div>';
+        matchedPages.forEach(item => {
+          cmdCurrentItems.push(item);
+          const idx = cmdCurrentItems.length - 1;
+          resultHtml += `
+            <div class="cmd-palette-item ${idx === 0 ? 'active' : ''}" data-idx="${idx}" onclick="execCmdItem(${idx})">
+              <i class="fa-solid ${item.icon}" style="color:var(--dash-indigo);"></i>
+              <div style="flex:1;">
+                <div style="font-weight:600; font-size:0.85rem;">${highlight(item.title)}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${highlight(item.desc)}</div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      if (matchedProjects.length) {
+        resultHtml += '<div class="cmd-section-label"><i class="fa-solid fa-cubes"></i> Deliverables</div>';
+        matchedProjects.forEach(item => {
+          cmdCurrentItems.push(item);
+          const idx = cmdCurrentItems.length - 1;
+          resultHtml += `
+            <div class="cmd-palette-item ${idx === 0 && !matchedPages.length ? 'active' : ''}" data-idx="${idx}" onclick="execCmdItem(${idx})">
+              <i class="fa-solid ${item.icon}" style="color:var(--dash-emerald);"></i>
+              <div style="flex:1;">
+                <div style="font-weight:600; font-size:0.85rem;">${highlight(item.title)}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${highlight(item.desc)}</div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      if (matchedActions.length) {
+        resultHtml += '<div class="cmd-section-label"><i class="fa-solid fa-bolt"></i> Actions</div>';
+        matchedActions.forEach(item => {
+          cmdCurrentItems.push(item);
+          const idx = cmdCurrentItems.length - 1;
+          resultHtml += `
+            <div class="cmd-palette-item ${idx === 0 && !matchedPages.length && !matchedProjects.length ? 'active' : ''}" data-idx="${idx}" onclick="execCmdItem(${idx})">
+              <i class="fa-solid ${item.icon}" style="color:var(--dash-accent);"></i>
+              <div style="flex:1;">
+                <div style="font-weight:600; font-size:0.85rem;">${highlight(item.title)}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${highlight(item.desc)}</div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      container.innerHTML = resultHtml;
+    }
+
+    function handleCmdKeyDown(e) {
+      const items = document.querySelectorAll('#cmdPaletteResults .cmd-palette-item');
+      if (!items.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        cmdActiveIndex = (cmdActiveIndex + 1) % items.length;
+        updateCmdActiveItem(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        cmdActiveIndex = (cmdActiveIndex - 1 + items.length) % items.length;
+        updateCmdActiveItem(items);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        execCmdItem(cmdActiveIndex);
+      }
+    }
+    window.handleCmdKeyDown = handleCmdKeyDown;
+
+    function updateCmdActiveItem(items) {
+      items.forEach((el, idx) => {
+        el.classList.toggle('active', idx === cmdActiveIndex);
+        if (idx === cmdActiveIndex) {
+          el.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+
+    function execCmdItem(idx) {
+      const item = cmdCurrentItems[idx];
+      if (!item) return;
+
+      if (item.title) {
+        clientState.recentSearches = [item.title, ...clientState.recentSearches.filter(t => t !== item.title)].slice(0, 6);
+        localStorage.setItem('lt_recent_client_searches', JSON.stringify(clientState.recentSearches));
+      }
+
+      closeClientCmdPalette();
+      if (item.action) item.action();
+    }
+    window.execCmdItem = execCmdItem;
+
+    function clearRecentSearches() {
+      clientState.recentSearches = [];
+      localStorage.removeItem('lt_recent_client_searches');
+      renderCmdPaletteResults('');
+    }
+    window.clearRecentSearches = clearRecentSearches;
+
+    /* ── GLOBAL KEYBOARD SHORTCUTS LISTENER ─────────────────────────── */
+    let lastKey = '';
+    let lastKeyTime = 0;
+
+    document.addEventListener('keydown', e => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl && (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName) || activeEl.isContentEditable);
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openClientCmdPalette();
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        closeClientCmdPalette();
+        closeRequestWizard();
+        closeEstimatorModal();
+        closeShortcutsModal();
+        closeNotificationsDropdown();
+        closeModal('projectDetailsModal');
+        closeChatModal();
+        closeSidebarMobile();
+        return;
+      }
+
+      if (isInput) return;
+
+      const now = Date.now();
+
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        openShortcutsModal();
+        return;
+      }
+
+      if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        openRequestWizard();
+        return;
+      }
+
+      if (e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        toggleTheme();
+        return;
+      }
+
+      if (lastKey === 'g' && now - lastKeyTime < 1000) {
+        if (e.key.toLowerCase() === 'p') {
+          e.preventDefault();
+          switchClientTab('projects');
+          showToast('Navigated to My Deliverables', 'info');
+          lastKey = '';
+          return;
+        } else if (e.key.toLowerCase() === 'o') {
+          e.preventDefault();
+          switchClientTab('overview');
+          showToast('Navigated to Overview', 'info');
+          lastKey = '';
+          return;
+        }
+      }
+
+      if (e.key.toLowerCase() === 'g') {
+        lastKey = 'g';
+        lastKeyTime = now;
+      }
+    });
+
+    /* ── 10. BUTTON RIPPLE MICRO-INTERACTION ────────────────────────── */
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.btn');
+      if (!btn) return;
+      const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (isReduced) return;
+
+      const rect = btn.getBoundingClientRect();
+      const circle = document.createElement('span');
+      const d = Math.max(rect.width, rect.height);
+      circle.style.width = circle.style.height = `${d}px`;
+      circle.style.left = `${e.clientX - rect.left - d/2}px`;
+      circle.style.top = `${e.clientY - rect.top - d/2}px`;
+      circle.classList.add('gold-ripple');
+      btn.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.notifications-wrapper')) {
+        closeNotificationsDropdown();
+      }
+    });
+
+    // Initialize UI setups
+    applyInitialTheme();
+    applyInitialSidebar();
+    setupWizardDragDrop();
+
+    /* ── PRESERVED FUNCTIONS ─────────────────────────────────────────── */
+
+    /* ── RESTORED ORIGINAL CORE OPERATIONS ── */
     let currentDetailsProjectId = null;
 
     // ── Project Scope & Roadmap Modal ──
@@ -1865,7 +4313,7 @@
 
       const minCost = Math.max(120, Math.round(baseCloudCost * 0.85));
       const maxCost = Math.max(180, Math.round(baseCloudCost * 1.25));
-      document.getElementById('calcCloudCost').textContent = `$${minCost.toLocaleString()} - $${maxCost.toLocaleString()}`;
+      document.getElementById('calcCloudCost').textContent = `${minCost.toLocaleString()} - ${maxCost.toLocaleString()}`;
 
       // Time to Production (MVP)
       let sprints = 4;
@@ -2405,57 +4853,8 @@ Contact: solutions@logictech.co.ke | https://logictech.co.ke`;
     window.closeChatModal = closeChatModal;
     window.sendChatMessage = sendChatMessage;
 
-    // ── Command Palette (Ctrl + K) ──
-    function openClientCmdPalette() {
-      openModal('cmdPaletteModal');
-      const input = document.getElementById('cmdPaletteInput');
-      input.value = '';
-      input.focus();
-      filterCmdPalette();
-    }
 
-    function closeClientCmdPalette() {
-      closeModal('cmdPaletteModal');
-    }
-
-    function filterCmdPalette() {
-      const q = (document.getElementById('cmdPaletteInput').value || '').toLowerCase().trim();
-      const items = document.querySelectorAll('#cmdPaletteResults .cmd-palette-item');
-      items.forEach(el => {
-        const text = el.textContent.toLowerCase();
-        el.style.display = !q || text.includes(q) ? 'flex' : 'none';
-      });
-    }
-
-    function execClientCmd(action) {
-      closeClientCmdPalette();
-      if (action === 'overview' || action === 'projects' || action === 'estimator' || action === 'request' || action === 'faqs' || action === 'account') {
-        switchClientTab(action);
-      } else if (action === 'sandbox') {
-        seedSampleDeliverables();
-      } else if (action === 'export') {
-        exportExecutiveSummary();
-      } else if (action === 'theme') {
-        toggleTheme();
-      } else if (action === 'logout') {
-        logout();
-      }
-    }
-
-    // Keyboard Shortcuts
-    document.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        openClientCmdPalette();
-      }
-      if (e.key === 'Escape') {
-        closeClientCmdPalette();
-        closeModal('projectDetailsModal');
-        closeChatModal();
-        closeSidebarMobile();
-      }
-    });
-
+    /* ── RESTORED LOGOUT & WINDOW BINDINGS ── */
     function logout() {
       apiFetch('/api/auth/logout', { method: 'POST' }).finally(() => {
         window.location.href = 'login.html';
@@ -2463,8 +4862,37 @@ Contact: solutions@logictech.co.ke | https://logictech.co.ke`;
     }
     window.logout = logout;
 
-    // Initialize Dashboard
+
+    // Window exports for HTML onclick handlers
+    window.openProjectDetails = openProjectDetails;
+    window.verifyMilestoneArtifact = verifyMilestoneArtifact;
+    window.signOffMilestone = signOffMilestone;
+    window.calcInteractiveEstimate = calcInteractiveEstimate;
+    window.transferEstimateToRfp = transferEstimateToRfp;
+    window.exportArchitectureSummary = exportArchitectureSummary;
+    window.seedSampleDeliverables = seedSampleDeliverables;
+    window.exportExecutiveSummary = exportExecutiveSummary;
+    window.exportCurrentProjectBrief = exportCurrentProjectBrief;
+    window.updateCharCount = updateCharCount;
+    window.selectTier = selectTier;
+    window.updateRfpPreview = updateRfpPreview;
+    window.handleProjectRequestSubmit = handleProjectRequestSubmit;
+    window.loadClientFaqs = loadClientFaqs;
+    window.renderClientFaqs = renderClientFaqs;
+    window.filterClientFaqs = filterClientFaqs;
+    window.toggleAllFaqs = toggleAllFaqs;
+    window.openProjectChat = openProjectChat;
+    window.closeChatModal = closeChatModal;
+    window.fetchChatMessages = fetchChatMessages;
+    window.renderChatMessages = renderChatMessages;
+    window.insertQuickReply = insertQuickReply;
+    window.sendChatMessage = sendChatMessage;
+    window.logout = logout;
+
+    // Initial Dashboard Load
     loadDashboard();
-  </script>
+
+    
+</script>
 </body>
 </html>

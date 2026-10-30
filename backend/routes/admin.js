@@ -185,6 +185,61 @@ router.get('/users', (_req, res) => {
   res.json({ users });
 });
 
+router.delete('/users/:id', (req, res, next) => {
+  try {
+    const targetId = Number(req.params.id);
+    if (!targetId || isNaN(targetId)) throw fail(400, 'Invalid user ID.');
+
+    if (req.user && req.user.id === targetId) {
+      throw fail(400, 'You cannot delete your own active administrator account.');
+    }
+
+    const targetUser = db.prepare('SELECT id, role, email FROM users WHERE id = ?').get(targetId);
+    if (!targetUser) throw fail(404, 'User account not found.');
+
+    const result = db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
+    if (Number(result.changes) === 0) throw fail(404, 'User account not found.');
+
+    res.json({ message: 'User account and associated records deleted successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── Bulk Delete ─────────────────────────────────────────────────────
+router.post('/bulk-delete', (req, res, next) => {
+  try {
+    const { type, ids } = req.body;
+    if (!type || !Array.isArray(ids) || ids.length === 0) {
+      throw fail(400, 'Invalid bulk delete request. Specify type and array of IDs.');
+    }
+
+    const numericIds = ids.map(id => Number(id)).filter(id => !isNaN(id) && id > 0);
+    if (numericIds.length === 0) throw fail(400, 'No valid record IDs provided.');
+
+    let table = '';
+    if (type === 'inquiries') table = 'inquiries';
+    else if (type === 'projects') table = 'projects';
+    else if (type === 'faqs') table = 'faqs';
+    else if (type === 'users') {
+      table = 'users';
+      const safeIds = numericIds.filter(id => !(req.user && req.user.id === id));
+      if (safeIds.length === 0) throw fail(400, 'Cannot delete your own active admin account.');
+      const placeholders = safeIds.map(() => '?').join(',');
+      const result = db.prepare(`DELETE FROM users WHERE id IN (${placeholders})`).run(...safeIds);
+      return res.json({ message: `Successfully deleted ${result.changes} user(s).`, deletedCount: result.changes });
+    } else {
+      throw fail(400, 'Invalid entity type for bulk deletion.');
+    }
+
+    const placeholders = numericIds.map(() => '?').join(',');
+    const result = db.prepare(`DELETE FROM ${table} WHERE id IN (${placeholders})`).run(...numericIds);
+    res.json({ message: `Successfully deleted ${result.changes} record(s).`, deletedCount: result.changes });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ── FAQs ────────────────────────────────────────────────────────────
 router.get('/faqs', (_req, res) => {
   const faqs = db.prepare(`

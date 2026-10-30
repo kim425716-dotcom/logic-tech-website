@@ -561,6 +561,60 @@
         padding: 0 1rem !important;
       }
     }
+  
+    /* ── DANGER / DELETE BUTTON STYLES ───────────────────── */
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.14) !important;
+      color: #f87171 !important;
+      border: 1px solid rgba(239, 68, 68, 0.35) !important;
+      transition: all 0.2s ease;
+    }
+    .btn-danger:hover {
+      background: #ef4444 !important;
+      color: #ffffff !important;
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-danger:active {
+      transform: scale(0.97);
+    }
+
+    /* ── BULK ACTIONS BAR ────────────────────────────────── */
+    .bulk-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: var(--dash-radius-sm);
+      padding: 0.65rem 1.15rem;
+      margin-bottom: 0.85rem;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.2s ease-out;
+    }
+    .bulk-actions-bar .bulk-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      color: #fca5a5;
+    }
+
+    /* Table checkbox styling */
+    .row-select-check,
+    .select-all-check {
+      cursor: pointer;
+      accent-color: var(--dash-accent);
+      width: 15px;
+      height: 15px;
+      margin: 0;
+      vertical-align: middle;
+    }
+
   </style>
 </head>
 <body class="dark">
@@ -845,6 +899,7 @@
                       <th>Subject</th>
                       <th>NDA / Budget</th>
                       <th>Date</th>
+                      <th style="text-align:right;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="recentInquiriesBody">
@@ -970,11 +1025,21 @@
               </div>
             </div>
 
+            
+            <!-- Bulk Actions Bar -->
+            <div id="bulkBar-inquiries" class="bulk-actions-bar" style="display:none;">
+              <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-inquiries">0</span> inquiry record(s) selected</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('inquiries')">Deselect All</button>
+                <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('inquiries')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+              </div>
+            </div>
             <!-- Inquiries Table -->
             <div class="table-wrap">
               <table class="dash-table">
                 <thead>
                   <tr>
+                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllInquiries" class="select-all-check" onchange="toggleSelectAll('inquiries', this.checked)" title="Select All Inquiries" /></th>
                     <th>Client Profile</th>
                     <th>Subject & Scope</th>
                     <th>Organization / Phone</th>
@@ -1028,11 +1093,21 @@
               </div>
             </div>
 
+            
+            <!-- Bulk Actions Bar -->
+            <div id="bulkBar-projects" class="bulk-actions-bar" style="display:none;">
+              <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-projects">0</span> project(s) selected</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('projects')">Deselect All</button>
+                <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('projects')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+              </div>
+            </div>
             <!-- Projects Table -->
             <div class="table-wrap">
               <table class="dash-table">
                 <thead>
                   <tr>
+                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllProjects" class="select-all-check" onchange="toggleSelectAll('projects', this.checked)" title="Select All Projects" /></th>
                     <th>Project Name & Scope</th>
                     <th>Assigned Client</th>
                     <th>Status</th>
@@ -1080,11 +1155,21 @@
               </div>
             </div>
 
+            
+            <!-- Bulk Actions Bar -->
+            <div id="bulkBar-faqs" class="bulk-actions-bar" style="display:none;">
+              <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-faqs">0</span> FAQ(s) selected</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('faqs')">Deselect All</button>
+                <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('faqs')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+              </div>
+            </div>
             <!-- FAQs Table -->
             <div class="table-wrap">
               <table class="dash-table">
                 <thead>
                   <tr>
+                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllFaqs" class="select-all-check" onchange="toggleSelectAll('faqs', this.checked)" title="Select All FAQs" /></th>
                     <th>Category</th>
                     <th>Question</th>
                     <th>Answer Preview</th>
@@ -1126,12 +1211,22 @@
               </div>
             </div>
 
+            
+            <!-- Bulk Actions Bar -->
+            <div id="bulkBar-users" class="bulk-actions-bar" style="display:none;">
+              <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-users">0</span> user(s) selected</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('users')">Deselect All</button>
+                <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('users')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+              </div>
+            </div>
             <!-- Users Table -->
             <div class="table-wrap">
               <table class="dash-table">
                 <thead>
                   <tr>
-                    <th>Client Profile</th>
+                  <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllUsers" class="select-all-check" onchange="toggleSelectAll('users', this.checked)" title="Select All Users" /></th>
+                  <th>Client Profile</th>
                     <th>Email Address</th>
                     <th>Access Role</th>
                     <th>Active Projects</th>
@@ -1209,7 +1304,10 @@
           <div id="inqModalMessage" style="background:var(--dash-surface); padding:1.25rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); font-size:0.875rem; line-height:1.6; white-space:pre-wrap; color:var(--text-primary); margin-top:0.4rem;"></div>
         </div>
       </div>
-      <div class="modal-footer" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:flex-end;">
+      <div class="modal-footer" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:flex-end; align-items:center;">
+        <button type="button" class="btn btn-sm btn-danger" id="inqModalDeleteBtn" onclick="deleteInquiryFromModal()" style="margin-right:auto;" title="Permanently delete this inquiry">
+          <i class="fa-solid fa-trash"></i> Delete Inquiry
+        </button>
         <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('inquiryModal')">Close</button>
         <button type="button" class="btn btn-sm btn-outline" id="inqConvertProjectBtn" onclick="convertInquiryToProject()">
           <i class="fa-solid fa-arrow-right"></i> Convert to Project
@@ -1334,9 +1432,14 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('projectModal')">Cancel</button>
-          <button type="submit" class="btn btn-sm btn-primary" id="projSubmitBtn">Save Project</button>
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+          <button type="button" class="btn btn-sm btn-danger" id="projModalDeleteBtn" onclick="deleteProjectFromModal()" style="display:none;" title="Delete this project">
+            <i class="fa-solid fa-trash"></i> Delete Project
+          </button>
+          <div style="display:flex; gap:0.5rem; margin-left:auto;">
+            <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('projectModal')">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-primary" id="projSubmitBtn">Save Project</button>
+          </div>
         </div>
       </form>
     </div>
@@ -1378,9 +1481,14 @@
             <label for="faqPublished" style="margin-bottom:0; cursor:pointer;">Live & Published on public website</label>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('faqModal')">Cancel</button>
-          <button type="submit" class="btn btn-sm btn-primary" id="faqSubmitBtn">Save FAQ</button>
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+          <button type="button" class="btn btn-sm btn-danger" id="faqModalDeleteBtn" onclick="deleteFaqFromModal()" style="display:none;" title="Delete this FAQ">
+            <i class="fa-solid fa-trash"></i> Delete FAQ
+          </button>
+          <div style="display:flex; gap:0.5rem; margin-left:auto;">
+            <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('faqModal')">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-primary" id="faqSubmitBtn">Save FAQ</button>
+          </div>
         </div>
       </form>
     </div>
@@ -1423,10 +1531,42 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('clientDossierModal')">Close</button>
-        <button type="button" class="btn btn-sm btn-primary" id="clientDossierNewProjBtn">
-          <i class="fa-solid fa-plus"></i> Assign New Project
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-sm btn-danger" id="dossierDeleteBtn" onclick="deleteUserFromDossier()" title="Delete this client account">
+          <i class="fa-solid fa-trash"></i> Delete Account
+        </button>
+        <div style="display:flex; gap:0.5rem;">
+          <button type="button" class="btn btn-sm btn-outline" onclick="closeModal('clientDossierModal')">Close</button>
+          <button type="button" class="btn btn-sm btn-primary" id="clientDossierNewProjBtn">
+            <i class="fa-solid fa-plus"></i> Assign New Project
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ════ MODAL: DEDICATED DELETE CONFIRMATION ════ -->
+  <div id="deleteConfirmModal" class="modal-overlay hidden" onclick="if(event.target===this) closeDeleteConfirm();" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+    <div class="modal-content" style="max-width: 440px; padding: 1.75rem; border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); border-radius:14px;">
+      <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:1.25rem;">
+        <div style="width:44px; height:44px; border-radius:50%; background:rgba(239, 68, 68, 0.15); color:#ef4444; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h3 id="deleteConfirmTitle" style="margin:0 0 0.25rem; font-size:1.15rem; color:#fff;">Confirm Permanent Deletion</h3>
+          <p id="deleteConfirmDesc" style="margin:0; font-size:0.825rem; color:var(--text-muted); line-height:1.5;">Are you sure you want to delete this record? This action cannot be undone.</p>
+        </div>
+      </div>
+
+      <div id="deleteConfirmTargetBox" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1.25rem; font-size:0.85rem; color:var(--text-primary); font-weight:600; display:none;">
+        <span id="deleteConfirmTargetName">-</span>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.6rem;">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeDeleteConfirm()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-danger" id="deleteConfirmExecuteBtn" onclick="executeDeleteConfirmed()">
+          <i class="fa-solid fa-trash"></i> Delete Permanently
         </button>
       </div>
     </div>
@@ -1526,8 +1666,151 @@
       projects: [],
       faqs: [],
       users: [],
-      currentInquiryForConvert: null
+      currentInquiryForConvert: null,
+      currentInquiry: null,
+      editingProjectId: null,
+      editingFaqId: null,
+      currentDossierUser: null,
+      selectedInquiries: new Set(),
+      selectedProjects: new Set(),
+      selectedFaqs: new Set(),
+      selectedUsers: new Set()
     };
+
+    /* ── DEDICATED DELETE CONFIRMATION SYSTEM ───────────────────────── */
+    let pendingDeleteAction = null;
+
+    function requestDeleteConfirm({ title, desc, targetName, onConfirm }) {
+      pendingDeleteAction = onConfirm;
+      const titleEl = document.getElementById('deleteConfirmTitle');
+      const descEl = document.getElementById('deleteConfirmDesc');
+      const targetBox = document.getElementById('deleteConfirmTargetBox');
+      const targetEl = document.getElementById('deleteConfirmTargetName');
+
+      if (titleEl) titleEl.textContent = title || 'Confirm Permanent Deletion';
+      if (descEl) descEl.textContent = desc || 'Are you sure you want to delete this record? This action cannot be undone.';
+      if (targetName && targetEl && targetBox) {
+        targetEl.textContent = targetName;
+        targetBox.style.display = 'block';
+      } else if (targetBox) {
+        targetBox.style.display = 'none';
+      }
+
+      openModal('deleteConfirmModal');
+    }
+    window.requestDeleteConfirm = requestDeleteConfirm;
+
+    function closeDeleteConfirm() {
+      closeModal('deleteConfirmModal');
+      pendingDeleteAction = null;
+    }
+    window.closeDeleteConfirm = closeDeleteConfirm;
+
+    async function executeDeleteConfirmed() {
+      if (typeof pendingDeleteAction === 'function') {
+        const action = pendingDeleteAction;
+        closeDeleteConfirm();
+        await action();
+      } else {
+        closeDeleteConfirm();
+      }
+    }
+    window.executeDeleteConfirmed = executeDeleteConfirmed;
+
+    /* ── BATCH / BULK SELECTION ENGINE ──────────────────────────────── */
+    function toggleSelectRow(type, id, checked) {
+      const setKey = 'selected' + type.charAt(0).toUpperCase() + type.slice(1);
+      if (!state[setKey]) state[setKey] = new Set();
+      if (checked) {
+        state[setKey].add(Number(id));
+      } else {
+        state[setKey].delete(Number(id));
+      }
+      updateBulkBar(type);
+    }
+    window.toggleSelectRow = toggleSelectRow;
+
+    function toggleSelectAll(type, checked) {
+      const setKey = 'selected' + type.charAt(0).toUpperCase() + type.slice(1);
+      state[setKey] = new Set();
+      const list = state[type] || [];
+      if (checked) {
+        list.forEach(item => {
+          if (type === 'users' && state.currentUser && state.currentUser.id === item.id) return;
+          state[setKey].add(Number(item.id));
+        });
+      }
+      const checks = document.querySelectorAll('.row-select-' + type);
+      checks.forEach(c => {
+        const id = Number(c.dataset.id);
+        c.checked = checked && (type !== 'users' || (state.currentUser && state.currentUser.id !== id));
+      });
+      updateBulkBar(type);
+    }
+    window.toggleSelectAll = toggleSelectAll;
+
+    function clearBulkSelection(type) {
+      const setKey = 'selected' + type.charAt(0).toUpperCase() + type.slice(1);
+      state[setKey] = new Set();
+      const allCheck = document.getElementById('selectAll' + type.charAt(0).toUpperCase() + type.slice(1));
+      if (allCheck) allCheck.checked = false;
+      const checks = document.querySelectorAll('.row-select-' + type);
+      checks.forEach(c => c.checked = false);
+      updateBulkBar(type);
+    }
+    window.clearBulkSelection = clearBulkSelection;
+
+    function updateBulkBar(type) {
+      const setKey = 'selected' + type.charAt(0).toUpperCase() + type.slice(1);
+      const count = state[setKey] ? state[setKey].size : 0;
+      const bar = document.getElementById('bulkBar-' + type);
+      const countEl = document.getElementById('bulkCount-' + type);
+      if (countEl) countEl.textContent = count;
+      if (bar) {
+        bar.style.display = count > 0 ? 'flex' : 'none';
+      }
+    }
+    window.updateBulkBar = updateBulkBar;
+
+    function executeBulkDelete(type) {
+      const setKey = 'selected' + type.charAt(0).toUpperCase() + type.slice(1);
+      const ids = Array.from(state[setKey] || []);
+      if (ids.length === 0) return;
+
+      const labelMap = {
+        inquiries: 'Inquiry Records',
+        projects: 'Project Deliveries',
+        faqs: 'Knowledge FAQs',
+        users: 'Client Accounts'
+      };
+
+      requestDeleteConfirm({
+        title: 'Batch Delete ' + ids.length + ' ' + (labelMap[type] || 'Records'),
+        desc: 'Permanently delete all ' + ids.length + ' selected items? This bulk operation cannot be undone and will remove them from the database.',
+        targetName: ids.length + ' selected records (' + type + ')',
+        onConfirm: async () => {
+          try {
+            const res = await apiFetch('/api/admin/bulk-delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type, ids })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Bulk deletion failed');
+            showToast('Successfully deleted ' + (data.deletedCount || ids.length) + ' record(s)', 'success', 'Bulk Deleted');
+            clearBulkSelection(type);
+            if (type === 'inquiries') await loadInquiries();
+            else if (type === 'projects') await loadProjects();
+            else if (type === 'faqs') await loadFaqs();
+            else if (type === 'users') await loadUsers();
+            await loadAdminStats();
+          } catch (err) {
+            showToast(err.message || 'Error during bulk deletion', 'error', 'Error');
+          }
+        }
+      });
+    }
+    window.executeBulkDelete = executeBulkDelete;
 
     // -- Live Clock in Topbar ------------------------------------------
     function startClock() {
@@ -1783,7 +2066,7 @@
     function renderRecentInquiries(list) {
       const tbody = document.getElementById('recentInquiriesBody');
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No recent inquiries received.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No recent inquiries received.</td></tr>`;
         return;
       }
       tbody.innerHTML = list.map(inq => `
@@ -1800,6 +2083,12 @@
             <span class="badge-pill" style="background:rgba(255,255,255,0.05); font-size:0.68rem;">${escapeHtml(inq.budget || 'Custom')}</span>
           </td>
           <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(inq.createdAt)}</td>
+          <td style="text-align:right;" onclick="event.stopPropagation();">
+            <div class="actions-cell">
+              <button class="btn-sm btn-outline" onclick="event.stopPropagation(); viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
+              <button class="btn-sm btn-danger" onclick="event.stopPropagation(); deleteInquiry(${inq.id})" title="Delete Inquiry"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
         </tr>
       `).join('');
     }
@@ -1809,7 +2098,7 @@
       if (!list.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7">
+            <td colspan="8">
               <div class="empty-state">
                 <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
                 <div class="empty-title">No client inquiries found</div>
@@ -1822,8 +2111,12 @@
       }
       tbody.innerHTML = list.map(inq => {
         const initials = (inq.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const isChecked = state.selectedInquiries && state.selectedInquiries.has(inq.id);
         return `
         <tr>
+          <td style="text-align:center;">
+            <input type="checkbox" class="row-select-check row-select-inquiries" data-id="${inq.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('inquiries', ${inq.id}, this.checked)" />
+          </td>
           <td>
             <div class="user-cell">
               <div class="user-mini-avatar" style="background:rgba(245,158,11,0.12); color:#f59e0b; border-color:rgba(245,158,11,0.3);">${initials}</div>
@@ -1895,6 +2188,7 @@
       const inq = state.inquiries.find(i => i.id === id);
       if (!inq) return;
 
+      state.currentInquiry = inq;
       state.currentInquiryForConvert = inq;
       document.getElementById('inqModalSubject').textContent = inq.subject;
       document.getElementById('inqModalName').textContent = inq.name;
@@ -1948,18 +2242,38 @@
       showToast('Drafted project from inquiry details', 'info', 'Draft Created');
     }
 
-    async function deleteInquiry(id) {
-      if (!confirm('Are you sure you want to permanently delete this inquiry record?')) return;
-      try {
-        const res = await apiFetch(`/api/admin/inquiries/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Failed to delete inquiry');
-        showToast('Inquiry record deleted', 'success', 'Deleted');
-        await loadInquiries();
-        await loadAdminStats();
-      } catch (err) {
-        showToast(err.message || 'Error deleting inquiry', 'error', 'Error');
-      }
+    async function deleteInquiry(id, name) {
+      const inq = state.inquiries.find(i => i.id === id);
+      const targetName = name || (inq ? `${inq.name} — ${inq.subject}` : `Inquiry #${id}`);
+      requestDeleteConfirm({
+        title: 'Delete Client Inquiry',
+        desc: 'Are you sure you want to permanently delete this inquiry submission? This record will be erased from active inquiries and reporting.',
+        targetName: targetName,
+        onConfirm: async () => {
+          try {
+            const res = await apiFetch(`/api/admin/inquiries/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete inquiry');
+            showToast('Inquiry record deleted', 'success', 'Deleted');
+            if (state.selectedInquiries) state.selectedInquiries.delete(id);
+            updateBulkBar('inquiries');
+            await loadInquiries();
+            await loadAdminStats();
+          } catch (err) {
+            showToast(err.message || 'Error deleting inquiry', 'error', 'Error');
+          }
+        }
+      });
     }
+    window.deleteInquiry = deleteInquiry;
+
+    function deleteInquiryFromModal() {
+      if (!state.currentInquiry) return;
+      const id = state.currentInquiry.id;
+      const targetName = `${state.currentInquiry.name} — ${state.currentInquiry.subject}`;
+      closeModal('inquiryModal');
+      deleteInquiry(id, targetName);
+    }
+    window.deleteInquiryFromModal = deleteInquiryFromModal;
 
     // -- WhatsApp & Email Inquiry Replies -----------------------------
     function formatPhoneForWhatsapp(rawPhone) {
@@ -2126,7 +2440,10 @@ https://logictech.co.ke`;
             <div class="progress-label">${p.progress}%</div>
           </td>
           <td style="text-align:right;">
-            <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Live Discussion"><i class="fa-solid fa-comments"></i></button>
+            <div class="actions-cell">
+              <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Live Discussion"><i class="fa-solid fa-comments"></i></button>
+              <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete Project"><i class="fa-solid fa-trash"></i></button>
+            </div>
           </td>
         </tr>
       `).join('');
@@ -2137,7 +2454,7 @@ https://logictech.co.ke`;
       if (!list.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6">
+            <td colspan="7">
               <div class="empty-state">
                 <div class="empty-icon"><i class="fa-solid fa-cubes"></i></div>
                 <div class="empty-title">No projects currently listed</div>
@@ -2151,8 +2468,12 @@ https://logictech.co.ke`;
       }
       tbody.innerHTML = list.map(p => {
         const initials = (p.clientName || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const isChecked = state.selectedProjects && state.selectedProjects.has(p.id);
         return `
         <tr>
+          <td style="text-align:center;">
+            <input type="checkbox" class="row-select-check row-select-projects" data-id="${p.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('projects', ${p.id}, this.checked)" />
+          </td>
           <td>
             <div class="proj-name">
               <i class="fa-solid fa-folder" style="color:#818cf8; font-size:0.9rem;"></i>
@@ -2208,6 +2529,9 @@ https://logictech.co.ke`;
     }
 
     function openNewProjectModal(preselectedUserId = null) {
+      state.editingProjectId = null;
+      const delBtn = document.getElementById('projModalDeleteBtn');
+      if (delBtn) delBtn.style.display = 'none';
       document.getElementById('projModalTitle').textContent = 'Create New Project';
       document.getElementById('projId').value = '';
       document.getElementById('projName').value = '';
@@ -2231,6 +2555,9 @@ https://logictech.co.ke`;
       const p = state.projects.find(proj => proj.id === id);
       if (!p) return;
 
+      state.editingProjectId = id;
+      const delBtn = document.getElementById('projModalDeleteBtn');
+      if (delBtn) delBtn.style.display = 'inline-flex';
       document.getElementById('projModalTitle').textContent = 'Edit Project: ' + p.name;
       document.getElementById('projId').value = p.id;
       document.getElementById('projName').value = p.name;
@@ -2296,18 +2623,37 @@ https://logictech.co.ke`;
       }
     }
 
-    async function deleteProject(id) {
-      if (!confirm('Are you sure you want to permanently delete this project?')) return;
-      try {
-        const res = await apiFetch(`/api/admin/projects/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Failed to delete project');
-        showToast('Project deleted successfully', 'success', 'Deleted');
-        await loadProjects();
-        await loadAdminStats();
-      } catch (err) {
-        showToast(err.message || 'Error deleting project', 'error', 'Error');
-      }
+    async function deleteProject(id, name) {
+      const proj = state.projects.find(p => p.id === id);
+      const targetName = name || (proj ? proj.name : `Project #${id}`);
+      requestDeleteConfirm({
+        title: 'Delete Project Engagement',
+        desc: 'Are you sure you want to permanently delete this project? All associated milestones and tasks will be removed.',
+        targetName: targetName,
+        onConfirm: async () => {
+          try {
+            const res = await apiFetch(`/api/admin/projects/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete project');
+            showToast('Project deleted successfully', 'success', 'Deleted');
+            if (state.selectedProjects) state.selectedProjects.delete(id);
+            updateBulkBar('projects');
+            await loadProjects();
+            await loadAdminStats();
+          } catch (err) {
+            showToast(err.message || 'Error deleting project', 'error', 'Error');
+          }
+        }
+      });
     }
+    window.deleteProject = deleteProject;
+
+    function deleteProjectFromModal() {
+      if (!state.editingProjectId) return;
+      const id = state.editingProjectId;
+      closeModal('projectModal');
+      deleteProject(id);
+    }
+    window.deleteProjectFromModal = deleteProjectFromModal;
 
     // -- FAQs ----------------------------------------------------------
     async function loadFaqs() {
@@ -2327,7 +2673,7 @@ https://logictech.co.ke`;
       if (!list.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5">
+            <td colspan="6">
               <div class="empty-state">
                 <div class="empty-icon"><i class="fa-solid fa-circle-question"></i></div>
                 <div class="empty-title">No knowledge FAQs found</div>
@@ -2339,8 +2685,13 @@ https://logictech.co.ke`;
         `;
         return;
       }
-      tbody.innerHTML = list.map(f => `
+      tbody.innerHTML = list.map(f => {
+        const isChecked = state.selectedFaqs && state.selectedFaqs.has(f.id);
+        return `
         <tr>
+          <td style="text-align:center;">
+            <input type="checkbox" class="row-select-check row-select-faqs" data-id="${f.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('faqs', ${f.id}, this.checked)" />
+          </td>
           <td><span class="badge-pill badge-category">${escapeHtml(f.category)}</span></td>
           <td><strong style="color:var(--text-primary);">${escapeHtml(f.q)}</strong></td>
           <td style="max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-muted); font-size:0.825rem;">${escapeHtml(f.a)}</td>
@@ -2352,7 +2703,8 @@ https://logictech.co.ke`;
             </div>
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function filterFaqs() {
@@ -2372,6 +2724,9 @@ https://logictech.co.ke`;
     }
 
     function openFaqModal() {
+      state.editingFaqId = null;
+      const delBtn = document.getElementById('faqModalDeleteBtn');
+      if (delBtn) delBtn.style.display = 'none';
       document.getElementById('faqModalTitle').textContent = 'Add Knowledge FAQ';
       document.getElementById('faqId').value = '';
       document.getElementById('faqCategory').value = 'general';
@@ -2385,6 +2740,9 @@ https://logictech.co.ke`;
       const f = state.faqs.find(faq => faq.id === id);
       if (!f) return;
 
+      state.editingFaqId = id;
+      const delBtn = document.getElementById('faqModalDeleteBtn');
+      if (delBtn) delBtn.style.display = 'inline-flex';
       document.getElementById('faqModalTitle').textContent = 'Edit FAQ Item';
       document.getElementById('faqId').value = f.id;
       document.getElementById('faqCategory').value = f.category;
@@ -2434,18 +2792,73 @@ https://logictech.co.ke`;
       }
     }
 
-    async function deleteFaq(id) {
-      if (!confirm('Are you sure you want to delete this FAQ item?')) return;
-      try {
-        const res = await apiFetch(`/api/admin/faqs/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Failed to delete FAQ');
-        showToast('FAQ item deleted', 'success');
-        await loadFaqs();
-        await loadAdminStats();
-      } catch (err) {
-        showToast(err.message || 'Error deleting FAQ', 'error', 'Error');
-      }
+    async function deleteFaq(id, question) {
+      const faq = state.faqs.find(f => f.id === id);
+      const targetName = question || (faq ? faq.q : `FAQ #${id}`);
+      requestDeleteConfirm({
+        title: 'Delete Knowledge FAQ Item',
+        desc: 'Remove this question and answer from the published client knowledge base directory?',
+        targetName: targetName,
+        onConfirm: async () => {
+          try {
+            const res = await apiFetch(`/api/admin/faqs/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete FAQ');
+            showToast('FAQ item deleted', 'success', 'Deleted');
+            if (state.selectedFaqs) state.selectedFaqs.delete(id);
+            updateBulkBar('faqs');
+            await loadFaqs();
+            await loadAdminStats();
+          } catch (err) {
+            showToast(err.message || 'Error deleting FAQ', 'error', 'Error');
+          }
+        }
+      });
     }
+    window.deleteFaq = deleteFaq;
+
+    function deleteFaqFromModal() {
+      if (!state.editingFaqId) return;
+      const id = state.editingFaqId;
+      closeModal('faqModal');
+      deleteFaq(id);
+    }
+    window.deleteFaqFromModal = deleteFaqFromModal;
+
+    /* ── USER ACCOUNT DELETION ───────────────────────────────────────── */
+    async function deleteUser(id, name, role) {
+      if (state.currentUser && state.currentUser.id === id) {
+        showToast('You cannot delete your own active administrator account', 'warning', 'Protected');
+        return;
+      }
+      requestDeleteConfirm({
+        title: 'Delete Client Account',
+        desc: `Permanently delete the user account for ${name || 'this client'}? All associated sessions, access tokens, and project assignments will be removed from the database.`,
+        targetName: `${name || 'Client Account'} (${role || 'client'})`,
+        onConfirm: async () => {
+          try {
+            const res = await apiFetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Failed to delete client account');
+            showToast('Client account permanently deleted', 'success', 'Deleted');
+            if (state.selectedUsers) state.selectedUsers.delete(id);
+            updateBulkBar('users');
+            closeModal('clientDossierModal');
+            await loadUsers();
+            await loadAdminStats();
+          } catch (err) {
+            showToast(err.message || 'Error deleting client account', 'error', 'Error');
+          }
+        }
+      });
+    }
+    window.deleteUser = deleteUser;
+
+    function deleteUserFromDossier() {
+      if (!state.currentDossierUser) return;
+      const u = state.currentDossierUser;
+      deleteUser(u.id, u.name, u.role);
+    }
+    window.deleteUserFromDossier = deleteUserFromDossier;
 
     // -- Users / Clients Directory -------------------------------------
     async function loadUsers() {
@@ -2465,7 +2878,7 @@ https://logictech.co.ke`;
       if (!list.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7">
+            <td colspan="8">
               <div class="empty-state">
                 <div class="empty-icon"><i class="fa-solid fa-users"></i></div>
                 <div class="empty-title">No client accounts registered</div>
@@ -2478,14 +2891,19 @@ https://logictech.co.ke`;
       }
       tbody.innerHTML = list.map(u => {
         const initials = (u.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const isCurrentAdmin = state.currentUser && state.currentUser.id === u.id;
+        const isChecked = state.selectedUsers && state.selectedUsers.has(u.id);
         return `
         <tr>
+          <td style="text-align:center;">
+            ${!isCurrentAdmin ? `<input type="checkbox" class="row-select-check row-select-users" data-id="${u.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('users', ${u.id}, this.checked)" />` : ''}
+          </td>
           <td>
             <div class="user-cell">
               <div class="user-mini-avatar" style="${u.role === 'admin' ? 'background:rgba(168,85,247,0.2); color:#c084fc; border-color:rgba(168,85,247,0.3);' : ''}">${initials}</div>
               <div>
                 <strong style="color:var(--text-primary);">${escapeHtml(u.name)}</strong>
-                <div style="font-size:0.75rem; color:var(--text-muted);">Account #${u.id}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Account #${u.id} ${isCurrentAdmin ? '<span style="color:var(--gold-light); font-weight:700;">(You)</span>' : ''}</div>
               </div>
             </div>
           </td>
@@ -2502,10 +2920,12 @@ https://logictech.co.ke`;
             <div class="actions-cell">
               <button class="btn-sm btn-outline" onclick="openClientDossier(${u.id})" title="Inspect Dossier"><i class="fa-solid fa-address-card"></i> Dossier</button>
               <button class="btn-sm btn-primary" onclick="openNewProjectModal(${u.id})" title="Assign Project"><i class="fa-solid fa-plus"></i></button>
+              ${!isCurrentAdmin ? `<button class="btn-sm btn-danger" onclick="deleteUser(${u.id}, '${escapeHtml(u.name).replace(/'/g, "\\'")}', '${u.role}')" title="Delete Client Account"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
           </td>
         </tr>
-      `}).join('');
+      `;
+      }).join('');
     }
 
     function filterUsers() {
@@ -2526,6 +2946,12 @@ https://logictech.co.ke`;
     function openClientDossier(userId) {
       const u = state.users.find(user => user.id === userId);
       if (!u) return;
+
+      state.currentDossierUser = u;
+      const delBtn = document.getElementById('dossierDeleteBtn');
+      if (delBtn) {
+        delBtn.style.display = (state.currentUser && state.currentUser.id === u.id) ? 'none' : 'inline-flex';
+      }
 
       document.getElementById('clientDossierName').textContent = u.name;
       document.getElementById('clientDossierEmail').textContent = u.email;
