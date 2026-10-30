@@ -6,7 +6,7 @@
   <title>Enterprise Client Portal — Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css?v=2.3" />
-  <link rel="stylesheet" href="css/dashboard.css?v=2.4" />
+  <link rel="stylesheet" href="css/dashboard.css?v=2.6" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
@@ -481,7 +481,7 @@
       font-size: clamp(0.8rem, 0.76rem + 0.2vw, 0.875rem);
       line-height: 1.6;
       overflow-x: hidden;
-      max-width: 100vw;
+      max-width: 100%;
     }
     .dash-body p,
     .dstat-card p,
@@ -853,37 +853,41 @@
     @media (min-width: 1024px) {
       .sidebar {
         transform: translateX(0) !important;
-        width: 68px !important;
+        width: var(--dash-sidebar-w, 260px) !important;
+        transition: width 0.28s ease !important;
         overflow: hidden !important;
       }
-      .sidebar:hover,
-      .sidebar.sidebar-open {
-        width: 260px !important;
+      .sidebar.sidebar-collapsed {
+        width: 68px !important;
       }
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link span:not(.sidebar-badge),
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-brand-badge,
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-section-title,
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-system-card,
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-logo a span {
+      .sidebar.sidebar-collapsed .sidebar-link span:not(.sidebar-badge),
+      .sidebar.sidebar-collapsed .sidebar-brand-badge,
+      .sidebar.sidebar-collapsed .sidebar-section-title,
+      .sidebar.sidebar-collapsed .sidebar-system-card,
+      .sidebar.sidebar-collapsed .sidebar-logo a span {
         display: none !important;
       }
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link {
+      .sidebar.sidebar-collapsed .sidebar-link {
         justify-content: center !important;
         padding: 0.75rem 0.5rem !important;
         gap: 0 !important;
       }
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link i {
+      .sidebar.sidebar-collapsed .sidebar-link i {
         width: auto !important;
         font-size: 1.1rem !important;
       }
       .dash-main {
-        margin-left: 68px !important;
-        transition: margin-left 0.28s ease !important;
+        margin-left: var(--dash-sidebar-w, 260px) !important;
+        width: calc(100% - var(--dash-sidebar-w, 260px)) !important;
+        max-width: calc(100% - var(--dash-sidebar-w, 260px)) !important;
+        min-width: 0 !important;
+        flex: 1 1 0% !important;
       }
-      .dash-main.main-expanded,
-      .sidebar:hover ~ .dash-main,
-      .sidebar.sidebar-open ~ .dash-main {
-        margin-left: 260px !important;
+      .dash-main.main-expanded {
+        margin-left: 68px !important;
+        width: calc(100% - 68px) !important;
+        max-width: calc(100% - 68px) !important;
+        min-width: 0 !important;
       }
       .dash-stats {
         grid-template-columns: repeat(2, 1fr) !important;
@@ -925,11 +929,16 @@
         gap: 0.75rem !important;
       }
       .dash-main {
-        margin-left: 260px !important;
+        margin-left: var(--dash-sidebar-w, 260px) !important;
+        width: calc(100% - var(--dash-sidebar-w, 260px)) !important;
+        max-width: calc(100% - var(--dash-sidebar-w, 260px)) !important;
+        min-width: 0 !important;
       }
       .dash-stats {
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1.25rem !important;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+        gap: 1rem !important;
+        min-width: 0 !important;
+        width: 100% !important;
       }
       .dash-body {
         max-width: 1400px !important;
