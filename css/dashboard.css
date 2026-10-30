@@ -3439,3 +3439,491 @@ body:not(.dark) .dash-topbar {
     min-width: 44px !important;
   }
 }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ── MOBILE TOPBAR STRICT 5-SLOT ARCHITECTURE (320px – 767px) ──────
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Mobile Title Wrap (Hidden by default on desktop/tablet) */
+.mobile-topbar-title-wrap {
+  display: none;
+}
+
+/* User Dropdown Menu */
+.dash-user-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 290px;
+  max-width: 90dvw;
+  background: var(--navy-900, #111B2E);
+  border: 1px solid var(--dash-border, rgba(30, 42, 64, 0.9));
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  padding: 0.9rem;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  animation: userDropdownAnim 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.user-dropdown-menu.hidden {
+  display: none !important;
+}
+
+@keyframes userDropdownAnim {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-dropdown-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--dash-accent, #c9a45c), #8c6a2e);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.user-dropdown-avatar.admin-avatar {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.user-dropdown-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.user-dropdown-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-dropdown-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--dash-accent, #c9a45c);
+  letter-spacing: 0.05em;
+}
+
+.user-dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.35;
+}
+
+.user-dropdown-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.user-dropdown-action {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary, #fff);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 150ms ease;
+}
+
+.user-dropdown-action:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.user-dropdown-action.logout-action {
+  color: #f87171;
+}
+
+.user-dropdown-action.logout-action:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Floating Action Button (Mobile only) */
+.mobile-fab-btn {
+  display: none;
+}
+
+/* Ctrl K badge only when hover & pointer fine */
+.dash-cmd-bar .cmd-badge {
+  display: none !important;
+}
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .dash-cmd-bar .cmd-badge {
+    display: inline-block !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ── STRICT MOBILE BREAKPOINT RULES (< 768px: 320px – 767px) ────────
+   ════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767.98px) {
+  .dash-topbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    min-height: 56px !important;
+    height: auto !important;
+    padding: 0 12px !important;
+    padding-top: max(0px, env(safe-area-inset-top)) !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 1. Hamburger button: flex: 0 0 auto */
+  #sidebarToggle {
+    flex: 0 0 auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+  }
+
+  /* 2. Mobile Title Wrap: flex: 1 1 auto, min-width: 0 */
+  .mobile-topbar-title-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .mobile-topbar-title {
+    font-size: clamp(0.85rem, 0.75rem + 0.5vw, 1rem) !important;
+    font-weight: 700 !important;
+    color: var(--text-primary) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    letter-spacing: -0.015em !important;
+    margin: 0 !important;
+  }
+
+  .mobile-status-dot {
+    display: inline-block !important;
+    width: 7px !important;
+    height: 7px !important;
+    min-width: 7px !important;
+    min-height: 7px !important;
+    border-radius: 50% !important;
+    background: #10b981 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Hide desktop breadcrumbs & full SLA chip on mobile */
+  .dash-breadcrumb {
+    display: none !important;
+  }
+  .dash-telemetry-chip {
+    display: none !important;
+  }
+
+  /* 3. Hide full command bar on mobile */
+  .dash-cmd-bar {
+    display: none !important;
+  }
+
+  /* 4. Show mobile search trigger icon button */
+  .mobile-search-btn {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* 5. Notifications wrapper: flex: 0 0 auto */
+  .notifications-wrapper {
+    flex: 0 0 auto !important;
+  }
+  .notifications-wrapper .icon-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  /* 6. Profile Avatar: flex: 0 0 auto */
+  .dash-user-wrapper {
+    flex: 0 0 auto !important;
+  }
+  .dash-user {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+  }
+  .dash-user-info {
+    display: none !important;
+  }
+
+  /* Hide other desktop-only items from topbar */
+  .dash-sync-indicator,
+  .dash-clock-widget,
+  .btn-new-project,
+  .btn-new-request,
+  #themeToggle,
+  .shortcuts-btn {
+    display: none !important;
+  }
+
+  /* Floating Action Button (FAB) at bottom-right */
+  .mobile-fab-btn {
+    display: flex !important;
+    position: fixed !important;
+    bottom: max(20px, calc(env(safe-area-inset-bottom) + 16px)) !important;
+    right: max(20px, calc(env(safe-area-inset-right) + 16px)) !important;
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, var(--dash-accent, #c9a45c), #99742e) !important;
+    color: #fff !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.25rem !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 16px var(--dash-accent-glow) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    z-index: 85 !important;
+    cursor: pointer !important;
+    transition: transform 150ms ease, box-shadow 150ms ease !important;
+  }
+  .mobile-fab-btn:active {
+    transform: scale(0.92) !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ── TABLET & DESKTOP RESTORATION (768px+) ───────────────────────────
+   ════════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .mobile-topbar-title-wrap {
+    display: none !important;
+  }
+  .mobile-search-btn {
+    display: none !important;
+  }
+  .mobile-fab-btn {
+    display: none !important;
+  }
+  .dash-cmd-bar {
+    display: flex !important;
+  }
+  .dash-breadcrumb {
+    display: flex !important;
+  }
+}
+
+
+/* ── Mobile Topbar: enforce strict 5-slot left-to-right order ────── */
+/* Slot 1: hamburger | Slot 2: title (flex:1) | Slot 3: search | Slot 4: bell | Slot 5: avatar */
+@media (max-width: 767.98px) {
+  /* Make the entire topbar a single flat flex row, children from both
+     dash-topbar-left and dash-topbar-right join the same visual line */
+  .dash-topbar {
+    position: relative !important;
+  }
+
+  /* LEFT zone: hamburger + mobile title (no extra grow allowed) */
+  .dash-topbar-left {
+    display: contents !important; /* flatten children into topbar flex row */
+  }
+
+  /* RIGHT zone: flatten into same flex row */
+  .dash-topbar-right {
+    display: contents !important; /* flatten children into topbar flex row */
+  }
+
+  /* Now assign explicit order to every direct participant */
+  #sidebarToggle {
+    order: 1 !important;
+    flex: 0 0 auto !important;
+  }
+
+  .mobile-topbar-title-wrap {
+    order: 2 !important;
+    display: flex !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  /* desktop breadcrumb hidden */
+  .dash-breadcrumb {
+    display: none !important;
+  }
+
+  /* desktop SLA chip hidden */
+  .dash-telemetry-chip {
+    display: none !important;
+  }
+
+  /* center search bar hidden */
+  .dash-cmd-bar {
+    display: none !important;
+  }
+
+  /* Slot 3: mobile search icon */
+  .mobile-search-btn {
+    order: 3 !important;
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  /* Hide: sync status, clock, new-request, theme toggle, shortcuts */
+  .dash-sync-indicator { display: none !important; }
+  .dash-clock-widget { display: none !important; }
+  .btn-new-request { display: none !important; }
+  .btn-new-project { display: none !important; }
+  #themeToggle { display: none !important; }
+  .shortcuts-btn { display: none !important; }
+
+  /* Slot 4: notifications */
+  .notifications-wrapper {
+    order: 4 !important;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .notifications-wrapper .icon-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  /* Slot 5: avatar chip (profile) */
+  .dash-user-wrapper {
+    order: 5 !important;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .dash-user {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .dash-user-info {
+    display: none !important;
+  }
+}
+
+/* ── Restore normal flex structure at 768px+ ─────────────────────── */
+@media (min-width: 768px) {
+  .dash-topbar-left {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+  }
+  .dash-topbar-right {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+    margin-left: auto !important;
+  }
+  #sidebarToggle { order: unset !important; }
+  .mobile-topbar-title-wrap { display: none !important; }
+  .mobile-search-btn { display: none !important; }
+  .mobile-fab-btn { display: none !important; }
+  .notifications-wrapper { order: unset !important; }
+  .dash-user-wrapper { order: unset !important; }
+  .dash-user {
+    width: auto !important;
+    height: 42px !important;
+    min-width: 0 !important;
+    padding: 0.25rem 0.65rem 0.25rem 0.35rem !important;
+    border: 1px solid var(--dash-border) !important;
+    background: rgba(255,255,255,0.03) !important;
+  }
+  .dash-user-info {
+    display: flex !important;
+  }
+  .dash-breadcrumb {
+    display: flex !important;
+  }
+  .dash-cmd-bar {
+    display: flex !important;
+  }
+}
+
+/* Ctrl K badge: only on hover+pointer:fine devices (desktop w/ cursor) */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .dash-cmd-bar .cmd-badge {
+    display: inline-block !important;
+  }
+}

@@ -6,7 +6,7 @@
   <title>Enterprise Client Portal — Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css?v=2.3" />
-  <link rel="stylesheet" href="css/dashboard.css?v=2.7" />
+  <link rel="stylesheet" href="css/dashboard.css?v=2.8" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
@@ -1869,9 +1869,13 @@
     <!-- Top Bar -->
     <header class="dash-topbar">
       <div class="dash-topbar-left">
-        <button class="icon-btn" id="sidebarToggle" onclick="toggleSidebarFull()" title="Toggle Sidebar">
+        <button class="icon-btn" id="sidebarToggle" onclick="toggleSidebarFull()" title="Toggle Sidebar" aria-label="Toggle Navigation">
           <i class="fa-solid fa-bars"></i>
         </button>
+        <div class="mobile-topbar-title-wrap">
+          <span class="mobile-topbar-title" id="mobilePageTitle">Client Portal</span>
+          <span class="mobile-status-dot pulse-dot" title="Enterprise SLA Active • 99.98% High Availability"></span>
+        </div>
         <div class="dash-breadcrumb">
           <a href="#" onclick="switchClientTab('overview')">Client Portal</a>
           <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i>
@@ -1892,6 +1896,11 @@
 
       <!-- Top Right Controls -->
       <div class="dash-topbar-right">
+        <!-- Mobile Search Trigger -->
+        <button class="icon-btn mobile-search-btn" onclick="openClientCmdPalette()" title="Search or jump to... (Ctrl K)" aria-label="Open Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        
         <div class="dash-sync-indicator" id="liveSyncStatus" title="Auto-refreshes every 60 seconds">
           <span class="pulse-dot"></span>
           <span id="syncTimeAgo">Updated just now</span>
@@ -1903,10 +1912,6 @@
         </div>
         <button class="btn btn-sm btn-primary btn-new-request" onclick="openRequestWizard()" title="New Deliverable Request (N)">
           <i class="fa-solid fa-plus"></i> <span class="btn-new-request-label">New Request</span>
-        </button>
-        <!-- Mobile Search Trigger -->
-        <button class="icon-btn mobile-search-btn" onclick="openClientCmdPalette()" title="Search or jump to... (Ctrl K)" aria-label="Open Search">
-          <i class="fa-solid fa-magnifying-glass"></i>
         </button>
         <!-- Notifications Bell & Dropdown -->
         <div class="notifications-wrapper" style="position:relative;">
@@ -1933,15 +1938,55 @@
           <i class="fa-solid fa-keyboard"></i>
         </button>
         <!-- User Profile Block -->
-        <div class="dash-user" onclick="switchClientTab('account')" style="cursor:pointer;" title="View Account Profile">
-          <div class="dash-avatar" id="dashAvatar">CL</div>
-          <div class="dash-user-info">
-            <span class="dash-user-name" id="dashName">Client Account</span>
-            <span class="dash-user-role dash-user-role-badge">Enterprise Client</span>
+        <div class="dash-user-wrapper">
+          <button class="dash-user" id="userProfileBtn" onclick="toggleUserDropdown(event)" aria-label="User Profile" aria-haspopup="true" aria-expanded="false" title="Account Menu">
+            <div class="dash-avatar" id="dashAvatar">CL</div>
+            <div class="dash-user-info">
+              <span class="dash-user-name" id="dashName">Client Account</span>
+              <span class="dash-user-role dash-user-role-badge">Enterprise Client</span>
+            </div>
+          </button>
+          <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-avatar" id="dropdownAvatar">CL</div>
+              <div class="user-dropdown-meta">
+                <span class="user-dropdown-name" id="dropdownName">Client Account</span>
+                <span class="user-dropdown-badge">Enterprise Client</span>
+              </div>
+            </div>
+            <div class="user-dropdown-section">
+              <div class="user-dropdown-item">
+                <span class="pulse-dot"></span>
+                <span>Enterprise SLA Active (99.98%)</span>
+              </div>
+              <div class="user-dropdown-item">
+                <i class="fa-solid fa-signal" style="color:#10b981; font-size:0.75rem;"></i>
+                <span id="dropdownSyncStatus">Live API • Updated just now</span>
+              </div>
+              <div class="user-dropdown-item">
+                <i class="fa-regular fa-clock" style="color:var(--dash-accent); font-size:0.75rem;"></i>
+                <span id="dropdownClockTime">--:--:--</span>
+              </div>
+            </div>
+            <div class="user-dropdown-actions">
+              <button class="user-dropdown-action" onclick="toggleTheme(); closeUserDropdown();">
+                <i class="fa-solid fa-moon"></i> Toggle Theme
+              </button>
+              <button class="user-dropdown-action" onclick="switchClientTab('account'); closeUserDropdown();">
+                <i class="fa-solid fa-user-gear"></i> Account Settings
+              </button>
+              <button class="user-dropdown-action logout-action" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </header>
+    <!-- Floating Action Button for Mobile (< 768px) -->
+    <button class="mobile-fab-btn" onclick="openRequestWizard()" title="New Deliverable Request" aria-label="New Deliverable Request">
+      <i class="fa-solid fa-plus"></i>
+    </button>
 
     <!-- Dashboard Body -->
     <div class="dash-body">
@@ -3035,6 +3080,29 @@
     window.toggleTheme = toggleTheme;
 
     /* ── 8. SIDEBAR COLLAPSE & MOBILE DRAWER ─────────────────────────── */
+    function toggleUserDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('userDropdownMenu');
+      const btn = document.getElementById('userProfileBtn');
+      if (!menu) return;
+      const isHidden = menu.classList.toggle('hidden');
+      if (btn) btn.setAttribute('aria-expanded', !isHidden);
+      const timeEl = document.getElementById('dropdownClockTime');
+      const srcTime = document.getElementById('clientLiveTime') || document.getElementById('liveTime');
+      if (timeEl && srcTime) timeEl.textContent = srcTime.textContent;
+    }
+    function closeUserDropdown() {
+      const menu = document.getElementById('userDropdownMenu');
+      const btn = document.getElementById('userProfileBtn');
+      if (menu) menu.classList.add('hidden');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+    window.toggleUserDropdown = toggleUserDropdown;
+    window.closeUserDropdown = closeUserDropdown;
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dash-user-wrapper')) closeUserDropdown();
+    });
+
     function toggleSidebarFull() {
       if (window.innerWidth <= 1024) {
         toggleSidebarMobile();
