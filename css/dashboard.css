@@ -2976,3 +2976,466 @@ button:not(.icon-btn) {
     display: none !important;
   }
 }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ── TOPBAR 3-ZONE FLEX ARCHITECTURE & RESPONSIVE POLISH ───────────
+   ════════════════════════════════════════════════════════════════════ */
+
+.dash-topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 80 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.75rem !important;
+  min-height: 64px !important;
+  height: auto !important;
+  padding: 0 clamp(0.75rem, 2vw, 1.5rem) !important;
+  background: rgba(15, 23, 42, 0.88) !important;
+  border-bottom: 1px solid var(--dash-border) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+body:not(.dark) .dash-topbar {
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* ── ZONE 1: LEFT (Menu + Breadcrumb + SLA Pill) ───────────────── */
+.dash-topbar-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+}
+
+.dash-breadcrumb {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  font-size: 0.825rem !important;
+  color: var(--text-muted) !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+}
+
+.dash-breadcrumb a {
+  color: var(--text-secondary) !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  font-weight: 500 !important;
+  transition: color 150ms ease !important;
+}
+
+.dash-breadcrumb a:hover {
+  color: var(--dash-accent) !important;
+}
+
+.dash-breadcrumb span {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 130px !important;
+}
+
+.dash-telemetry-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  padding: 0.3rem 0.7rem !important;
+  border-radius: 999px !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+  color: #10b981 !important;
+  font-size: 0.725rem !important;
+  font-weight: 600 !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+}
+
+/* ── ZONE 2: CENTER (Search Input with internal Ctrl+K hint) ───── */
+.dash-cmd-bar {
+  display: flex !important;
+  align-items: center !important;
+  position: relative !important;
+  flex: 1 1 240px !important;
+  min-width: 0 !important;
+  max-width: 560px !important;
+  margin-inline: auto !important;
+  cursor: pointer !important;
+}
+
+.dash-cmd-bar input {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 40px !important;
+  padding: 0 3.2rem 0 2.2rem !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--dash-border) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.825rem !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  transition: all 150ms ease !important;
+  cursor: pointer !important;
+}
+
+.dash-cmd-bar input:focus {
+  outline: none !important;
+  border-color: var(--dash-accent) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 0 3px var(--dash-accent-glow) !important;
+}
+
+.dash-cmd-bar .search-icon {
+  position: absolute !important;
+  left: 0.85rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--text-muted) !important;
+  font-size: 0.8rem !important;
+  pointer-events: none !important;
+}
+
+.dash-cmd-bar .cmd-badge {
+  position: absolute !important;
+  right: 0.65rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  padding: 0.18rem 0.45rem !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  font-size: 0.68rem !important;
+  color: var(--text-muted) !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--dash-border) !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;
+}
+
+.mobile-search-btn {
+  display: none !important;
+}
+
+/* ── ZONE 3: RIGHT (Status + Clock + Actions + Profile) ────────── */
+.dash-topbar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  margin-left: auto !important;
+}
+
+/* Standardized 40px Controls */
+.icon-btn {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--dash-border) !important;
+  color: var(--text-secondary) !important;
+  cursor: pointer !important;
+  transition: all 150ms ease !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(201, 164, 92, 0.35) !important;
+}
+
+.dash-sync-indicator {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  padding: 0.35rem 0.65rem !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--dash-border) !important;
+  font-size: 0.75rem !important;
+  color: var(--text-secondary) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.dash-clock-widget {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  padding: 0.35rem 0.75rem !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--dash-border) !important;
+  font-size: 0.775rem !important;
+  color: var(--text-secondary) !important;
+  font-variant-numeric: tabular-nums !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.btn-new-project,
+.btn-new-request {
+  height: 40px !important;
+  padding: 0 1rem !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  font-weight: 600 !important;
+  font-size: 0.825rem !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* Notification badge non-clipping */
+.notif-badge {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  padding: 2px 6px !important;
+  border-radius: 999px !important;
+  background: #f87171 !important;
+  color: #fff !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  border: 2px solid var(--dash-surface, #05020a) !important;
+  pointer-events: none !important;
+}
+
+/* Profile Chip: Avatar + Two-line stack (name + badge) */
+.dash-user {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  padding: 0.25rem 0.65rem 0.25rem 0.35rem !important;
+  height: 42px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--dash-border) !important;
+  transition: all 150ms ease !important;
+  flex-shrink: 0 !important;
+  min-width: 0 !important;
+  max-width: 220px !important;
+}
+
+.dash-user:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(201, 164, 92, 0.35) !important;
+}
+
+.dash-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, var(--dash-accent), #8c6a2e) !important;
+  color: #fff !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.dash-avatar.admin-avatar {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+}
+
+.dash-user-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.dash-user-name {
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 120px !important;
+}
+
+.dash-user-role-badge,
+.dash-user-role {
+  font-size: 0.65rem !important;
+  color: var(--dash-accent) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ── RESPONSIVE BREAKPOINT SPECIFICATIONS ───────────────────────────
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Desktop Wide (1280px+) ──────────────────────────────────── */
+@media (min-width: 1280px) {
+  .dash-breadcrumb { display: flex !important; }
+  .dash-telemetry-chip { display: inline-flex !important; }
+  .dash-cmd-bar { display: flex !important; }
+  .dash-sync-indicator { display: inline-flex !important; }
+  .dash-sync-indicator span:not(.pulse-dot) { display: inline !important; }
+  .dash-clock-widget { display: inline-flex !important; }
+  .btn-new-project .btn-new-project-label,
+  .btn-new-request .btn-new-request-label { display: inline !important; }
+  .shortcuts-btn { display: inline-flex !important; }
+  .dash-user-info { display: flex !important; }
+}
+
+/* ── 2. Small Desktop (1024px – 1279px) ─────────────────────────── */
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .dash-sync-indicator {
+    padding: 0.35rem 0.5rem !important;
+  }
+  .dash-sync-indicator span:not(.pulse-dot) {
+    display: none !important;
+  }
+  .shortcuts-btn {
+    display: none !important;
+  }
+  .dash-user-name {
+    max-width: 90px !important;
+  }
+  .dash-clock-widget .clock-date-part {
+    display: none !important;
+  }
+}
+
+/* ── 3. Tablet (768px – 1023px) ─────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .dash-breadcrumb {
+    display: none !important;
+  }
+  .dash-clock-widget {
+    display: none !important;
+  }
+  .dash-sync-indicator {
+    display: none !important;
+  }
+  .shortcuts-btn {
+    display: none !important;
+  }
+  .dash-telemetry-chip {
+    padding: 0.35rem !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    justify-content: center !important;
+  }
+  .dash-telemetry-chip span:not(.pulse-dot) {
+    display: none !important;
+  }
+  .dash-cmd-bar .cmd-badge {
+    display: none !important;
+  }
+  .btn-new-project,
+  .btn-new-request {
+    min-width: 40px !important;
+    width: 40px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+  .btn-new-project .btn-new-project-label,
+  .btn-new-request .btn-new-request-label,
+  .btn-new-project span,
+  .btn-new-request span {
+    display: none !important;
+  }
+  .btn-new-project i,
+  .btn-new-request i {
+    margin: 0 !important;
+  }
+  .dash-user {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .dash-user-info {
+    display: none !important;
+  }
+}
+
+/* ── 4. Mobile (< 768px: 320px – 767px) ─────────────────────────── */
+@media (max-width: 767.98px) {
+  .dash-topbar {
+    padding: 0 max(0.85rem, env(safe-area-inset-right)) 0 max(0.85rem, env(safe-area-inset-left)) !important;
+    min-height: 56px !important;
+    gap: 0.45rem !important;
+  }
+  .dash-breadcrumb {
+    display: none !important;
+  }
+  .dash-telemetry-chip {
+    display: none !important;
+  }
+  .dash-cmd-bar {
+    display: none !important;
+  }
+  .mobile-search-btn {
+    display: inline-flex !important;
+  }
+  .dash-clock-widget {
+    display: none !important;
+  }
+  .dash-sync-indicator {
+    display: none !important;
+  }
+  .btn-new-project,
+  .btn-new-request {
+    display: none !important;
+  }
+  #themeToggle {
+    display: none !important;
+  }
+  .shortcuts-btn {
+    display: none !important;
+  }
+  .dash-user {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .dash-user-info {
+    display: none !important;
+  }
+  .icon-btn,
+  .sidebar-link {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+}

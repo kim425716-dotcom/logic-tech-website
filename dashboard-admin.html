@@ -6,7 +6,7 @@
   <title>Executive Admin Portal � Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css?v=2.3" />
-  <link rel="stylesheet" href="css/dashboard.css?v=2.6" />
+  <link rel="stylesheet" href="css/dashboard.css?v=2.7" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
@@ -1123,12 +1123,16 @@
       <!-- Quick Command Bar -->
       <div class="dash-cmd-bar" onclick="openCmdPalette()">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" placeholder="Type a command or search..." readonly />
+        <input type="text" placeholder="Search or jump to..." readonly />
         <span class="cmd-badge">Ctrl K</span>
       </div>
 
       <!-- Top Right Controls -->
       <div class="dash-topbar-right">
+        <!-- Mobile Search Trigger -->
+        <button class="icon-btn mobile-search-btn" onclick="openCmdPalette()" title="Search or jump to... (Ctrl K)" aria-label="Open Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
         <div class="dash-clock-widget" id="dashClock" title="Current Time">
           <i class="fa-regular fa-clock" style="color:var(--dash-accent);"></i>
           <span id="liveTime">--:--:--</span>
