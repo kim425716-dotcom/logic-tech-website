@@ -333,7 +333,7 @@
     }
 
     .dstat-value {
-      font-size: 2.25rem !important;
+      font-size: clamp(1.35rem, 1.15rem + 0.6vw, 1.75rem) !important;
       font-weight: 700 !important;
       font-family: var(--font-serif) !important;
       letter-spacing: -0.02em !important;
@@ -493,75 +493,556 @@
       width: 100% !important;
     }
 
-    /* ── RESPONSIVE ADAPTATIONS ───────────────────────────── */
-    @media (max-width: 1024px) {
-      :root {
-        --dash-sidebar-w: 72px;
-      }
-      .sidebar {
-        width: var(--dash-sidebar-w) !important;
-      }
-      .sidebar-logo a span,
-      .sidebar-brand-badge,
-      .sidebar-section-title,
-      .sidebar-system-card,
-      .sidebar-link span:not(.sidebar-badge) {
-        display: none !important;
-      }
-      .sidebar-logo {
-        justify-content: center !important;
-        padding: 1.25rem 0.5rem !important;
-      }
-      .sidebar-link {
-        justify-content: center !important;
-        padding: 0.85rem 0.5rem !important;
-        font-size: 1.15rem !important;
-        position: relative !important;
-      }
-      .sidebar-link i {
-        margin: 0 !important;
-        font-size: 1.15rem !important;
-      }
-      .sidebar-link .sidebar-badge {
-        position: absolute !important;
-        top: 6px !important;
-        right: 8px !important;
-        padding: 2px 5px !important;
-        font-size: 0.65rem !important;
-      }
-      .dash-main {
-        margin-left: var(--dash-sidebar-w) !important;
-      }
+    /* ── RESPONSIVE ADAPTATIONS & FLUID TYPOGRAPHY (MOBILE-FIRST) ── */
+    /* Breakpoints: 320px (XS) → 480px (SM) → 640px (MD) → 768px (LG) → 1024px (XL) → 1280px (2XL) → 1536px+ (3XL) */
+
+    /* ── Fluid Typography (reduced global scale) ─────────────── */
+    html, body {
+      font-size: clamp(0.8rem, 0.76rem + 0.2vw, 0.875rem);
+      line-height: 1.6;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    .dash-body p,
+    .dstat-card p,
+    .dash-welcome p,
+    .modal-body p {
+      max-width: 72ch;
+    }
+    .dstat-value {
+      font-size: clamp(1.35rem, 1.15rem + 0.6vw, 1.75rem) !important;
+    }
+    .dstat-label {
+      font-size: clamp(0.66rem, 0.62rem + 0.1vw, 0.74rem) !important;
+    }
+    .dash-welcome h2 {
+      font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.45rem) !important;
+    }
+    .dash-page-title {
+      font-size: clamp(0.9rem, 0.82rem + 0.3vw, 1.1rem) !important;
+    }
+    .dash-card-header h3,
+    .modal-header h3 {
+      font-size: clamp(0.95rem, 0.88rem + 0.25vw, 1.15rem) !important;
+    }
+    .dash-table td,
+    .dash-table th,
+    .data-table td,
+    .data-table th {
+      font-size: clamp(0.72rem, 0.68rem + 0.12vw, 0.8rem) !important;
+    }
+    .btn-sm,
+    .btn {
+      font-size: clamp(0.72rem, 0.68rem + 0.12vw, 0.8rem) !important;
     }
 
-    @media (max-width: 900px) {
+    /* ── Base: XS Mobile (320px – 479px) ─────────────────────── */
+    .sidebar {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      bottom: 0 !important;
+      height: 100dvh !important;
+      width: min(280px, 85dvw) !important;
+      z-index: 100 !important;
+      transform: translateX(-100%) !important;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
+      box-shadow: none !important;
+      padding-top: env(safe-area-inset-top) !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+    .sidebar.sidebar-open {
+      transform: translateX(0) !important;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.85) !important;
+    }
+    .sidebar-backdrop {
+      position: fixed !important;
+      inset: 0 !important;
+      background: rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+      z-index: 95 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.25s ease !important;
+    }
+    .sidebar-backdrop.active {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    .dash-main {
+      margin-left: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: 100dvh !important;
+      transition: margin-left 0.28s ease !important;
+    }
+    .dash-topbar {
+      height: 56px !important;
+      padding: 0 max(0.85rem, env(safe-area-inset-right)) 0 max(0.85rem, env(safe-area-inset-left)) !important;
+    }
+    .dash-topbar-left {
+      gap: 0.5rem !important;
+      min-width: 0 !important;
+      flex: 1 !important;
+    }
+    .dash-page-title {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      max-width: 160px !important;
+    }
+    .dash-cmd-bar,
+    .dash-clock-widget,
+    .dash-telemetry-chip,
+    .dash-user-info {
+      display: none !important;
+    }
+    .dash-user {
+      padding: 0.2rem !important;
+      gap: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+    .dash-body {
+      padding: 1rem 0.85rem max(3.5rem, calc(env(safe-area-inset-bottom) + 3rem)) !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    .dash-stats {
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+    .dstat-card {
+      padding: 1rem 1.15rem !important;
+    }
+    .dash-welcome {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      padding: 1.15rem 1.25rem !important;
+      gap: 1rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+    .dash-welcome::after {
+      display: none !important;
+    }
+    .dash-welcome-actions {
+      width: 100% !important;
+      display: flex !important;
+      gap: 0.5rem !important;
+    }
+    .dash-welcome-actions .btn,
+    .dash-welcome-actions .btn-sm {
+      flex: 1 !important;
+      justify-content: center !important;
+      min-height: 44px !important;
+    }
+    .pipeline-bar-card {
+      padding: 1rem 1.15rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+    .pipeline-legend {
+      gap: 0.6rem !important;
+      flex-wrap: wrap !important;
+    }
+    .table-wrap {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    .btn-sm,
+    .sidebar-link,
+    .icon-btn {
+      min-height: 44px;
+    }
+    .dash-toolbar {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.65rem !important;
+      padding: 0.85rem 1rem !important;
+    }
+    .dash-search {
+      min-width: 100% !important;
+      max-width: 100% !important;
+    }
+    .dash-toolbar-actions {
+      flex-wrap: wrap !important;
+      gap: 0.4rem !important;
+    }
+    .dash-toolbar-actions .btn-sm,
+    .dash-toolbar-actions select {
+      flex: 1 !important;
+      min-width: calc(50% - 0.2rem) !important;
+      justify-content: center !important;
+    }
+    .modal-overlay {
+      padding: 0 !important;
+      align-items: flex-end !important;
+    }
+    .modal-content {
+      width: 100dvw !important;
+      max-width: 100dvw !important;
+      max-height: 92dvh !important;
+      border-radius: 16px 16px 0 0 !important;
+      margin: 0 !important;
+    }
+    .cmd-palette-box {
+      max-width: 100dvw !important;
+      width: 100% !important;
+      border-radius: 0 0 16px 16px !important;
+    }
+    .cmd-palette-overlay {
+      padding-top: 0 !important;
+    }
+    #requestWizardDrawer .drawer-panel,
+    .drawer-panel {
+      width: 100dvw !important;
+      max-width: 100dvw !important;
+      border-radius: 16px 16px 0 0 !important;
+      top: auto !important;
+      height: 92dvh !important;
+    }
+    .detail-grid,
+    .client-account-grid,
+    .tier-selector-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .chat-container {
+      height: 70dvh !important;
+    }
+    .sandbox-banner {
+      flex-direction: column !important;
+      text-align: center !important;
+      gap: 1rem !important;
+      padding: 1.25rem 1rem !important;
+    }
+    .sandbox-banner-icon {
+      margin: 0 auto !important;
+    }
+    .sandbox-banner .btn {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+
+    /* ── 480px+ (SM Mobile) ──────────────────────────────────── */
+    @media (min-width: 480px) {
       .dash-stats {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: var(--space-2, 16px) !important;
+        gap: 0.875rem !important;
       }
-      .dash-welcome {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+      .dash-body {
+        padding: 1.25rem 1.15rem max(3.5rem, calc(env(safe-area-inset-bottom) + 3rem)) !important;
+      }
+      .dash-page-title {
+        max-width: 220px !important;
+      }
+      .dash-toolbar {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+      }
+      .dash-search {
+        min-width: 200px !important;
+        max-width: 320px !important;
+      }
+      .dash-toolbar-actions .btn-sm,
+      .dash-toolbar-actions select {
+        flex: none !important;
+        min-width: unset !important;
+      }
+      .modal-overlay {
+        padding: 1rem !important;
+        align-items: center !important;
+      }
+      .modal-content {
+        width: calc(100% - 2rem) !important;
+        max-width: 460px !important;
+        border-radius: 16px !important;
+        margin: auto !important;
+      }
+      .cmd-palette-box {
+        max-width: 460px !important;
+        border-radius: 16px !important;
+      }
+      .cmd-palette-overlay {
+        padding-top: 5dvh !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
       }
     }
 
-    @media (max-width: 600px) {
-      .dash-stats {
-        grid-template-columns: 1fr !important;
-        gap: var(--space-2, 16px) !important;
+    /* ── 640px+ (MD Mobile / Small Tablet) ───────────────────── */
+    @media (min-width: 640px) {
+      .dash-topbar {
+        height: 60px !important;
+        padding: 0 1.25rem !important;
+      }
+      .dash-user-info {
+        display: flex !important;
+      }
+      .dash-user-name {
+        max-width: 110px !important;
+      }
+      .dash-telemetry-chip {
+        display: inline-flex !important;
+      }
+      .dash-welcome {
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 1.5rem !important;
+      }
+      .dash-welcome::after {
+        display: block !important;
+      }
+      .dash-welcome-actions .btn,
+      .dash-welcome-actions .btn-sm {
+        flex: none !important;
+        min-height: unset !important;
+      }
+      .modal-content {
+        max-width: 520px !important;
+      }
+      .cmd-palette-box {
+        max-width: 520px !important;
+      }
+      .cmd-palette-overlay {
+        padding-top: 10dvh !important;
+      }
+      #requestWizardDrawer .drawer-panel,
+      .drawer-panel {
+        width: min(480px, 90dvw) !important;
+        border-radius: 16px 0 0 16px !important;
+        top: 0 !important;
+        right: 0 !important;
+        height: 100dvh !important;
+      }
+      .tier-selector-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+      }
+    }
+
+    /* ── 768px+ (LG Tablet) ──────────────────────────────────── */
+    @media (min-width: 768px) {
+      .dash-topbar {
+        height: 64px !important;
+        padding: 0 1.5rem !important;
       }
       .dash-clock-widget {
+        display: flex !important;
+      }
+      .dash-clock-widget .clock-date-part {
         display: none !important;
       }
-      .dash-cmd-bar {
+      .dash-body {
+        padding: 1.5rem 1.5rem 4rem !important;
+      }
+      .dash-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+      }
+      .detail-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+      .modal-content {
+        max-width: 560px !important;
+      }
+      .chat-container {
+        height: 520px !important;
+      }
+      .sandbox-banner {
+        flex-direction: row !important;
+        text-align: left !important;
+        gap: 1.5rem !important;
+        padding: 1.5rem 1.75rem !important;
+      }
+      .sandbox-banner-icon {
+        margin: 0 !important;
+      }
+      .sandbox-banner .btn {
+        width: auto !important;
+      }
+      #requestWizardDrawer .drawer-panel,
+      .drawer-panel {
+        width: min(540px, 85dvw) !important;
+      }
+    }
+
+    /* ── 1024px+ (XL Small Desktop) ──────────────────────────── */
+    @media (min-width: 1024px) {
+      .sidebar {
+        transform: translateX(0) !important;
+        width: 68px !important;
+        overflow: hidden !important;
+      }
+      .sidebar:hover,
+      .sidebar.sidebar-open {
+        width: 260px !important;
+      }
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link span:not(.sidebar-badge),
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-brand-badge,
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-section-title,
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-system-card,
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-logo a span {
         display: none !important;
+      }
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link {
+        justify-content: center !important;
+        padding: 0.75rem 0.5rem !important;
+        gap: 0 !important;
+      }
+      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link i {
+        width: auto !important;
+        font-size: 1.1rem !important;
+      }
+      .dash-main {
+        margin-left: 68px !important;
+        transition: margin-left 0.28s ease !important;
+      }
+      .dash-main.main-expanded,
+      .sidebar:hover ~ .dash-main,
+      .sidebar.sidebar-open ~ .dash-main {
+        margin-left: 260px !important;
+      }
+      .dash-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.15rem !important;
       }
       .dash-topbar {
-        padding: 0 1rem !important;
+        height: 68px !important;
+        padding: 0 1.75rem !important;
+      }
+      .dash-cmd-bar {
+        display: block !important;
+      }
+      .dash-clock-widget .clock-date-part {
+        display: inline !important;
+      }
+      .dash-body {
+        padding: 2rem 2rem 4rem !important;
+      }
+      .sidebar-backdrop {
+        display: none !important;
+      }
+    }
+
+    /* ── 1280px+ (2XL Desktop) ───────────────────────────────── */
+    @media (min-width: 1280px) {
+      .sidebar {
+        width: 260px !important;
+      }
+      .sidebar .sidebar-link span,
+      .sidebar .sidebar-brand-badge,
+      .sidebar .sidebar-section-title,
+      .sidebar .sidebar-system-card,
+      .sidebar .sidebar-logo a span {
+        display: initial !important;
+      }
+      .sidebar .sidebar-link {
+        justify-content: flex-start !important;
+        padding: 0.65rem 0.85rem !important;
+        gap: 0.75rem !important;
+      }
+      .dash-main {
+        margin-left: 260px !important;
+      }
+      .dash-stats {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1.25rem !important;
+      }
+      .dash-body {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+      }
+      .modal-content {
+        max-width: 620px !important;
+      }
+      #requestWizardDrawer .drawer-panel,
+      .drawer-panel {
+        width: min(580px, 50dvw) !important;
+      }
+    }
+
+    /* ── 1536px+ (3XL Ultrawide 1920px+) ─────────────────────── */
+    @media (min-width: 1536px) {
+      .dash-body {
+        max-width: 1560px !important;
+        margin: 0 auto !important;
+        padding: 2.5rem 3rem 5rem !important;
+      }
+      .dash-stats {
+        gap: 1.5rem !important;
+      }
+    }
+
+    /* ── Hover-only Guards ───────────────────────────────────── */
+    @media (hover: hover) {
+      .dstat-card:hover {
+        transform: translateY(-3px) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+        box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65),
+                    0 0 24px color-mix(in srgb, var(--stat-accent, #C9A45C) 20%, transparent) !important;
+      }
+      .dstat-card.clickable:hover {
+        transform: translateY(-4px) !important;
+        border-color: rgba(196, 158, 88, 0.4) !important;
+      }
+      .sidebar-link:hover {
+        background: rgba(255, 255, 255, 0.04) !important;
+        color: var(--text-primary) !important;
+      }
+      .dash-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.025) !important;
+      }
+      .tier-card:hover {
+        border-color: rgba(196, 158, 88, 0.4) !important;
+        transform: translateY(-2px) !important;
+      }
+      .btn:hover,
+      .btn-sm:hover {
+        transform: translateY(-1px) !important;
+      }
+      .type-card:hover {
+        border-color: rgba(201, 164, 92, 0.4) !important;
+        background: rgba(201, 164, 92, 0.04) !important;
+        transform: translateY(-2px) !important;
+      }
+      .faq-accordion-item:hover {
+        border-color: rgba(196, 158, 88, 0.35) !important;
+      }
+    }
+
+    /* ── Prefers-reduced-motion ──────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .pulse-dot,
+      .typing-dot,
+      .skeleton-shimmer,
+      .gold-ripple {
+        animation: none !important;
+      }
+      .dstat-card,
+      .tier-card,
+      .type-card,
+      .btn,
+      .btn-sm,
+      .sidebar,
+      .dash-main {
+        transition: none !important;
+        transform: none !important;
       }
     }
   
+
+
     /* ── DANGER / DELETE BUTTON STYLES ───────────────────── */
     .btn-danger {
       background: rgba(239, 68, 68, 0.14) !important;
@@ -676,11 +1157,14 @@
   </aside>
 
   <!-- -- Main Dashboard Container -- -->
+  <!-- Mobile Drawer Backdrop -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="document.getElementById('sidebar')?.classList.remove('sidebar-open'); this.classList.remove('active');"></div>
+
   <div class="dash-main">
     <!-- Top Bar -->
     <header class="dash-topbar">
       <div class="dash-topbar-left">
-        <button class="icon-btn" onclick="document.getElementById('sidebar').classList.toggle('sidebar-open')" title="Toggle Sidebar">
+        <button class="icon-btn" onclick="const sb=document.getElementById('sidebar'); const isOpen=sb.classList.toggle('sidebar-open'); document.getElementById('sidebarBackdrop')?.classList.toggle('active', isOpen);" title="Toggle Sidebar">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="dash-breadcrumb">
