@@ -111,9 +111,13 @@ body:not(.dark) {
 
 /* ---- Reset & Base Typography ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px; /* explicit root -- 1rem = 16px on every public page */
+}
 body {
   font-family: var(--font-sans);
+  font-size: 1rem; /* 16px -- uniform base across the whole site */
   background: var(--bg-950);
   color: var(--text-primary);
   line-height: 1.6;
