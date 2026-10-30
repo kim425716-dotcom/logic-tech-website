@@ -6,7 +6,7 @@
   <title>Executive Admin Portal � Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css?v=2.3" />
-  <link rel="stylesheet" href="css/dashboard.css?v=2.2" />
+  <link rel="stylesheet" href="css/dashboard.css?v=2.5" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
@@ -496,7 +496,7 @@
     /* ── RESPONSIVE ADAPTATIONS & FLUID TYPOGRAPHY (MOBILE-FIRST) ── */
     /* Breakpoints: 320px (XS) → 480px (SM) → 640px (MD) → 768px (LG) → 1024px (XL) → 1280px (2XL) → 1536px+ (3XL) */
 
-    /* ── Fluid Typography (reduced global scale) ─────────────── */
+    /* ── Global Fluid Typography (reduced scale) ─────────────── */
     html, body {
       font-size: clamp(0.8rem, 0.76rem + 0.2vw, 0.875rem);
       line-height: 1.6;
@@ -534,6 +534,23 @@
     .btn-sm,
     .btn {
       font-size: clamp(0.72rem, 0.68rem + 0.12vw, 0.8rem) !important;
+    }
+
+    /* ── Grid Splits (Overview Tab) ───────────────────────────── */
+    .admin-split-grid,
+    .admin-telemetry-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+      width: 100%;
+    }
+    @media (min-width: 900px) {
+      .admin-split-grid,
+      .admin-telemetry-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
     }
 
     /* ── Base: XS Mobile (320px – 479px) ─────────────────────── */
@@ -580,17 +597,21 @@
     .dash-topbar {
       height: 56px !important;
       padding: 0 max(0.85rem, env(safe-area-inset-right)) 0 max(0.85rem, env(safe-area-inset-left)) !important;
+      flex-wrap: nowrap !important;
+      gap: 0.5rem !important;
     }
     .dash-topbar-left {
       gap: 0.5rem !important;
       min-width: 0 !important;
-      flex: 1 !important;
+      flex: 1 1 auto !important;
+      overflow: hidden !important;
     }
-    .dash-page-title {
+    .dash-breadcrumb {
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
-      max-width: 160px !important;
+      max-width: 130px !important;
+      font-size: 0.75rem !important;
     }
     .dash-cmd-bar,
     .dash-clock-widget,
@@ -599,10 +620,25 @@
       display: none !important;
     }
     .dash-user {
-      padding: 0.2rem !important;
+      padding: 0 !important;
       gap: 0 !important;
       border: none !important;
       background: transparent !important;
+      flex-shrink: 0 !important;
+    }
+    .dash-topbar-right {
+      gap: 0.4rem !important;
+      flex-shrink: 0 !important;
+    }
+    .btn-new-project {
+      min-width: 36px !important;
+      width: 36px !important;
+      height: 36px !important;
+      padding: 0 !important;
+      border-radius: 8px !important;
+    }
+    .btn-new-project .btn-new-project-label {
+      display: none !important;
     }
     .dash-body {
       padding: 1rem 0.85rem max(3.5rem, calc(env(safe-area-inset-bottom) + 3rem)) !important;
@@ -651,6 +687,7 @@
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
       max-width: 100% !important;
+      display: block !important;
     }
     .btn-sm,
     .sidebar-link,
@@ -670,12 +707,11 @@
     .dash-toolbar-actions {
       flex-wrap: wrap !important;
       gap: 0.4rem !important;
+      width: 100% !important;
     }
-    .dash-toolbar-actions .btn-sm,
-    .dash-toolbar-actions select {
+    .dash-toolbar-actions .dash-select {
       flex: 1 !important;
       min-width: calc(50% - 0.2rem) !important;
-      justify-content: center !important;
     }
     .modal-overlay {
       padding: 0 !important;
@@ -696,34 +732,8 @@
     .cmd-palette-overlay {
       padding-top: 0 !important;
     }
-    #requestWizardDrawer .drawer-panel,
-    .drawer-panel {
-      width: 100dvw !important;
-      max-width: 100dvw !important;
-      border-radius: 16px 16px 0 0 !important;
-      top: auto !important;
-      height: 92dvh !important;
-    }
-    .detail-grid,
-    .client-account-grid,
-    .tier-selector-grid {
+    .detail-grid {
       grid-template-columns: 1fr !important;
-    }
-    .chat-container {
-      height: 70dvh !important;
-    }
-    .sandbox-banner {
-      flex-direction: column !important;
-      text-align: center !important;
-      gap: 1rem !important;
-      padding: 1.25rem 1rem !important;
-    }
-    .sandbox-banner-icon {
-      margin: 0 auto !important;
-    }
-    .sandbox-banner .btn {
-      width: 100% !important;
-      justify-content: center !important;
     }
 
     /* ── 480px+ (SM Mobile) ──────────────────────────────────── */
@@ -735,22 +745,8 @@
       .dash-body {
         padding: 1.25rem 1.15rem max(3.5rem, calc(env(safe-area-inset-bottom) + 3rem)) !important;
       }
-      .dash-page-title {
-        max-width: 220px !important;
-      }
-      .dash-toolbar {
-        flex-direction: row !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-      }
-      .dash-search {
-        min-width: 200px !important;
-        max-width: 320px !important;
-      }
-      .dash-toolbar-actions .btn-sm,
-      .dash-toolbar-actions select {
-        flex: none !important;
-        min-width: unset !important;
+      .dash-breadcrumb {
+        max-width: 180px !important;
       }
       .modal-overlay {
         padding: 1rem !important;
@@ -810,16 +806,21 @@
       .cmd-palette-overlay {
         padding-top: 10dvh !important;
       }
-      #requestWizardDrawer .drawer-panel,
-      .drawer-panel {
-        width: min(480px, 90dvw) !important;
-        border-radius: 16px 0 0 16px !important;
-        top: 0 !important;
-        right: 0 !important;
-        height: 100dvh !important;
+      .dash-toolbar {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
       }
-      .tier-selector-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+      .dash-search {
+        min-width: 200px !important;
+        max-width: 320px !important;
+      }
+      .dash-toolbar-actions {
+        width: auto !important;
+      }
+      .dash-toolbar-actions .dash-select {
+        flex: none !important;
+        min-width: unset !important;
       }
     }
 
@@ -848,66 +849,47 @@
       .modal-content {
         max-width: 560px !important;
       }
-      .chat-container {
-        height: 520px !important;
-      }
-      .sandbox-banner {
-        flex-direction: row !important;
-        text-align: left !important;
-        gap: 1.5rem !important;
-        padding: 1.5rem 1.75rem !important;
-      }
-      .sandbox-banner-icon {
-        margin: 0 !important;
-      }
-      .sandbox-banner .btn {
-        width: auto !important;
-      }
-      #requestWizardDrawer .drawer-panel,
-      .drawer-panel {
-        width: min(540px, 85dvw) !important;
-      }
     }
 
-    /* ── 1024px+ (XL Small Desktop) ──────────────────────────── */
+    /* ── 1024px+ (XL Desktop) ────────────────────────────────── */
     @media (min-width: 1024px) {
       .sidebar {
         transform: translateX(0) !important;
-        width: 68px !important;
-        overflow: hidden !important;
+        width: var(--dash-sidebar-w, 260px) !important;
+        transition: width 0.28s ease !important;
       }
-      .sidebar:hover,
-      .sidebar.sidebar-open {
-        width: 260px !important;
+      .dash-main {
+        margin-left: var(--dash-sidebar-w, 260px) !important;
       }
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link span:not(.sidebar-badge),
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-brand-badge,
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-section-title,
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-system-card,
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-logo a span {
+      .sidebar-backdrop {
         display: none !important;
       }
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link {
+      /* Collapsed sidebar mode on desktop */
+      .sidebar.sidebar-collapsed {
+        width: 68px !important;
+      }
+      .sidebar.sidebar-collapsed .sidebar-link span:not(.sidebar-badge),
+      .sidebar.sidebar-collapsed .sidebar-brand-badge,
+      .sidebar.sidebar-collapsed .sidebar-section-title,
+      .sidebar.sidebar-collapsed .sidebar-system-card,
+      .sidebar.sidebar-collapsed .sidebar-logo a span {
+        display: none !important;
+      }
+      .sidebar.sidebar-collapsed .sidebar-link {
         justify-content: center !important;
         padding: 0.75rem 0.5rem !important;
         gap: 0 !important;
       }
-      .sidebar:not(:hover):not(.sidebar-open) .sidebar-link i {
+      .sidebar.sidebar-collapsed .sidebar-link i {
         width: auto !important;
-        font-size: 1.1rem !important;
+        font-size: 1.15rem !important;
       }
-      .dash-main {
+      .dash-main.main-expanded {
         margin-left: 68px !important;
-        transition: margin-left 0.28s ease !important;
-      }
-      .dash-main.main-expanded,
-      .sidebar:hover ~ .dash-main,
-      .sidebar.sidebar-open ~ .dash-main {
-        margin-left: 260px !important;
       }
       .dash-stats {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 1.15rem !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1.25rem !important;
       }
       .dash-topbar {
         height: 68px !important;
@@ -916,51 +898,22 @@
       .dash-cmd-bar {
         display: block !important;
       }
+      .btn-new-project {
+        min-width: 132px !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 0.45rem 0.85rem !important;
+      }
+      .btn-new-project .btn-new-project-label {
+        display: inline !important;
+      }
       .dash-clock-widget .clock-date-part {
         display: inline !important;
       }
       .dash-body {
         padding: 2rem 2rem 4rem !important;
-      }
-      .sidebar-backdrop {
-        display: none !important;
-      }
-    }
-
-    /* ── 1280px+ (2XL Desktop) ───────────────────────────────── */
-    @media (min-width: 1280px) {
-      .sidebar {
-        width: 260px !important;
-      }
-      .sidebar .sidebar-link span,
-      .sidebar .sidebar-brand-badge,
-      .sidebar .sidebar-section-title,
-      .sidebar .sidebar-system-card,
-      .sidebar .sidebar-logo a span {
-        display: initial !important;
-      }
-      .sidebar .sidebar-link {
-        justify-content: flex-start !important;
-        padding: 0.65rem 0.85rem !important;
-        gap: 0.75rem !important;
-      }
-      .dash-main {
-        margin-left: 260px !important;
-      }
-      .dash-stats {
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1.25rem !important;
-      }
-      .dash-body {
         max-width: 1400px !important;
         margin: 0 auto !important;
-      }
-      .modal-content {
-        max-width: 620px !important;
-      }
-      #requestWizardDrawer .drawer-panel,
-      .drawer-panel {
-        width: min(580px, 50dvw) !important;
       }
     }
 
@@ -984,10 +937,6 @@
         box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65),
                     0 0 24px color-mix(in srgb, var(--stat-accent, #C9A45C) 20%, transparent) !important;
       }
-      .dstat-card.clickable:hover {
-        transform: translateY(-4px) !important;
-        border-color: rgba(196, 158, 88, 0.4) !important;
-      }
       .sidebar-link:hover {
         background: rgba(255, 255, 255, 0.04) !important;
         color: var(--text-primary) !important;
@@ -995,21 +944,9 @@
       .dash-table tbody tr:hover td {
         background: rgba(255, 255, 255, 0.025) !important;
       }
-      .tier-card:hover {
-        border-color: rgba(196, 158, 88, 0.4) !important;
-        transform: translateY(-2px) !important;
-      }
       .btn:hover,
       .btn-sm:hover {
         transform: translateY(-1px) !important;
-      }
-      .type-card:hover {
-        border-color: rgba(201, 164, 92, 0.4) !important;
-        background: rgba(201, 164, 92, 0.04) !important;
-        transform: translateY(-2px) !important;
-      }
-      .faq-accordion-item:hover {
-        border-color: rgba(196, 158, 88, 0.35) !important;
       }
     }
 
@@ -1024,14 +961,10 @@
         scroll-behavior: auto !important;
       }
       .pulse-dot,
-      .typing-dot,
-      .skeleton-shimmer,
-      .gold-ripple {
+      .skeleton-shimmer {
         animation: none !important;
       }
       .dstat-card,
-      .tier-card,
-      .type-card,
       .btn,
       .btn-sm,
       .sidebar,
@@ -1158,13 +1091,13 @@
 
   <!-- -- Main Dashboard Container -- -->
   <!-- Mobile Drawer Backdrop -->
-  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="document.getElementById('sidebar')?.classList.remove('sidebar-open'); this.classList.remove('active');"></div>
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebarMobile()"></div>
 
   <div class="dash-main">
     <!-- Top Bar -->
     <header class="dash-topbar">
       <div class="dash-topbar-left">
-        <button class="icon-btn" onclick="const sb=document.getElementById('sidebar'); const isOpen=sb.classList.toggle('sidebar-open'); document.getElementById('sidebarBackdrop')?.classList.toggle('active', isOpen);" title="Toggle Sidebar">
+        <button class="icon-btn" id="sidebarToggle" onclick="toggleSidebarFull()" title="Toggle Sidebar">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="dash-breadcrumb">
@@ -1365,7 +1298,7 @@
           </div>
 
           <!-- Quick Command Splits: Recent Inquiries & Active Projects -->
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <div class="admin-split-grid">
             <!-- Recent Inquiries Panel -->
             <div class="dash-card">
               <div class="dash-card-header">
@@ -1421,7 +1354,7 @@
           </div>
 
           <!-- Bottom Operational Row: Audit Activity Feed & System Telemetry -->
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+          <div class="admin-telemetry-grid">
             <!-- Activity Timeline -->
             <div class="dash-card">
               <div class="dash-card-header">
@@ -2353,6 +2286,7 @@
       };
 
       document.getElementById('breadcrumbCurrent').textContent = titles[tabId] || 'Admin';
+      if (window.innerWidth < 1024) closeSidebarMobile();
 
       ['overview', 'inquiries', 'projects', 'faqs', 'users'].forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
@@ -3786,6 +3720,41 @@ https://logictech.co.ke`;
       }
     }
 
+    
+    // Sidebar Responsiveness Helpers
+    function toggleSidebarFull() {
+      if (window.innerWidth < 1024) {
+        toggleSidebarMobile();
+        return;
+      }
+      const sb = document.getElementById('sidebar');
+      const main = document.querySelector('.dash-main');
+      const isCollapsed = sb.classList.toggle('sidebar-collapsed');
+      if (main) main.classList.toggle('main-expanded', isCollapsed);
+      localStorage.setItem('lt_admin_sidebar_collapsed', isCollapsed);
+    }
+
+    function toggleSidebarMobile() {
+      const sb = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sb) {
+        const isOpen = sb.classList.toggle('sidebar-open');
+        if (backdrop) backdrop.classList.toggle('active', isOpen);
+      }
+    }
+
+    function closeSidebarMobile() {
+      const sb = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sb) sb.classList.remove('sidebar-open');
+      if (backdrop) backdrop.classList.remove('active');
+    }
+
+    window.toggleSidebarFull = toggleSidebarFull;
+    window.toggleSidebarMobile = toggleSidebarMobile;
+    window.closeSidebarMobile = closeSidebarMobile;
+
+    
     // Expose handlers globally
     window.openAdminChat = openAdminChat;
     window.closeAdminChat = closeAdminChat;
