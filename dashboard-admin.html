@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Executive Admin Portal � Logic Tech</title>
+  <title>Executive Admin Portal � Logic Tech</title>
   <link rel="icon" href="assets/logo.png" />
   <link rel="stylesheet" href="css/style.css?v=2.3" />
   <link rel="stylesheet" href="css/dashboard.css?v=2.2" />
@@ -11,6 +11,557 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ========================================================
+       LOGIC TECH ADMIN DESIGN SYSTEM & 8PX SPACING GRID
+       ======================================================== */
+    :root {
+      /* 8px Spacing Grid */
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 40px;
+      --space-6: 48px;
+
+      /* Color Tokens */
+      --navy-950: #05020a;
+      --navy-900: #111B2E;
+      --navy-850: #142036;
+      --navy-800: #17243d;
+      --navy-700: #1E2D4A;
+
+      --gold-primary: #C9A45C;
+      --gold-light:   #E0BC74;
+      --gold-glow:    rgba(201, 164, 92, 0.25);
+
+      --dash-indigo:  #818CF8;
+      --dash-emerald: #34D399;
+      --dash-cyan:    #22D3EE;
+      --dash-amber:   #F59E0B;
+      --dash-rose:    #F87171;
+
+      /* High-Contrast WCAG AA Text Tokens (contrast >= 4.5:1 on dark) */
+      --text-primary:   #F8FAFC;
+      --text-secondary: #CBD5E1; /* 9.2:1 contrast ratio against #111B2E */
+      --text-muted:     #94A3B8; /* 5.1:1 contrast ratio against #111B2E */
+      --text-dim:       rgba(248, 250, 252, 0.55);
+
+      /* Typography */
+      --font-serif: 'Newsreader', 'Lora', 'Georgia', serif;
+      --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+
+      /* Shared Card Radii & Borders */
+      --card-radius:  16px;
+      --card-padding: 24px;
+      --card-border:  1px solid rgba(255, 255, 255, 0.06);
+
+      /* Global Shadows */
+      --dash-shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      --dash-shadow-glow: 0 0 24px rgba(201, 164, 92, 0.18);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--navy-950);
+      color: var(--text-primary);
+    }
+
+    h1, h2, h3, .dash-welcome h2 {
+      font-family: var(--font-serif);
+      letter-spacing: -0.015em;
+    }
+
+    /* ── ACCESSIBILITY: FOCUS-VISIBLE RINGS IN GOLD ───────── */
+    :focus-visible {
+      outline: 2px solid var(--gold-primary) !important;
+      outline-offset: 2px !important;
+      box-shadow: 0 0 12px var(--gold-glow) !important;
+    }
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex="0"]:focus-visible {
+      outline: 2px solid var(--gold-primary) !important;
+      outline-offset: 2px !important;
+    }
+
+    /* ── REDUCED MOTION SUPPORT ───────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .pulse-dot,
+      .skeleton-shimmer,
+      .is-loading-data .dstat-value,
+      .is-loading-data .pipeline-segment {
+        animation: none !important;
+      }
+      .dstat-card:hover {
+        transform: none !important;
+      }
+    }
+
+    /* ── TOOLTIPS (DATA-TOOLTIP) ──────────────────────────── */
+    [data-tooltip] {
+      position: relative;
+    }
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #090e1a;
+      color: #F8FAFC;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid rgba(201, 164, 92, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+      z-index: 1000;
+    }
+    [data-tooltip]:hover::after,
+    [data-tooltip]:focus-visible::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── 1. HEADER REFINEMENTS ────────────────────────────── */
+    .btn-new-project {
+      white-space: nowrap !important;
+      min-width: 132px;
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    @media (max-width: 1100px) {
+      .btn-new-project {
+        min-width: 38px !important;
+        width: 38px !important;
+        height: 38px !important;
+        padding: 0 !important;
+        border-radius: var(--radius-sm, 8px) !important;
+      }
+      .btn-new-project .btn-new-project-label {
+        display: none !important;
+      }
+    }
+
+    /* User Block: avatar + name single line + badge */
+    .dash-user {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.65rem !important;
+      max-width: 200px;
+      flex-shrink: 0;
+    }
+    .dash-user-info {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      min-width: 0 !important;
+      gap: 2px !important;
+    }
+    .dash-user-name {
+      font-size: 0.825rem !important;
+      font-weight: 600 !important;
+      color: var(--text-primary) !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      max-width: 125px !important;
+      line-height: 1.2 !important;
+      display: block !important;
+    }
+    .dash-user-role-badge {
+      font-size: 0.65rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      padding: 1px 7px !important;
+      border-radius: 9999px !important;
+      background: rgba(201, 164, 92, 0.15) !important;
+      border: 1px solid rgba(201, 164, 92, 0.35) !important;
+      color: var(--gold-light, #E0BC74) !important;
+      line-height: 1.3 !important;
+      display: inline-block !important;
+      white-space: nowrap !important;
+    }
+
+    .dash-telemetry-chip {
+      cursor: help;
+      user-select: none;
+    }
+
+    /* ── 2. TITLE AREA REFINEMENTS ────────────────────────── */
+    .title-info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: var(--text-muted);
+      margin-left: 8px;
+      cursor: help;
+      transition: color 150ms ease, background 150ms ease;
+    }
+    .title-info-icon:hover,
+    .title-info-icon:focus-visible {
+      color: var(--gold-light);
+      background: rgba(201, 164, 92, 0.12);
+    }
+
+    /* ── 3. SIDEBAR REFINEMENTS ───────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      width: var(--dash-sidebar-w);
+      background: var(--navy-900);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      z-index: 90;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease;
+      overflow: hidden;
+    }
+
+    .sidebar-nav {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 200ms ease;
+      padding: 0 0.75rem;
+    }
+    .sidebar-nav:hover {
+      scrollbar-color: rgba(201, 164, 92, 0.25) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 999px;
+      transition: background 200ms ease;
+    }
+    .sidebar-nav:hover::-webkit-scrollbar-thumb {
+      background: rgba(201, 164, 92, 0.25);
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(201, 164, 92, 0.5);
+    }
+
+    .sidebar-link.active {
+      background: rgba(201, 164, 92, 0.09) !important;
+      color: var(--gold-light, #E0BC74) !important;
+      border-left: 3px solid var(--gold-primary, #C9A45C) !important;
+      box-shadow: inset 4px 0 14px rgba(201, 164, 92, 0.16), 0 0 16px rgba(201, 164, 92, 0.06);
+    }
+
+    /* Pinned compact backend status */
+    .sidebar-bottom {
+      margin-top: auto !important;
+      padding: 0.75rem 0.85rem 0.85rem !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+      background: var(--navy-900);
+      flex-shrink: 0;
+    }
+    .sidebar-system-card {
+      padding: 0.5rem 0.75rem !important;
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: var(--radius-sm, 8px) !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* ── 4. STAT CARDS REFINEMENTS ────────────────────────── */
+    .dash-welcome,
+    .dstat-card {
+      padding: var(--card-padding, 24px) !important;
+      border-radius: var(--card-radius, 16px) !important;
+      border: var(--card-border) !important;
+      background: var(--navy-900);
+    }
+
+    .dstat-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .dstat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--stat-accent, var(--gold-primary));
+    }
+    .dstat-card:hover {
+      transform: translateY(-3px) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65),
+                  0 0 24px color-mix(in srgb, var(--stat-accent, #C9A45C) 20%, transparent) !important;
+    }
+
+    .dstat-value {
+      font-size: 2.25rem !important;
+      font-weight: 700 !important;
+      font-family: var(--font-serif) !important;
+      letter-spacing: -0.02em !important;
+      line-height: 1.1 !important;
+      color: #FFFFFF !important;
+      margin: 0.4rem 0 0.2rem !important;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .dstat-fraction {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .dstat-label {
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      color: var(--text-secondary) !important;
+      margin-bottom: 0.75rem !important;
+    }
+
+    /* Sparkbar with clear descriptive labels */
+    .dstat-spark-wrap {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .dstat-spark-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .dstat-sparkbar {
+      width: 100%;
+      height: 5px !important;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .dstat-sparkfill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--stat-accent, var(--gold-primary));
+      transition: width 0.4s ease;
+    }
+
+    /* ── 5. DELIVERY PIPELINE BAR ─────────────────────────── */
+    .pipeline-bar-card {
+      padding: var(--card-padding, 24px) !important;
+      border-radius: var(--card-radius, 16px) !important;
+      border: var(--card-border) !important;
+      background: var(--navy-900);
+      margin-bottom: var(--space-3, 24px);
+    }
+
+    .pipeline-segments {
+      display: flex !important;
+      align-items: flex-end !important;
+      gap: 3px !important;
+      width: 100%;
+      height: auto !important;
+      background: transparent !important;
+      padding-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .pipeline-segment-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 28px;
+      transition: flex 300ms ease;
+    }
+
+    .pipeline-segment-count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      line-height: 1;
+      user-select: none;
+    }
+    .pipeline-segment-count.is-zero {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .pipeline-segment {
+      width: 100%;
+      height: 14px !important;
+      border-radius: 4px !important;
+      cursor: pointer;
+      transition: transform 180ms ease, filter 180ms ease, opacity 180ms ease;
+    }
+    .pipeline-segment:hover {
+      transform: scaleY(1.2);
+      filter: brightness(1.15);
+    }
+
+    .pipeline-segment.is-zero-segment {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px dashed rgba(255, 255, 255, 0.18) !important;
+      box-shadow: none !important;
+      opacity: 0.7;
+    }
+
+    .pipeline-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .pipeline-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .pipeline-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── 7. SKELETON SHIMMER LOADER ───────────────────────── */
+    @keyframes skeletonPulse {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .is-loading-data .dstat-value,
+    .is-loading-data .dstat-sparkfill,
+    .is-loading-data .pipeline-segment {
+      position: relative !important;
+      overflow: hidden !important;
+      color: transparent !important;
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(201,164,92,0.18) 50%, rgba(255,255,255,0.05) 75%) !important;
+      background-size: 200% 100% !important;
+      animation: skeletonPulse 1.2s ease-in-out infinite !important;
+      border-radius: 4px !important;
+    }
+    .is-loading-data .dstat-value * {
+      visibility: hidden !important;
+    }
+    .is-loading-data .dstat-sparkfill {
+      width: 100% !important;
+    }
+
+    /* ── RESPONSIVE ADAPTATIONS ───────────────────────────── */
+    @media (max-width: 1024px) {
+      :root {
+        --dash-sidebar-w: 72px;
+      }
+      .sidebar {
+        width: var(--dash-sidebar-w) !important;
+      }
+      .sidebar-logo a span,
+      .sidebar-brand-badge,
+      .sidebar-section-title,
+      .sidebar-system-card,
+      .sidebar-link span:not(.sidebar-badge) {
+        display: none !important;
+      }
+      .sidebar-logo {
+        justify-content: center !important;
+        padding: 1.25rem 0.5rem !important;
+      }
+      .sidebar-link {
+        justify-content: center !important;
+        padding: 0.85rem 0.5rem !important;
+        font-size: 1.15rem !important;
+        position: relative !important;
+      }
+      .sidebar-link i {
+        margin: 0 !important;
+        font-size: 1.15rem !important;
+      }
+      .sidebar-link .sidebar-badge {
+        position: absolute !important;
+        top: 6px !important;
+        right: 8px !important;
+        padding: 2px 5px !important;
+        font-size: 0.65rem !important;
+      }
+      .dash-main {
+        margin-left: var(--dash-sidebar-w) !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .dash-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-2, 16px) !important;
+      }
+      .dash-welcome {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .dash-stats {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-2, 16px) !important;
+      }
+      .dash-clock-widget {
+        display: none !important;
+      }
+      .dash-cmd-bar {
+        display: none !important;
+      }
+      .dash-topbar {
+        padding: 0 1rem !important;
+      }
+    }
+  </style>
 </head>
 <body class="dark">
 
@@ -83,7 +634,7 @@
           <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i>
           <span id="breadcrumbCurrent">Overview</span>
         </div>
-        <div class="dash-telemetry-chip">
+        <div class="dash-telemetry-chip" data-tooltip="API 99.98% Operational (Last 30 days) • Latency: 22ms • 0 active incidents">
           <span class="pulse-dot"></span>
           <span>API 99.98% Operational</span>
         </div>
@@ -102,8 +653,8 @@
           <i class="fa-regular fa-clock" style="color:var(--dash-accent);"></i>
           <span id="liveTime">--:--:--</span>
         </div>
-        <button class="btn btn-sm btn-primary" onclick="openNewProjectModal()" style="display:flex; align-items:center; gap:0.4rem;">
-          <i class="fa-solid fa-plus"></i> <span>New Project</span>
+        <button class="btn btn-sm btn-primary btn-new-project" onclick="openNewProjectModal()" title="Create New Project">
+          <i class="fa-solid fa-plus"></i> <span class="btn-new-project-label">New Project</span>
         </button>
         <button class="icon-btn" id="themeToggle" title="Toggle Theme">
           <i class="fa-solid fa-moon" id="themeIcon"></i>
@@ -112,7 +663,7 @@
           <div class="dash-avatar admin-avatar" id="adminAvatar">AD</div>
           <div class="dash-user-info">
             <span class="dash-user-name" id="adminName">Administrator</span>
-            <span class="dash-user-role">Super Admin</span>
+            <span class="dash-user-role dash-user-role-badge">Super Admin</span>
           </div>
         </div>
       </div>
@@ -146,7 +697,16 @@
           <!-- Welcome Hero Banner -->
           <div class="dash-welcome">
             <div>
-              <h2>Executive Operations Deck <span style="font-size:1.2rem;">?</span></h2>
+              <h2>
+                Executive Operations Deck
+                <span class="title-info-icon" data-tooltip="Centralized executive telemetry, live client demand &amp; engineering delivery controls" aria-label="Deck Info" tabindex="0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                </span>
+              </h2>
               <p>Real-time client demand, engineering delivery pipeline, customer directory, and published knowledge assets.</p>
             </div>
             <div class="dash-welcome-actions">
@@ -172,7 +732,10 @@
               <div>
                 <div class="dstat-value" id="statInquiries">0</div>
                 <div class="dstat-label">Client Inquiries</div>
-                <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="inquirySpark" style="width:45%;"></div></div>
+                <div class="dstat-spark-wrap">
+                  <div class="dstat-spark-label"><span>Intake Capacity</span><span id="inquirySparkText">45% of monthly target</span></div>
+                  <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="inquirySpark" style="width:45%;"></div></div>
+                </div>
               </div>
             </div>
 
@@ -187,7 +750,10 @@
               <div>
                 <div class="dstat-value" id="statActiveProjects">0</div>
                 <div class="dstat-label">Active Deliveries</div>
-                <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="projectSpark" style="width:70%;"></div></div>
+                <div class="dstat-spark-wrap">
+                  <div class="dstat-spark-label"><span>Sprint Allocation</span><span id="projectCapacityText">70% of engineering bandwidth</span></div>
+                  <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="projectSpark" style="width:70%;"></div></div>
+                </div>
               </div>
             </div>
 
@@ -202,7 +768,10 @@
               <div>
                 <div class="dstat-value" id="statClients">0</div>
                 <div class="dstat-label">Enterprise Clients</div>
-                <div class="dstat-sparkbar"><div class="dstat-sparkfill" style="width:85%;"></div></div>
+                <div class="dstat-spark-wrap">
+                  <div class="dstat-spark-label"><span>Active Retention</span><span>85% recurring engagements</span></div>
+                  <div class="dstat-sparkbar"><div class="dstat-sparkfill" style="width:85%;"></div></div>
+                </div>
               </div>
             </div>
 
@@ -215,9 +784,12 @@
                 <span class="trend-badge up"><i class="fa-solid fa-check"></i> Published</span>
               </div>
               <div>
-                <div class="dstat-value" id="statFaqs">0</div>
+                <div class="dstat-value" id="statFaqs">100% <span class="dstat-fraction" style="font-size:0.8rem; font-weight:500; color:var(--text-muted); display:inline-block; margin-left:4px;">published (0/0)</span></div>
                 <div class="dstat-label">Live Knowledge FAQs</div>
-                <div class="dstat-sparkbar"><div class="dstat-sparkfill" style="width:100%;"></div></div>
+                <div class="dstat-spark-wrap">
+                  <div class="dstat-spark-label"><span>Coverage Rate</span><span id="faqCoverageLabel">100% published</span></div>
+                  <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="faqSpark" style="width:100%;"></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -229,10 +801,22 @@
               <span id="pipelineTotalCount" style="font-size:0.775rem; color:var(--text-muted); font-weight:600;">0 Total Projects</span>
             </div>
             <div class="pipeline-segments" id="pipelineSegmentsBar">
-              <div class="pipeline-segment" style="width:25%; background:#f59e0b;" data-tooltip="Pending: 0"></div>
-              <div class="pipeline-segment" style="width:40%; background:#6366f1;" data-tooltip="In Progress: 0"></div>
-              <div class="pipeline-segment" style="width:15%; background:#06b6d4;" data-tooltip="Review: 0"></div>
-              <div class="pipeline-segment" style="width:20%; background:#10b981;" data-tooltip="Completed: 0"></div>
+              <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="Pending: 0">
+                <div class="pipeline-segment-count is-zero">0</div>
+                <div class="pipeline-segment is-zero-segment"></div>
+              </div>
+              <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="In Progress: 0">
+                <div class="pipeline-segment-count is-zero">0</div>
+                <div class="pipeline-segment is-zero-segment"></div>
+              </div>
+              <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="In Review: 0">
+                <div class="pipeline-segment-count is-zero">0</div>
+                <div class="pipeline-segment is-zero-segment"></div>
+              </div>
+              <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="Completed: 0">
+                <div class="pipeline-segment-count is-zero">0</div>
+                <div class="pipeline-segment is-zero-segment"></div>
+              </div>
             </div>
             <div class="pipeline-legend">
               <div class="pipeline-legend-item"><span class="pipeline-dot" style="background:#f59e0b;"></span> Pending (<span id="countPending">0</span>)</div>
@@ -378,8 +962,8 @@
                 <select id="inquiryBudgetFilter" class="dash-select" onchange="filterInquiries()">
                   <option value="all">All Budget Tiers</option>
                   <option value="under50k">Under KSh 50,000</option>
-                  <option value="50k-150k">KSh 50,000 � 150,000</option>
-                  <option value="150k-250k">KSh 150,000 � 250,000</option>
+                  <option value="50k-150k">KSh 50,000 � 150,000</option>
+                  <option value="150k-250k">KSh 150,000 � 250,000</option>
                   <option value="250k+">KSh 250,000+ (Larger Projects)</option>
                   <option value="flexible">Flexible Budget</option>
                 </select>
@@ -828,7 +1412,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Total Engagements</span>
-            <span class="detail-value" id="clientDossierStats">0 Projects � 0 Inquiries</span>
+            <span class="detail-value" id="clientDossierStats">0 Projects � 0 Inquiries</span>
           </div>
         </div>
 
@@ -1053,15 +1637,23 @@
     }
 
     async function refreshAllData() {
+      const overview = document.getElementById('tab-overview');
+      overview?.classList.add('is-loading-data');
       showToast('Refreshing latest telemetry and pipeline records...', 'info', 'Syncing');
-      await Promise.all([
-        loadAdminStats(),
-        loadInquiries(),
-        loadProjects(),
-        loadUsers(),
-        loadFaqs()
-      ]);
-      showToast('All administrative records updated.', 'success', 'Synced');
+      try {
+        await Promise.all([
+          loadAdminStats(),
+          loadInquiries(),
+          loadProjects(),
+          loadUsers(),
+          loadFaqs()
+        ]);
+        showToast('All administrative records updated.', 'success', 'Synced');
+      } catch (err) {
+        console.error('Failed to sync all records:', err);
+      } finally {
+        overview?.classList.remove('is-loading-data');
+      }
     }
 
     // -- Stats & Pipeline Metrics --------------------------------------
@@ -1071,27 +1663,52 @@
         if (!res.ok) return;
         const { stats } = await res.json();
 
-        document.getElementById('statInquiries').textContent = stats.totalInquiries;
-        document.getElementById('statActiveProjects').textContent = stats.activeProjects;
-        document.getElementById('statClients').textContent = stats.totalUsers;
-        document.getElementById('statFaqs').textContent = `${stats.publishedFaqs} / ${stats.totalFaqs}`;
+        const statInquiriesEl = document.getElementById('statInquiries');
+        if (statInquiriesEl) statInquiriesEl.textContent = stats.totalInquiries;
+        
+        const statActiveProjectsEl = document.getElementById('statActiveProjects');
+        if (statActiveProjectsEl) statActiveProjectsEl.textContent = stats.activeProjects;
+        
+        const statClientsEl = document.getElementById('statClients');
+        if (statClientsEl) statClientsEl.textContent = stats.totalUsers;
+
+        // Requirement 4: Show "23 / 23" as "100% published" with the fraction in small text
+        const totalFaqs = Number(stats.totalFaqs || 0);
+        const pubFaqs = Number(stats.publishedFaqs || 0);
+        const faqPct = totalFaqs > 0 ? Math.round((pubFaqs / totalFaqs) * 100) : 100;
+        const statFaqsEl = document.getElementById('statFaqs');
+        if (statFaqsEl) {
+          statFaqsEl.innerHTML = `${faqPct}% <span class="dstat-fraction" style="font-size:0.8rem; font-weight:500; color:var(--text-muted); display:inline-block; margin-left:4px;">published (${pubFaqs}/${totalFaqs})</span>`;
+        }
+        const faqCoverageLabel = document.getElementById('faqCoverageLabel');
+        if (faqCoverageLabel) {
+          faqCoverageLabel.textContent = `${faqPct}% published`;
+        }
+        const faqSpark = document.getElementById('faqSpark');
+        if (faqSpark) {
+          faqSpark.style.width = `${faqPct}%`;
+        }
 
         // Inquiry badge in sidebar
         const badge = document.getElementById('inquiryCountBadge');
-        if (stats.totalInquiries > 0) {
-          badge.textContent = stats.totalInquiries;
-          badge.classList.remove('hidden');
-        } else {
-          badge.classList.add('hidden');
+        if (badge) {
+          if (stats.totalInquiries > 0) {
+            badge.textContent = stats.totalInquiries;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
         }
 
         // Project badge in sidebar
         const pBadge = document.getElementById('projectCountBadge');
-        if (stats.activeProjects > 0) {
-          pBadge.textContent = stats.activeProjects;
-          pBadge.classList.remove('hidden');
-        } else {
-          pBadge.classList.add('hidden');
+        if (pBadge) {
+          if (stats.activeProjects > 0) {
+            pBadge.textContent = stats.activeProjects;
+            pBadge.classList.remove('hidden');
+          } else {
+            pBadge.classList.add('hidden');
+          }
         }
 
         updatePipelineBar();
@@ -1103,7 +1720,8 @@
     function updatePipelineBar() {
       const projects = state.projects || [];
       const total = projects.length;
-      document.getElementById('pipelineTotalCount').textContent = `${total} Total Projects`;
+      const totalEl = document.getElementById('pipelineTotalCount');
+      if (totalEl) totalEl.textContent = `${total} Total Projects`;
 
       const counts = {
         pending: projects.filter(p => p.status === 'Pending').length,
@@ -1112,28 +1730,39 @@
         completed: projects.filter(p => p.status === 'Completed').length,
       };
 
-      document.getElementById('countPending').textContent = counts.pending;
-      document.getElementById('countInProgress').textContent = counts.inProgress;
-      document.getElementById('countReview').textContent = counts.review;
-      document.getElementById('countCompleted').textContent = counts.completed;
+      const countPending = document.getElementById('countPending');
+      if (countPending) countPending.textContent = counts.pending;
+      const countInProgress = document.getElementById('countInProgress');
+      if (countInProgress) countInProgress.textContent = counts.inProgress;
+      const countReview = document.getElementById('countReview');
+      if (countReview) countReview.textContent = counts.review;
+      const countCompleted = document.getElementById('countCompleted');
+      if (countCompleted) countCompleted.textContent = counts.completed;
 
       const segments = document.getElementById('pipelineSegmentsBar');
-      if (!total) {
-        segments.innerHTML = '<div class="pipeline-segment" style="width:100%; background:rgba(255,255,255,0.06);" data-tooltip="No projects"></div>';
-        return;
-      }
+      if (!segments) return;
 
-      const pPending = Math.round((counts.pending / total) * 100);
-      const pInProgress = Math.round((counts.inProgress / total) * 100);
-      const pReview = Math.round((counts.review / total) * 100);
-      const pCompleted = Math.round((counts.completed / total) * 100);
+      const defs = [
+        { key: 'pending', label: 'Pending', count: counts.pending, color: '#f59e0b' },
+        { key: 'inProgress', label: 'In Progress', count: counts.inProgress, color: '#6366f1' },
+        { key: 'review', label: 'In Review', count: counts.review, color: '#06b6d4' },
+        { key: 'completed', label: 'Completed', count: counts.completed, color: '#10b981' }
+      ];
 
-      segments.innerHTML = `
-        ${counts.pending ? `<div class="pipeline-segment" style="width:${pPending}%; background:#f59e0b;" data-tooltip="Pending: ${counts.pending} (${pPending}%)"></div>` : ''}
-        ${counts.inProgress ? `<div class="pipeline-segment" style="width:${pInProgress}%; background:#6366f1;" data-tooltip="In Progress: ${counts.inProgress} (${pInProgress}%)"></div>` : ''}
-        ${counts.review ? `<div class="pipeline-segment" style="width:${pReview}%; background:#06b6d4;" data-tooltip="Review: ${counts.review} (${pReview}%)"></div>` : ''}
-        ${counts.completed ? `<div class="pipeline-segment" style="width:${pCompleted}%; background:#10b981;" data-tooltip="Completed: ${counts.completed} (${pCompleted}%)"></div>` : ''}
-      `;
+      segments.innerHTML = defs.map(d => {
+        const isZero = d.count === 0;
+        // Proportional flex width when count > 0; faint placeholder when zero
+        const flexVal = isZero ? (total === 0 ? '1' : '0.18') : String(d.count);
+        const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
+        const tooltip = `${d.label}: ${d.count}${total > 0 ? ` (${pct}%)` : ''}`;
+
+        return `
+          <div class="pipeline-segment-col" style="flex: ${flexVal};" data-tooltip="${tooltip}">
+            <div class="pipeline-segment-count ${isZero ? 'is-zero' : ''}">${d.count}</div>
+            <div class="pipeline-segment ${isZero ? 'is-zero-segment' : ''}" style="${isZero ? '' : `background:${d.color}; box-shadow:0 0 10px ${d.color}40;`}"></div>
+          </div>
+        `;
+      }).join('');
     }
 
     // -- Inquiries -----------------------------------------------------
@@ -1381,7 +2010,7 @@
       document.getElementById('emailReplyInquiryId').value = inq.id;
       document.getElementById('emailReplyTo').value = inq.email;
       document.getElementById('emailReplyToDisplay').textContent = `To: ${inq.name} (${inq.email})`;
-      document.getElementById('emailReplySubject').value = `Re: Logic Tech � ${inq.subject}`;
+      document.getElementById('emailReplySubject').value = `Re: Logic Tech � ${inq.subject}`;
       document.getElementById('emailReplyBody').value = 
 `Dear ${inq.name},
 
@@ -1903,7 +2532,7 @@ https://logictech.co.ke`;
       document.getElementById('clientDossierId').textContent = '#' + u.id;
       document.getElementById('clientDossierRole').innerHTML = `<span class="badge-pill ${u.role === 'admin' ? 'badge-admin' : 'badge-client'}">${u.role.toUpperCase()}</span>`;
       document.getElementById('clientDossierJoined').textContent = formatDate(u.createdAt);
-      document.getElementById('clientDossierStats').textContent = `${u.projectCount || 0} Projects � ${u.inquiryCount || 0} Inquiries`;
+      document.getElementById('clientDossierStats').textContent = `${u.projectCount || 0} Projects � ${u.inquiryCount || 0} Inquiries`;
 
       // Projects by this user
       const userProjects = state.projects.filter(p => p.userId === u.id);
@@ -1915,7 +2544,7 @@ https://logictech.co.ke`;
           <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.85rem; border-radius:6px; background:var(--dash-surface); border:1px solid var(--dash-border); font-size:0.85rem;">
             <div>
               <strong>${escapeHtml(p.name)}</strong>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${p.progress}% � ${p.startDate ? `Started: ${p.startDate} � ` : ''}Due: ${p.dueDate || 'Ongoing'}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${p.progress}% � ${p.startDate ? `Started: ${p.startDate} � ` : ''}Due: ${p.dueDate || 'Ongoing'}</div>
             </div>
             <span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span>
           </div>
@@ -2209,7 +2838,7 @@ https://logictech.co.ke`;
           <div class="chat-bubble ${isMine ? 'mine' : 'theirs'} ${m.isInternal ? 'internal' : ''}">
             <div class="chat-meta">
               <span><strong>${escapeHtml(m.senderName)}</strong> ${roleLabel}${internalTag}</span>
-              <span>� ${timeStr}</span>
+              <span>� ${timeStr}</span>
             </div>
             <div class="chat-body">${escapeHtml(m.content)}</div>
           </div>

@@ -121,14 +121,12 @@ function showToast(message, type = 'success') {
 
 /* ---- Testimonials data ---- */
 const testimonials = [
-  { name: 'Alice Wanjiku', role: 'CTO @ FinanceHub Kenya', text: 'Logic Tech transformed our banking platform. Their cloud migration cut costs by 40% and improved uptime to 99.99%. Absolutely world-class engineering.', stars: 5 },
-  { name: 'David Ochieng', role: 'VP Engineering @ RetailMax', text: 'The custom ERP system they built handles millions of transactions daily without a hiccup. Their team understands enterprise needs like no other.', stars: 5 },
-  { name: 'Sarah Mitchell', role: 'Head of IT @ GlobalInsure', text: 'Outstanding cybersecurity audit. They identified critical vulnerabilities and implemented a zero-trust architecture that passed our SOC 2 compliance.', stars: 5 },
-  { name: 'James Kariuki', role: 'CEO @ AgriTech Africa', text: 'From mobile app to data analytics pipeline, Logic Tech delivered everything on time and under budget. Their communication throughout was exceptional.', stars: 5 },
-  { name: 'Priya Sharma', role: 'Director @ CloudFirst Solutions', text: 'Our AWS infrastructure is now automated and self-healing. Logic Tech\'s DevOps team saved us 60 hours of manual work every month.', stars: 5 },
-  { name: 'Michael Torres', role: 'CIO @ MediCare Systems', text: 'HIPAA-compliant platform delivered in 3 months. Logic Tech\'s attention to security and regulatory detail is unmatched in the industry.', stars: 5 },
-  { name: 'Amina Hassan', role: 'Founder @ EduTech East Africa', text: 'Our e-learning platform now serves 50,000 students. The React Native app they built has a 4.8 star rating on both app stores.', stars: 5 },
-  { name: 'Robert Ndungu', role: 'MD @ PropertyPro Kenya', text: 'Incredible real estate marketplace built from scratch. The team\'s full-stack expertise and clean code quality exceeded our expectations completely.', stars: 5 },
+  { name: 'Lead Principal Designer', role: 'Silk & Stone Interiors', text: 'Logic Tech transformed our digital presence into a luxury experience that matches the precision of our architectural designs. Inquiries from high-net-worth homeowners and commercial developers tripled within the first two months.', stars: 5 },
+  { name: 'Creative Director', role: 'WDI Studios Kenya', text: 'The custom studio platform Logic Tech engineered completely streamlined how our clients discover our furnishings and finishes. The material catalog and quote estimator took our sales process to a whole new level.', stars: 5 },
+  { name: 'Alice Wanjiku', role: 'CTO @ FinanceHub Kenya', text: 'Logic Tech delivered an event-driven cloud architecture that improved our platform uptime to 99.99%. Absolutely world-class engineering and speed.', stars: 5 },
+  { name: 'David Ochieng', role: 'VP Engineering @ RetailMax', text: 'The custom inventory platform they built handles high transaction loads without a hiccup. Their team understands modern web scale.', stars: 5 },
+  { name: 'Sarah Mitchell', role: 'Head of IT @ GlobalInsure', text: 'Outstanding security audit. They identified critical vulnerabilities and implemented zero-trust access controls that passed compliance effortlessly.', stars: 5 },
+  { name: 'James Kariuki', role: 'CEO @ AgriTech Africa', text: 'From mobile app to real-time analytics, Logic Tech delivered everything on time and with incredible sprint velocity. Communication was exceptional.', stars: 5 },
 ];
 
 function buildTestimonialCard(t) {

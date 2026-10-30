@@ -4,7 +4,12 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const Database = require('better-sqlite3');
+let Database;
+try {
+  Database = require('better-sqlite3');
+} catch (_e) {
+  Database = null;
+}
 
 const storagePath = path.join(__dirname, '..', 'storage');
 const databasePath = path.join(storagePath, 'logic-tech.sqlite');
@@ -13,7 +18,31 @@ const faqSeedPath = path.join(__dirname, '..', '..', 'data', 'faqs.json');
 // Ensure storage directory exists
 fs.mkdirSync(storagePath, { recursive: true });
 
-const db = new Database(databasePath);
+let db;
+if (Database) {
+  try {
+    db = new Database(databasePath);
+  } catch (_e) {
+    db = null;
+  }
+}
+
+if (!db) {
+  const { DatabaseSync } = require('node:sqlite');
+  db = new DatabaseSync(databasePath);
+  db.pragma = (str) => db.exec(`PRAGMA ${str}`);
+  db.transaction = (fn) => (...args) => {
+    db.exec('BEGIN');
+    try {
+      const result = fn(...args);
+      db.exec('COMMIT');
+      return result;
+    } catch (txErr) {
+      db.exec('ROLLBACK');
+      throw txErr;
+    }
+  };
+}
 
 // ── Pragmas & Schema ────────────────────────────────────────────────
 db.pragma('journal_mode = WAL');

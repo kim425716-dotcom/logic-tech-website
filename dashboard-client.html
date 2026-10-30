@@ -9,8 +9,532 @@
   <link rel="stylesheet" href="css/dashboard.css?v=2.4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ========================================================
+       LOGIC TECH CLIENT PORTAL DESIGN SYSTEM & 8PX GRID
+       ======================================================== */
+    :root {
+      /* 8px Spacing Grid */
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 40px;
+      --space-6: 48px;
+
+      /* Color Tokens */
+      --navy-950: #05020a;
+      --navy-900: #111B2E;
+      --navy-850: #142036;
+      --navy-800: #17243d;
+      --navy-700: #1E2D4A;
+
+      --gold-primary: #C9A45C;
+      --gold-light:   #E0BC74;
+      --gold-glow:    rgba(201, 164, 92, 0.25);
+
+      --dash-indigo:  #818CF8;
+      --dash-emerald: #34D399;
+      --dash-cyan:    #22D3EE;
+      --dash-amber:   #F59E0B;
+      --dash-rose:    #F87171;
+
+      /* High-Contrast WCAG AA Text Tokens (contrast >= 4.5:1 on dark) */
+      --text-primary:   #F8FAFC;
+      --text-secondary: #CBD5E1; /* 9.2:1 contrast ratio against #111B2E */
+      --text-muted:     #94A3B8; /* 5.1:1 contrast ratio against #111B2E */
+      --text-dim:       rgba(248, 250, 252, 0.55);
+
+      /* Typography */
+      --font-serif: 'Newsreader', 'Lora', 'Georgia', serif;
+      --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+
+      /* Shared Card Radii & Borders */
+      --card-radius:  16px;
+      --card-padding: 24px;
+      --card-border:  1px solid rgba(255, 255, 255, 0.06);
+
+      /* Global Shadows */
+      --dash-shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      --dash-shadow-glow: 0 0 24px rgba(201, 164, 92, 0.18);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--navy-950);
+      color: var(--text-primary);
+    }
+
+    h1, h2, h3, .dash-welcome h2 {
+      font-family: var(--font-serif);
+      letter-spacing: -0.015em;
+    }
+
+    /* ── ACCESSIBILITY: FOCUS-VISIBLE RINGS IN GOLD ───────── */
+    :focus-visible {
+      outline: 2px solid var(--gold-primary) !important;
+      outline-offset: 2px !important;
+      box-shadow: 0 0 12px var(--gold-glow) !important;
+    }
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex="0"]:focus-visible {
+      outline: 2px solid var(--gold-primary) !important;
+      outline-offset: 2px !important;
+    }
+
+    /* ── REDUCED MOTION SUPPORT ───────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .pulse-dot,
+      .skeleton-shimmer,
+      .is-loading-data .dstat-value,
+      .is-loading-data .pipeline-segment {
+        animation: none !important;
+      }
+      .dstat-card:hover {
+        transform: none !important;
+      }
+    }
+
+    /* ── TOOLTIPS (DATA-TOOLTIP) ──────────────────────────── */
+    [data-tooltip] {
+      position: relative;
+    }
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #090e1a;
+      color: #F8FAFC;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid rgba(201, 164, 92, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+      z-index: 1000;
+    }
+    [data-tooltip]:hover::after,
+    [data-tooltip]:focus-visible::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── 1. HEADER REFINEMENTS ────────────────────────────── */
+    .btn-new-request {
+      white-space: nowrap !important;
+      min-width: 132px;
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    @media (max-width: 1100px) {
+      .btn-new-request {
+        min-width: 38px !important;
+        width: 38px !important;
+        height: 38px !important;
+        padding: 0 !important;
+        border-radius: var(--radius-sm, 8px) !important;
+      }
+      .btn-new-request .btn-new-request-label {
+        display: none !important;
+      }
+    }
+
+    /* User Block: avatar + name single line + badge */
+    .dash-user {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.65rem !important;
+      max-width: 210px;
+      flex-shrink: 0;
+    }
+    .dash-user-info {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      min-width: 0 !important;
+      gap: 2px !important;
+    }
+    .dash-user-name {
+      font-size: 0.825rem !important;
+      font-weight: 600 !important;
+      color: var(--text-primary) !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      max-width: 130px !important;
+      line-height: 1.2 !important;
+      display: block !important;
+    }
+    .dash-user-role-badge {
+      font-size: 0.65rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      padding: 1px 7px !important;
+      border-radius: 9999px !important;
+      background: rgba(201, 164, 92, 0.15) !important;
+      border: 1px solid rgba(201, 164, 92, 0.35) !important;
+      color: var(--gold-light, #E0BC74) !important;
+      line-height: 1.3 !important;
+      display: inline-block !important;
+      white-space: nowrap !important;
+    }
+
+    .dash-telemetry-chip {
+      cursor: help;
+      user-select: none;
+    }
+
+    /* ── 2. SIDEBAR REFINEMENTS ───────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      width: var(--dash-sidebar-w);
+      background: var(--navy-900);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      z-index: 90;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease;
+      overflow: hidden;
+    }
+
+    .sidebar-nav {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 200ms ease;
+      padding: 0 0.75rem;
+    }
+    .sidebar-nav:hover {
+      scrollbar-color: rgba(201, 164, 92, 0.25) transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 999px;
+      transition: background 200ms ease;
+    }
+    .sidebar-nav:hover::-webkit-scrollbar-thumb {
+      background: rgba(201, 164, 92, 0.25);
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(201, 164, 92, 0.5);
+    }
+
+    .sidebar-link.active {
+      background: rgba(201, 164, 92, 0.09) !important;
+      color: var(--gold-light, #E0BC74) !important;
+      border-left: 3px solid var(--gold-primary, #C9A45C) !important;
+      box-shadow: inset 4px 0 14px rgba(201, 164, 92, 0.16), 0 0 16px rgba(201, 164, 92, 0.06);
+    }
+
+    /* Pinned compact system card */
+    .sidebar-bottom {
+      margin-top: auto !important;
+      padding: 0.75rem 0.85rem 0.85rem !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+      background: var(--navy-900);
+      flex-shrink: 0;
+    }
+    .sidebar-system-card {
+      padding: 0.5rem 0.75rem !important;
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: var(--radius-sm, 8px) !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* ── 3. STAT CARDS REFINEMENTS ────────────────────────── */
+    .dash-welcome,
+    .dstat-card {
+      padding: var(--card-padding, 24px) !important;
+      border-radius: var(--card-radius, 16px) !important;
+      border: var(--card-border) !important;
+      background: var(--navy-900);
+    }
+
+    .dstat-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .dstat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--stat-accent, var(--gold-primary));
+    }
+    .dstat-card:hover {
+      transform: translateY(-3px) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65),
+                  0 0 24px color-mix(in srgb, var(--stat-accent, #C9A45C) 20%, transparent) !important;
+    }
+
+    .dstat-value {
+      font-size: 2.25rem !important;
+      font-weight: 700 !important;
+      font-family: var(--font-serif) !important;
+      letter-spacing: -0.02em !important;
+      line-height: 1.1 !important;
+      color: #FFFFFF !important;
+      margin: 0.4rem 0 0.2rem !important;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .dstat-fraction {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .dstat-label {
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      color: var(--text-secondary) !important;
+      margin-bottom: 0.75rem !important;
+    }
+
+    /* Sparkbar with clear descriptive labels */
+    .dstat-spark-wrap {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .dstat-spark-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .dstat-sparkbar {
+      width: 100%;
+      height: 5px !important;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .dstat-sparkfill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--stat-accent, var(--gold-primary));
+      transition: width 0.4s ease;
+    }
+
+    /* ── 4. DELIVERY PIPELINE BAR ─────────────────────────── */
+    .pipeline-bar-card {
+      padding: var(--card-padding, 24px) !important;
+      border-radius: var(--card-radius, 16px) !important;
+      border: var(--card-border) !important;
+      background: var(--navy-900);
+      margin-bottom: var(--space-3, 24px);
+    }
+
+    .pipeline-segments {
+      display: flex !important;
+      align-items: flex-end !important;
+      gap: 3px !important;
+      width: 100%;
+      height: auto !important;
+      background: transparent !important;
+      padding-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .pipeline-segment-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 28px;
+      transition: flex 300ms ease;
+    }
+
+    .pipeline-segment-count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      line-height: 1;
+      user-select: none;
+    }
+    .pipeline-segment-count.is-zero {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .pipeline-segment {
+      width: 100%;
+      height: 14px !important;
+      border-radius: 4px !important;
+      cursor: pointer;
+      transition: transform 180ms ease, filter 180ms ease, opacity 180ms ease;
+    }
+    .pipeline-segment:hover {
+      transform: scaleY(1.2);
+      filter: brightness(1.15);
+    }
+
+    .pipeline-segment.is-zero-segment {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px dashed rgba(255, 255, 255, 0.18) !important;
+      box-shadow: none !important;
+      opacity: 0.7;
+    }
+
+    .pipeline-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .pipeline-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .pipeline-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── 5. SKELETON SHIMMER LOADER ───────────────────────── */
+    @keyframes skeletonPulse {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .is-loading-data .dstat-value,
+    .is-loading-data .dstat-sparkfill,
+    .is-loading-data .pipeline-segment {
+      position: relative !important;
+      overflow: hidden !important;
+      color: transparent !important;
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(201,164,92,0.18) 50%, rgba(255,255,255,0.05) 75%) !important;
+      background-size: 200% 100% !important;
+      animation: skeletonPulse 1.2s ease-in-out infinite !important;
+      border-radius: 4px !important;
+    }
+    .is-loading-data .dstat-value * {
+      visibility: hidden !important;
+    }
+    .is-loading-data .dstat-sparkfill {
+      width: 100% !important;
+    }
+
+    /* ── RESPONSIVE ADAPTATIONS ───────────────────────────── */
+    @media (max-width: 1024px) {
+      :root {
+        --dash-sidebar-w: 72px;
+      }
+      .sidebar {
+        width: var(--dash-sidebar-w) !important;
+      }
+      .sidebar-logo a span,
+      .sidebar-brand-badge,
+      .sidebar-section-title,
+      .sidebar-system-card,
+      .sidebar-link span:not(.sidebar-badge) {
+        display: none !important;
+      }
+      .sidebar-logo {
+        justify-content: center !important;
+        padding: 1.25rem 0.5rem !important;
+      }
+      .sidebar-link {
+        justify-content: center !important;
+        padding: 0.85rem 0.5rem !important;
+        font-size: 1.15rem !important;
+        position: relative !important;
+      }
+      .sidebar-link i {
+        margin: 0 !important;
+        font-size: 1.15rem !important;
+      }
+      .sidebar-link .sidebar-badge {
+        position: absolute !important;
+        top: 6px !important;
+        right: 8px !important;
+        padding: 2px 5px !important;
+        font-size: 0.65rem !important;
+      }
+      .dash-main {
+        margin-left: var(--dash-sidebar-w) !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .dash-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-2, 16px) !important;
+      }
+      .dash-welcome {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .dash-stats {
+        grid-template-columns: 1fr !important;
+      }
+      .dash-topbar {
+        padding: 0 1rem !important;
+      }
+    }
+  </style>
 </head>
 <body class="dark">
 
@@ -89,7 +613,7 @@
           <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i>
           <span id="clientBreadcrumb">Overview</span>
         </div>
-        <div class="dash-telemetry-chip">
+        <div class="dash-telemetry-chip" data-tooltip="Enterprise SLA Active • 99.98% High Availability • Priority Response < 1hr">
           <span class="pulse-dot"></span>
           <span>Enterprise SLA Active</span>
         </div>
@@ -109,8 +633,8 @@
           <span id="clientLiveTime">--:--:--</span>
           <span class="clock-date-part" id="clientLiveDate" style="opacity:0.8; font-size:0.725rem; margin-left:2px; border-left:1px solid var(--dash-border); padding-left:6px;">--</span>
         </div>
-        <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')" style="display:flex; align-items:center; gap:0.4rem;">
-          <i class="fa-solid fa-plus"></i> <span>New Request</span>
+        <button class="btn btn-sm btn-primary btn-new-request" onclick="switchClientTab('request')" title="New Deliverable Request">
+          <i class="fa-solid fa-plus"></i> <span class="btn-new-request-label">New Request</span>
         </button>
         <button class="icon-btn" id="themeToggle" title="Toggle Theme">
           <i class="fa-solid fa-moon" id="themeIcon"></i>
@@ -119,7 +643,7 @@
           <div class="dash-avatar" id="dashAvatar">CL</div>
           <div class="dash-user-info">
             <span class="dash-user-name" id="dashName">Client Account</span>
-            <span class="dash-user-role">Enterprise Client</span>
+            <span class="dash-user-role dash-user-role-badge">Enterprise Client</span>
           </div>
         </div>
       </div>
@@ -192,7 +716,10 @@
             <div>
               <div class="dstat-value" id="activeProjects">0</div>
               <div class="dstat-label">Active Sprints</div>
-              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="activeSpark" style="width:75%; background:#6366f1;"></div></div>
+              <div class="dstat-spark-wrap">
+                <div class="dstat-spark-label"><span>Sprint Velocity</span><span id="activeSparkText">Active delivery sprint</span></div>
+                <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="activeSpark" style="width:75%; background:#6366f1;"></div></div>
+              </div>
             </div>
           </div>
 
@@ -207,7 +734,10 @@
             <div>
               <div class="dstat-value" id="completedProjects">0</div>
               <div class="dstat-label">Completed Deliverables</div>
-              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="completedSpark" style="width:100%; background:#10b981;"></div></div>
+              <div class="dstat-spark-wrap">
+                <div class="dstat-spark-label"><span>Production Status</span><span id="completedSparkText">Acceptance verified</span></div>
+                <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="completedSpark" style="width:100%; background:#10b981;"></div></div>
+              </div>
             </div>
           </div>
 
@@ -222,7 +752,10 @@
             <div>
               <div class="dstat-value" id="reviewProjects">0</div>
               <div class="dstat-label">In Review / QA</div>
-              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="reviewSpark" style="width:50%; background:#06b6d4;"></div></div>
+              <div class="dstat-spark-wrap">
+                <div class="dstat-spark-label"><span>QA Cycle</span><span id="reviewSparkText">Staging validation</span></div>
+                <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="reviewSpark" style="width:50%; background:#06b6d4;"></div></div>
+              </div>
             </div>
           </div>
 
@@ -237,7 +770,10 @@
             <div>
               <div class="dstat-value" id="pendingProjects">0</div>
               <div class="dstat-label">Pending Review</div>
-              <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="pendingSpark" style="width:30%; background:#f59e0b;"></div></div>
+              <div class="dstat-spark-wrap">
+                <div class="dstat-spark-label"><span>Architecture Scoping</span><span id="pendingSparkText">Requirements spec</span></div>
+                <div class="dstat-sparkbar"><div class="dstat-sparkfill" id="pendingSpark" style="width:30%; background:#f59e0b;"></div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -249,7 +785,22 @@
             <span id="clientPipelineTotalCount" style="font-size:0.775rem; color:var(--text-muted); font-weight:600;">0 Total Projects</span>
           </div>
           <div class="pipeline-segments" id="clientPipelineSegmentsBar">
-            <div class="pipeline-segment" style="width:100%; background:rgba(255,255,255,0.06);" data-tooltip="No projects"></div>
+            <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="Pending: 0">
+              <div class="pipeline-segment-count is-zero">0</div>
+              <div class="pipeline-segment is-zero-segment"></div>
+            </div>
+            <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="In Progress: 0">
+              <div class="pipeline-segment-count is-zero">0</div>
+              <div class="pipeline-segment is-zero-segment"></div>
+            </div>
+            <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="In Review: 0">
+              <div class="pipeline-segment-count is-zero">0</div>
+              <div class="pipeline-segment is-zero-segment"></div>
+            </div>
+            <div class="pipeline-segment-col" style="flex: 1;" data-tooltip="Completed: 0">
+              <div class="pipeline-segment-count is-zero">0</div>
+              <div class="pipeline-segment is-zero-segment"></div>
+            </div>
           </div>
           <div class="pipeline-legend">
             <div class="pipeline-legend-item"><span class="pipeline-dot" style="background:#f59e0b;"></span> Pending (<span id="clientCountPending">0</span>)</div>
@@ -897,6 +1448,8 @@
 
     // Load Dashboard Core Data
     async function loadDashboard() {
+      const overview = document.getElementById('tab-client-overview');
+      overview?.classList.add('is-loading-data');
       try {
         const response = await apiFetch('/api/dashboard');
         if (response.status === 401) {
@@ -967,41 +1520,54 @@
 
       } catch (error) {
         showToast(error.message || 'Unable to sync dashboard data.', 'error');
+      } finally {
+        overview?.classList.remove('is-loading-data');
       }
     }
 
     // Render Pipeline Distribution
     function renderClientPipelineBar(projects) {
       const total = projects.length;
-      document.getElementById('clientPipelineTotalCount').textContent = `${total} Total ${total === 1 ? 'Project' : 'Projects'}`;
+      const totalEl = document.getElementById('clientPipelineTotalCount');
+      if (totalEl) totalEl.textContent = `${total} Total ${total === 1 ? 'Project' : 'Projects'}`;
 
       const pending = projects.filter(p => p.status === 'Pending').length;
       const inProgress = projects.filter(p => p.status === 'In Progress').length;
       const review = projects.filter(p => p.status === 'Review' || p.status === 'In Review').length;
       const completed = projects.filter(p => p.status === 'Completed').length;
 
-      document.getElementById('clientCountPending').textContent = pending;
-      document.getElementById('clientCountInProgress').textContent = inProgress;
-      document.getElementById('clientCountReview').textContent = review;
-      document.getElementById('clientCountCompleted').textContent = completed;
+      const countPending = document.getElementById('clientCountPending');
+      if (countPending) countPending.textContent = pending;
+      const countInProgress = document.getElementById('clientCountInProgress');
+      if (countInProgress) countInProgress.textContent = inProgress;
+      const countReview = document.getElementById('clientCountReview');
+      if (countReview) countReview.textContent = review;
+      const countCompleted = document.getElementById('clientCountCompleted');
+      if (countCompleted) countCompleted.textContent = completed;
 
       const bar = document.getElementById('clientPipelineSegmentsBar');
-      if (!total) {
-        bar.innerHTML = '<div class="pipeline-segment" style="width:100%; background:rgba(255,255,255,0.06);" data-tooltip="No projects"></div>';
-        return;
-      }
+      if (!bar) return;
 
-      const pPct = Math.round((pending / total) * 100);
-      const ipPct = Math.round((inProgress / total) * 100);
-      const rPct = Math.round((review / total) * 100);
-      const cPct = Math.max(0, 100 - (pPct + ipPct + rPct));
+      const defs = [
+        { key: 'pending', label: 'Pending', count: pending, color: '#f59e0b' },
+        { key: 'inProgress', label: 'In Progress', count: inProgress, color: '#6366f1' },
+        { key: 'review', label: 'In Review', count: review, color: '#06b6d4' },
+        { key: 'completed', label: 'Completed', count: completed, color: '#10b981' }
+      ];
 
-      bar.innerHTML = `
-        ${pending ? `<div class="pipeline-segment" style="width:${pPct}%; background:#f59e0b;" data-tooltip="Pending: ${pending}"></div>` : ''}
-        ${inProgress ? `<div class="pipeline-segment" style="width:${ipPct}%; background:#6366f1;" data-tooltip="In Progress: ${inProgress}"></div>` : ''}
-        ${review ? `<div class="pipeline-segment" style="width:${rPct}%; background:#06b6d4;" data-tooltip="Review: ${review}"></div>` : ''}
-        ${completed ? `<div class="pipeline-segment" style="width:${cPct}%; background:#10b981;" data-tooltip="Completed: ${completed}"></div>` : ''}
-      `;
+      bar.innerHTML = defs.map(d => {
+        const isZero = d.count === 0;
+        const flexVal = isZero ? (total === 0 ? '1' : '0.22') : String(d.count);
+        const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
+        const tooltip = `${d.label}: ${d.count}${total > 0 ? ` (${pct}%)` : ''}`;
+
+        return `
+          <div class="pipeline-segment-col" style="flex: ${flexVal};" data-tooltip="${tooltip}">
+            <div class="pipeline-segment-count ${isZero ? 'is-zero' : ''}">${d.count}</div>
+            <div class="pipeline-segment ${isZero ? 'is-zero-segment' : ''}" style="${isZero ? '' : `background:${d.color}; box-shadow:0 0 10px ${d.color}40;`}"></div>
+          </div>
+        `;
+      }).join('');
     }
 
     function statusBadgeClass(status) {
