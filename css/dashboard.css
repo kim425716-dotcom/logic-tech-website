@@ -1,21 +1,14 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
 /* =============================================
    LOGIC TECH — Professional Dashboard Stylesheet (Admin & Client)
    ============================================= */
 
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 html, body {
@@ -33,6 +26,7 @@ body {
   background: var(--dash-surface, #05020a);
   color: var(--text-primary, #f8fafc);
   font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 1rem;
 }
 
 /* ── Design Tokens ────────────────────────────────────────── */
