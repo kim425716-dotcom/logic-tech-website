@@ -492,7 +492,7 @@ body.dark .hero-grid {
 .orbital-sphere-container {
   position: absolute;
   inset: 0;
-  background-color: #05020a;
+  background: transparent;
   pointer-events: none;
   overflow: hidden;
   display: flex;
