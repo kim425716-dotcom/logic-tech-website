@@ -53,6 +53,16 @@
   --font-serif: 'Newsreader', 'Lora', 'Georgia', 'Times New Roman', serif;
   --font-sans:  'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
+  /* Typography Scale Tokens */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-md:   1.0625rem;
+  --text-lg:   1.25rem;
+  --text-xl:   1.5rem;
+  --text-2xl:  clamp(1.75rem, 3vw, 2.5rem);
+  --text-3xl:  clamp(2.25rem, 4.5vw, 3.25rem);
+
   --nav-h:     64px;
   --radius:    12px;
   --radius-sm: 8px;
@@ -134,10 +144,45 @@ body *:not(img):not(video):not(iframe):not(canvas):not(input[type="range"]) {
     color            0.35s ease,
     box-shadow       0.35s ease;
 }
-h1, h2 {
+/* ---- Standard Typography Hierarchy Across Public Pages ---- */
+h1 {
   font-family: var(--font-serif);
-  font-weight: 600;
+  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.25;
   letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+h3 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+h4 {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
 }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
@@ -1824,6 +1869,105 @@ body:not(.dark) .google-modal-disclaimer a {
 .section-cta p {
   font-size: 1.25rem;
   font-weight: 700;
+  color: var(--text-primary);
+}
+.section-cta span {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Unified Subpage Deep-Dive & Card Typography */
+.service-deep-item h2,
+.service-deep-item h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+
+/* Unified Contact Page Cards */
+.contact-card h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.contact-card > div > p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.contact-card-classic h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+.contact-card-classic p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.office-card-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+.office-card-content p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.office-hours {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* Unified Legal Pages (Privacy, Terms, Cookies) Typography */
+.legal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+.legal-card h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+.legal-card h2:first-child {
+  margin-top: 0;
+}
+.legal-card p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+.legal-card ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.legal-card li {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.legal-card strong {
   color: var(--text-primary);
 }
 
