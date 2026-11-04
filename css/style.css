@@ -4453,3 +4453,83 @@ body:not(.dark) .map-footer-details {
   color: var(--text-muted);
   line-height: 1.5;
 }
+
+
+/* ── Service Card Header & Action Links ── */
+.service-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.35rem;
+}
+.service-card-header .service-icon {
+  margin-bottom: 0;
+}
+.service-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--card-color, #E0BC74);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.3s ease;
+}
+.service-card:hover .service-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--card-color, #E0BC74);
+  box-shadow: 0 0 16px var(--card-color, #E0BC74);
+}
+.service-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.service-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #F8FAFC;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.service-card-link i {
+  font-size: 0.75rem;
+  color: var(--card-color, #C9A45C);
+  transition: transform 0.3s ease;
+}
+.service-card:hover .service-card-link {
+  color: var(--card-color, #E0BC74);
+}
+.service-card:hover .service-card-link i {
+  transform: translateX(5px);
+}
+.service-card-estimate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.service-card-estimate:hover {
+  background: rgba(201, 164, 92, 0.18);
+  border-color: rgba(201, 164, 92, 0.45);
+  color: #FDE68A;
+  transform: scale(1.12);
+  box-shadow: 0 0 16px rgba(201, 164, 92, 0.35);
+}

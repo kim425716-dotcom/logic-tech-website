@@ -1032,6 +1032,142 @@
   filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.6));
 }
 
+.service-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.35rem;
+}
+
+.service-card-header .service-icon {
+  margin-bottom: 0;
+}
+
+.service-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--card-color, #E0BC74);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .service-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--card-color, #E0BC74);
+  box-shadow: 0 0 16px var(--card-color, #E0BC74);
+}
+
+.service-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.service-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #F8FAFC;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.service-card-link i {
+  font-size: 0.75rem;
+  color: var(--card-color, #C9A45C);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-card-link {
+  color: var(--card-color, #E0BC74);
+}
+
+.service-card:hover .service-card-link i {
+  transform: translateX(5px);
+}
+
+.service-card-estimate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.service-card-estimate:hover {
+  background: rgba(201, 164, 92, 0.18);
+  border-color: rgba(201, 164, 92, 0.45);
+  color: #FDE68A;
+  transform: scale(1.12);
+  box-shadow: 0 0 16px rgba(201, 164, 92, 0.35);
+}
+
+/* ── Services Bottom Directory Banner ── */
+.services-cta-banner {
+  margin-top: 3.5rem;
+  padding: 2.25rem 2.75rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(22, 33, 56, 0.7) 0%, rgba(10, 16, 28, 0.92) 100%);
+  border: 1px solid rgba(201, 164, 92, 0.25);
+  box-shadow:
+    0 20px 50px -10px rgba(0, 0, 0, 0.75),
+    0 0 35px rgba(201, 164, 92, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.services-cta-banner h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.015em;
+}
+
+.services-cta-banner p {
+  font-size: 0.92rem;
+  color: rgba(226, 232, 240, 0.75);
+  max-width: 620px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .services-cta-banner {
+    padding: 1.75rem 1.5rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+  }
+  .services-cta-banner a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* ── How It Works Luxury Elevation ── */
 .how-section {
   padding: 6.5rem 0;
