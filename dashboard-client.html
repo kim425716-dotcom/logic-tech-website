@@ -1835,7 +1835,8 @@
         <i class="fa-solid fa-circle-question"></i> Help & FAQs
       </button>
       <button class="sidebar-link" id="sideLink-account" onclick="switchClientTab('account'); closeSidebarMobile();">
-        <i class="fa-solid fa-user-shield"></i> Account & SLA
+        <i class="fa-solid fa-user-gear"></i> Account &amp; Settings
+        <span class="sidebar-badge" style="background:rgba(201,164,92,0.15); color:var(--gold-primary, #C9A45C); display:inline-flex; font-size:0.65rem; padding:0.15rem 0.45rem;">Security</span>
       </button>
 
       <div class="sidebar-section-title" style="margin-top:0.5rem;">Shortcuts</div>
@@ -2008,6 +2009,9 @@
             </div>
           </div>
           <div class="dash-welcome-actions">
+            <button class="btn btn-sm btn-outline" onclick="switchClientTab('account')" style="border-color:rgba(201,164,92,0.4); color:var(--gold-light, #E0BC74);">
+              <i class="fa-solid fa-user-gear"></i> Account Settings
+            </button>
             <button class="btn btn-sm btn-primary" onclick="switchClientTab('request')">
               <i class="fa-solid fa-plus"></i> Request Deliverable
             </button>
@@ -5767,7 +5771,21 @@ Contact: solutions@logictech.co.ke | https://logictech.co.ke`;
     window.checkPassStrength = checkPassStrength;
 
     // Initial Dashboard Load
-    loadDashboard();
+    loadDashboard().then(() => {
+      // Support direct deep-linking via #account or ?tab=account
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabTarget = urlParams.get('tab') || window.location.hash.replace('#', '');
+      if (tabTarget && ['overview', 'projects', 'estimator', 'request', 'faqs', 'account'].includes(tabTarget)) {
+        switchClientTab(tabTarget);
+      }
+    });
+
+    window.addEventListener('hashchange', () => {
+      const h = window.location.hash.replace('#', '');
+      if (h && ['overview', 'projects', 'estimator', 'request', 'faqs', 'account'].includes(h)) {
+        switchClientTab(h);
+      }
+    });
 
     
 </script>

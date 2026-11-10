@@ -1077,6 +1077,7 @@
       </button>
       <button class="sidebar-link" onclick="switchTab('account')">
         <i class="fa-solid fa-user-gear"></i> Account &amp; Security
+        <span class="sidebar-badge" style="background:rgba(201,164,92,0.15); color:var(--gold-primary, #C9A45C); display:inline-flex; font-size:0.65rem; padding:0.15rem 0.45rem;">Admin</span>
       </button>
 
       <div class="sidebar-section-title" style="margin-top:0.5rem;">Shortcuts</div>
@@ -1252,6 +1253,9 @@
               <p>Real-time client demand, engineering delivery pipeline, customer directory, and published knowledge assets.</p>
             </div>
             <div class="dash-welcome-actions">
+              <button class="btn btn-sm btn-outline" onclick="switchTab('account')" style="border-color:rgba(201,164,92,0.4); color:var(--gold-light, #E0BC74);" title="Account & Security Settings">
+                <i class="fa-solid fa-user-gear"></i> <span>Account Settings</span>
+              </button>
               <button class="btn btn-sm btn-outline" onclick="refreshAllData()" title="Reload all data">
                 <i class="fa-solid fa-arrows-rotate"></i> <span>Sync Data</span>
               </button>
@@ -2734,6 +2738,13 @@
         if (dropAv) dropAv.textContent = initials;
 
         loadAdminAccount();
+
+        // Check initial hash/query for direct tab navigation (e.g. #account or ?tab=account)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabTarget = urlParams.get('tab') || window.location.hash.replace('#', '');
+        if (tabTarget && ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'account'].includes(tabTarget)) {
+          switchTab(tabTarget);
+        }
 
         document.getElementById('authGateMsg').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
@@ -4792,6 +4803,13 @@ https://logictech.co.ke`;
     window.convertInquiryToProject = convertInquiryToProject;
     window.copyEmail = copyEmail;
     window.openClientDossier = openClientDossier;
+
+    window.addEventListener('hashchange', () => {
+      const h = window.location.hash.replace('#', '');
+      if (h && ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'account'].includes(h)) {
+        switchTab(h);
+      }
+    });
 
     // Initialize
     document.addEventListener('DOMContentLoaded', checkAdminAuth);
