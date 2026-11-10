@@ -3376,7 +3376,10 @@ https://logictech.co.ke`;
       renderProjects(filtered);
     }
 
-    function openNewProjectModal(preselectedUserId = null) {
+    async function openNewProjectModal(preselectedUserId = null) {
+      if (!state.users || !state.users.length) {
+        await loadUsers();
+      }
       state.editingProjectId = null;
       const delBtn = document.getElementById('projModalDeleteBtn');
       if (delBtn) delBtn.style.display = 'none';
@@ -3393,8 +3396,10 @@ https://logictech.co.ke`;
       document.getElementById('projUserId').required = true;
 
       const select = document.getElementById('projUserId');
+      const clientList = (state.users || []).filter(u => u.role !== 'admin');
+      const listToDisplay = clientList.length ? clientList : (state.users || []);
       select.innerHTML = '<option value="">Select an enterprise client...</option>' + 
-        state.users.map(u => `<option value="${u.id}" ${u.id === preselectedUserId ? 'selected' : ''}>${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
+        listToDisplay.map(u => `<option value="${u.id}" ${u.id === preselectedUserId ? 'selected' : ''}>${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
 
       openModal('projectModal');
     }

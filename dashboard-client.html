@@ -2222,11 +2222,32 @@
               </tbody>
             </table>
           </div>
+          <!-- Grid view container for overview tab -->
+          <div id="overviewProjectGrid" class="projects-grid" style="display:none;"></div>
         </div>
       </section>
 
       <!-- ════ TAB 2: MY PROJECTS ════ -->
       <section id="tab-client-projects" class="tab-pane hidden">
+        <!-- Interactive Sandbox Workspace Banner for Deliverables Tab -->
+        <div id="clientSandboxBannerProjects" class="sandbox-banner" style="display:none; margin-bottom:1.5rem;">
+          <div class="sandbox-banner-icon">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div class="sandbox-banner-text">
+            <h4>Explore Enterprise Sandbox Deliverables</h4>
+            <p>Your workspace is ready. Load 3 realistic enterprise deliverables with active milestones, live discussion threads, and architecture blueprints to explore before submitting your first project.</p>
+          </div>
+          <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm btn-primary" onclick="seedSampleDeliverables()">
+              <i class="fa-solid fa-bolt"></i> Load Sandbox Workspace
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="openRequestWizard()">
+              <i class="fa-solid fa-plus"></i> Request Deliverable
+            </button>
+          </div>
+        </div>
+
         <div class="dash-card">
           <div class="dash-card-header">
             <div>
@@ -2291,6 +2312,8 @@
               </tbody>
             </table>
           </div>
+          <!-- Grid view container for full projects tab -->
+          <div id="fullProjectGrid" class="projects-grid" style="display:none;"></div>
         </div>
       </section>
 
@@ -3492,7 +3515,7 @@
       if (mobTitle) mobTitle.textContent = titleMap[tabId] || 'Client Portal';
 
       if (tabId === 'projects') {
-        renderFullProjects(clientState.projects);
+        filterFullProjects();
       }
       if (tabId === 'faqs' && !clientState.faqs.length) {
         loadClientFaqs();
@@ -3573,9 +3596,14 @@
         }
 
         // Sandbox Banner Visibility
+        const isZeroProjects = clientState.projects.length === 0;
         const sandboxBanner = document.getElementById('clientSandboxBanner');
         if (sandboxBanner) {
-          sandboxBanner.style.display = clientState.projects.length === 0 ? 'flex' : 'none';
+          sandboxBanner.style.display = isZeroProjects ? 'flex' : 'none';
+        }
+        const sandboxBanner2 = document.getElementById('clientSandboxBannerProjects');
+        if (sandboxBanner2) {
+          sandboxBanner2.style.display = isZeroProjects ? 'flex' : 'none';
         }
 
         // Render Pipeline Distribution Bar & Tables
@@ -3913,10 +3941,10 @@
                   <i class="fa-solid fa-box-archive" style="color:var(--dash-cyan);"></i> Scope Actions
                 </div>
                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                  <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+                  <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id})">
                     <i class="fa-solid fa-comments"></i> Message Squad
                   </button>
-                  <button type="button" class="btn btn-sm btn-outline" onclick="mockApproveDeliverable(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+                  <button type="button" class="btn btn-sm btn-outline" onclick="mockApproveDeliverable(${p.id})">
                     <i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Approve
                   </button>
                 </div>
@@ -3929,8 +3957,9 @@
 
     /* === MOCK API CALL: Approve deliverable === */
     function mockApproveDeliverable(id, title) {
-      showToast(`Deliverable "${title}" has been signed off and recorded in the audit log.`, 'success', 'Approved');
       const p = clientState.projects.find(item => item.id === id);
+      const projTitle = title || (p ? p.name : `Deliverable #${id}`);
+      showToast(`Deliverable "${projTitle}" has been signed off and recorded in the audit log.`, 'success', 'Approved');
       if (p) {
         p.progress = Math.min(100, (p.progress || 0) + 20);
         if (p.progress >= 100) p.status = 'Completed';
@@ -3959,25 +3988,30 @@
         clearBtn.style.display = clientState.activeKpiFilter ? 'inline-block' : 'none';
       }
 
+      const isGrid = clientState.projectsViewMode === 'grid';
+      if (tableWrap) tableWrap.style.display = isGrid ? 'none' : 'block';
+      if (grid) grid.style.display = isGrid ? 'grid' : 'none';
+
       if (!list.length) {
         const emptyHtml = `
           <div class="empty-state" style="padding:3rem 1rem;">
             <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
             <div class="empty-title">No deliverables found</div>
-            <div class="empty-desc">No software projects match the active stage criteria. Request a new deliverable to begin.</div>
-            <button class="btn btn-sm btn-primary" onclick="openRequestWizard()" style="margin-top:0.75rem;">
-              <i class="fa-solid fa-plus"></i> Request Deliverable
-            </button>
+            <div class="empty-desc">No software projects match the active stage criteria. You can request a custom deliverable or load our enterprise sandbox to explore live deliverables.</div>
+            <div style="display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; margin-top:0.85rem;">
+              <button type="button" class="btn btn-sm btn-primary" onclick="openRequestWizard()">
+                <i class="fa-solid fa-plus"></i> Request Deliverable
+              </button>
+              <button type="button" class="btn btn-sm btn-outline" onclick="seedSampleDeliverables()">
+                <i class="fa-solid fa-bolt"></i> Load Sample Deliverables
+              </button>
+            </div>
           </div>
         `;
         if (tbody) tbody.innerHTML = `<tr><td colspan="5">${emptyHtml}</td></tr>`;
         if (grid) grid.innerHTML = emptyHtml;
         return;
       }
-
-      const isGrid = clientState.projectsViewMode === 'grid';
-      if (tableWrap) tableWrap.style.display = isGrid ? 'none' : 'block';
-      if (grid) grid.style.display = isGrid ? 'grid' : 'none';
 
       // 1. Render Table (List view)
       if (tbody) {
@@ -4008,7 +4042,7 @@
                   <button class="btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" title="Toggle Scope Details" aria-expanded="${isExpanded}">
                     <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> Details
                   </button>
-                  <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Open Discussion Thread">
+                  <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id})" title="Open Discussion Thread">
                     <i class="fa-solid fa-comments"></i> Chat
                   </button>
                 </div>
@@ -4051,7 +4085,7 @@
                 <button type="button" class="btn btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" style="font-size:0.75rem;">
                   <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> ${isExpanded ? 'Close' : 'Details'}
                 </button>
-                <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" style="font-size:0.75rem;">
+                <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id})" style="font-size:0.75rem;">
                   <i class="fa-solid fa-comments"></i> Chat
                 </button>
               </div>
@@ -4095,25 +4129,30 @@
         clearBtn.style.display = clientState.activeKpiFilter ? 'inline-block' : 'none';
       }
 
+      const isGrid = clientState.projectsViewMode === 'grid';
+      if (tableWrap) tableWrap.style.display = isGrid ? 'none' : 'block';
+      if (grid) grid.style.display = isGrid ? 'grid' : 'none';
+
       if (!list.length) {
         const emptyHtml = `
           <div class="empty-state" style="padding:3rem 1rem;">
             <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
             <div class="empty-title">No deliverables found</div>
-            <div class="empty-desc">No software projects match the active stage criteria. Request a new deliverable to begin.</div>
-            <button class="btn btn-sm btn-primary" onclick="openRequestWizard()" style="margin-top:0.75rem;">
-              <i class="fa-solid fa-plus"></i> Request Deliverable
-            </button>
+            <div class="empty-desc">No software projects match the active stage criteria. You can request a custom deliverable or load our enterprise sandbox to explore live deliverables.</div>
+            <div style="display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; margin-top:0.85rem;">
+              <button type="button" class="btn btn-sm btn-primary" onclick="openRequestWizard()">
+                <i class="fa-solid fa-plus"></i> Request Deliverable
+              </button>
+              <button type="button" class="btn btn-sm btn-outline" onclick="seedSampleDeliverables()">
+                <i class="fa-solid fa-bolt"></i> Load Sample Deliverables
+              </button>
+            </div>
           </div>
         `;
         if (tbody) tbody.innerHTML = `<tr><td colspan="5">${emptyHtml}</td></tr>`;
         if (grid) grid.innerHTML = emptyHtml;
         return;
       }
-
-      const isGrid = clientState.projectsViewMode === 'grid';
-      if (tableWrap) tableWrap.style.display = isGrid ? 'none' : 'block';
-      if (grid) grid.style.display = isGrid ? 'grid' : 'none';
 
       // 1. List View Table
       if (tbody) {
@@ -4144,7 +4183,7 @@
                   <button class="btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" title="Scope Details">
                     <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> Details
                   </button>
-                  <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" title="Chat">
+                  <button class="btn-sm btn-primary" onclick="openProjectChat(${p.id})" title="Chat">
                     <i class="fa-solid fa-comments"></i> Chat
                   </button>
                 </div>
@@ -4187,7 +4226,7 @@
                 <button type="button" class="btn btn-sm btn-outline" onclick="toggleInlineDetails(${p.id})" style="font-size:0.75rem;">
                   <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i> ${isExpanded ? 'Close' : 'Details'}
                 </button>
-                <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" style="font-size:0.75rem;">
+                <button type="button" class="btn btn-sm btn-primary" onclick="openProjectChat(${p.id})" style="font-size:0.75rem;">
                   <i class="fa-solid fa-comments"></i> Chat
                 </button>
               </div>
@@ -5401,7 +5440,9 @@ Contact: solutions@logictech.co.ke | https://logictech.co.ke`;
 
     async function openProjectChat(projectId, projectName) {
       currentChatProjectId = projectId;
-      document.getElementById('chatProjectTitle').textContent = projectName || 'Project Discussion';
+      const proj = clientState.projects.find(p => p.id === projectId);
+      const title = projectName || (proj ? proj.name : 'Project Discussion');
+      document.getElementById('chatProjectTitle').textContent = title;
       document.getElementById('chatModal').classList.remove('hidden');
       document.getElementById('chatMessagesList').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading discussion thread...</div>';
       document.getElementById('chatMessageInput').value = '';

@@ -14,7 +14,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 
-const { seedFaqs, cleanupExpired, db } = require('./config/database');
+const { seedFaqs, seedProjects, cleanupExpired, db } = require('./config/database');
 const { hashPassword } = require('./utils/crypto');
 const { validEmail } = require('./utils/validation');
 const { smtpConfigured } = require('./utils/mailer');
@@ -182,6 +182,9 @@ app.use(errorHandler);
 async function initialize() {
   // Seed FAQs from data/faqs.json if the table is empty
   seedFaqs();
+
+  // Seed default enterprise projects for client accounts if empty
+  seedProjects();
 
   // Create admin account from environment variables
   if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {

@@ -41,6 +41,64 @@ function clearSession(req, res) {
   res.setHeader('Set-Cookie', cookieHeader('', 0));
 }
 
+function seedClientStarterProjects(userId) {
+  try {
+    const existing = db.prepare('SELECT COUNT(*) AS count FROM projects WHERE user_id = ?').get(userId);
+    if (existing && existing.count > 0) return;
+
+    const demoProjects = [
+      {
+        name: 'Enterprise M-Pesa & Core Banking Rails Gateway',
+        description: '[Scope Tier: Enterprise Custom Architecture]\n\nHigh-throughput financial switch integrating Safaricom Daraja 3.0 B2C/C2B APIs with core banking ledger. Features automated HMAC-SHA256 signature verification, idempotency key deduplication, and dead-letter Kafka queuing.',
+        status: 'In Progress',
+        progress: 65,
+        startDate: '2026-09-15',
+        dueDate: '2026-11-30'
+      },
+      {
+        name: 'AWS Multi-Region Kubernetes & Infrastructure as Code',
+        description: '[Scope Tier: High-Availability Cloud Native]\n\nTerraform IaC deployment across af-south-1 (Cape Town) and eu-west-1 (Ireland). Provisioning auto-scaling Amazon EKS clusters, Istio service mesh, and Aurora PostgreSQL multi-region replication with sub-30ms failover.',
+        status: 'Review',
+        progress: 90,
+        startDate: '2026-09-28',
+        dueDate: '2026-10-31'
+      },
+      {
+        name: 'Zero-Trust Security & KDPA 2019 Compliance Audit',
+        description: '[Scope Tier: Security & Compliance Audit]\n\nEnd-to-end vulnerability assessment and penetration testing across all public API gateways. Automated KDPA 2019 data subject access request (DSAR) workflows and SOC2 compliance controls.',
+        status: 'Completed',
+        progress: 100,
+        startDate: '2026-08-01',
+        dueDate: '2026-09-15'
+      }
+    ];
+
+    const insertProj = db.prepare(`
+      INSERT INTO projects (user_id, name, description, status, progress, start_date, due_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    const insertMsg = db.prepare(`
+      INSERT INTO messages (project_id, sender_id, content, is_internal)
+      VALUES (?, ?, ?, 0)
+    `);
+
+    const adminUser = db.prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1").get();
+    const adminId = adminUser ? adminUser.id : userId;
+
+    for (const p of demoProjects) {
+      const res = insertProj.run(userId, p.name, p.description, p.status, p.progress, p.startDate, p.dueDate);
+      const projId = Number(res.lastInsertRowid);
+      insertMsg.run(
+        projId,
+        adminId,
+        `Welcome to the ${p.name} engagement workspace! Our solutions squad has scaffolded the milestone pipeline and architecture blueprint. Feel free to leave questions or milestone feedback directly in this thread.`
+      );
+    }
+  } catch (err) {
+    console.error('Error seeding starter deliverables for client:', err);
+  }
+}
+
 // ── POST /api/auth/register ─────────────────────────────────────────
 router.post(
   '/register',
@@ -66,6 +124,7 @@ router.post(
       ).run(name, email, hash);
 
       const user = statements.userById.get(Number(result.lastInsertRowid));
+      seedClientStarterProjects(user.id);
       createSession(res, user.id);
       res.status(201).json({ user: publicUser(user) });
     } catch (err) {
@@ -113,6 +172,7 @@ router.post(
           'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)'
         ).run(name, email, dummyPass);
         user = statements.userById.get(Number(result.lastInsertRowid));
+        seedClientStarterProjects(user.id);
       }
 
       createSession(res, user.id);
