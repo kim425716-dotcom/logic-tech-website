@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop – Logic Tech | Computers, Laptops & Phones Kenya</title>
+  <meta name="description" content="Buy computers, laptops, phones and accessories from Logic Tech. Nationwide delivery across Kenya. Free delivery over KES 10,000." />
+  <link rel="stylesheet" href="css/style.css?v=3.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* =====================================================
+       SHOP-SPECIFIC STYLES
+       ===================================================== */
+
+    /* ---- Reset & box-sizing safety ---- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: hidden; }
+
+    /* ---- Hero ---- */
+    .shop-hero {
+      padding: clamp(5rem,10vw,8rem) 0 clamp(2.5rem,5vw,4rem);
+      text-align: center;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,164,92,.12) 0%, transparent 70%);
+    }
+    .shop-hero .badge-pill {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(201,164,92,.1); border: 1px solid rgba(201,164,92,.35);
+      color: var(--gold); border-radius: 999px;
+      padding: .35rem 1rem; font-size: .8rem; font-weight: 600;
+      letter-spacing: .05em; text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+    .shop-hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4vw + 1rem, 3.75rem);
+      font-weight: 700; line-height: 1.1;
+      color: var(--text-primary); margin-bottom: 1rem;
+    }
+    .shop-hero h1 .accent { color: var(--gold); }
+    .shop-hero p {
+      max-width: 560px; margin: 0 auto 2rem;
+      color: var(--text-secondary); font-size: clamp(.95rem,1.5vw,1.1rem);
+    }
+    .trust-chips {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: .625rem;
+      margin-bottom: 2rem;
+    }
+    .trust-chip {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border-color);
+      border-radius: 999px; padding: .35rem .9rem;
+      color: var(--text-secondary); font-size: .8rem; font-weight: 500;
+    }
+    .trust-chip i { color: var(--gold); font-size: .75rem; }
+
+    /* Hero search */
+    .hero-search-wrap {
+      max-width: 520px; margin: 0 auto;
+      position: relative;
+    }
+    .hero-search-wrap i.search-ic {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); pointer-events: none;
+    }
+    .hero-search {
+      width: 100%; background: rgba(255,255,255,.05);
+      border: 1px solid var(--border-color); border-radius: 999px;
+      padding: .75rem 1rem .75rem 2.75rem;
+      color: var(--text-primary); font-size: .95rem; font-family: var(--font-sans);
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .hero-search:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,164,92,.18);
+    }
+    .hero-search::placeholder { color: var(--text-muted); }
+
+    /* ---- Filter Bar ---- */
+    .filter-bar {
+      position: sticky; top: 64px; z-index: 50;
+      background: #05020a; border-bottom: 1px solid var(--border-color);
+      padding: .75rem 0;
+    }
+    .filter-inner {
+      display: flex; align-items: center; gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .filter-pills {
+      display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; flex: 1 1 auto;
+    }
+    .filter-pill {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .4rem 1rem; border-radius: 999px;
+      border: 1px solid var(--border-color); background: transparent;
+      color: var(--text-secondary); font-size: .8rem; font-weight: 500;
+      cursor: pointer; font-family: var(--font-sans);
+      transition: background .15s, border-color .15s, color .15s;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-pill.active {
+      background: var(--gold); border-color: var(--gold);
+      color: #05020a; font-weight: 700;
+    }
+    .filter-pill .pill-count {
+      background: rgba(0,0,0,.2); border-radius: 999px;
+      padding: .05rem .4rem; font-size: .7rem;
+    }
+    .filter-pill.active .pill-count { background: rgba(0,0,0,.25); }
+
+    .sort-select {
+      background: rgba(255,255,255,.05); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: .4rem .75rem; color: var(--text-secondary);
+      font-size: .8rem; font-family: var(--font-sans); cursor: pointer; outline: none;
+      transition: border-color .15s;
+    }
+    .sort-select:hover, .sort-select:focus { border-color: var(--gold); }
+    .sort-select option { background: #111b2e; }
+
+    /* ---- Product Grid ---- */
+    .shop-section { padding: 2.5rem 0 5rem; }
+    .shop-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: .75rem; margin-bottom: 1.5rem;
+    }
+    .shop-count { color: var(--text-muted); font-size: .875rem; }
+    .shop-count strong { color: var(--text-secondary); }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .no-results {
+      grid-column: 1/-1; text-align: center; padding: 4rem 1rem;
+      color: var(--text-muted);
+    }
+    .no-results i { font-size: 2.5rem; margin-bottom: 1rem; color: var(--border-color); }
+    .no-results p { font-size: 1.1rem; }
+
+    /* ---- Product Card ---- */
+    .product-card {
+      background: var(--surface); border: 1px solid var(--border-color);
+      border-radius: var(--radius); overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .18s, border-color .18s, box-shadow .18s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold);
+      box-shadow: 0 10px 36px rgba(201,164,92,.18);
+    }
+    .product-img-wrap {
+      position: relative; overflow: hidden;
+      aspect-ratio: 4/3; background: rgba(255,255,255,.03);
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .3s;
+    }
+    .product-card:hover .product-img-wrap img { transform: scale(1.05); }
+    .product-badges {
+      position: absolute; top: .625rem; left: .625rem;
+      display: flex; flex-direction: column; gap: .3rem;
+    }
+    .badge-cat {
+      display: inline-block; padding: .2rem .55rem;
+      border-radius: 6px; font-size: .68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+    }
+    .badge-cat.laptop { background: rgba(99,102,241,.25); color: #818cf8; border: 1px solid rgba(99,102,241,.35); }
+    .badge-cat.desktop { background: rgba(20,184,166,.2); color: #2dd4bf; border: 1px solid rgba(20,184,166,.3); }
+    .badge-cat.phone { background: rgba(201,164,92,.18); color: var(--gold); border: 1px solid rgba(201,164,92,.3); }
+    .badge-cat.accessory { background: rgba(168,139,250,.2); color: #c4b5fd; border: 1px solid rgba(168,139,250,.3); }
+    .badge-low {
+      background: rgba(239,68,68,.2); color: #f87171;
+      border: 1px solid rgba(239,68,68,.35);
+      padding: .2rem .55rem; border-radius: 6px;
+      font-size: .68rem; font-weight: 600; white-space: nowrap;
+    }
+
+    .product-info { padding: 1rem; display: flex; flex-direction: column; flex: 1; }
+    .product-name {
+      font-size: .95rem; font-weight: 600; color: var(--text-primary);
+      margin-bottom: .35rem; line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+    .product-specs {
+      font-size: .78rem; color: var(--text-muted); margin-bottom: .625rem;
+      line-height: 1.4; min-height: 2.5em;
+    }
+    .product-stars {
+      display: flex; align-items: center; gap: .3rem;
+      margin-bottom: .625rem;
+    }
+    .stars { color: #f59e0b; font-size: .78rem; }
+    .rating-num { color: var(--text-muted); font-size: .75rem; }
+    .product-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: .5rem; margin-top: auto; padding-top: .75rem;
+      border-top: 1px solid var(--border-color);
+    }
+    .product-price {
+      font-size: 1.05rem; font-weight: 700; color: var(--gold);
+      white-space: nowrap;
+    }
+    .product-actions { display: flex; gap: .4rem; }
+    .btn-cart {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .45rem .85rem; border-radius: 8px;
+      background: var(--gold); color: #05020a;
+      border: none; cursor: pointer; font-size: .8rem; font-weight: 600;
+      font-family: var(--font-sans);
+      transition: background .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .btn-cart:hover { background: #d4b06c; transform: translateY(-1px); }
+    .btn-cart:active { transform: none; }
+    .btn-quick {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .btn-quick:hover { background: rgba(201,164,92,.12); border-color: var(--gold); color: var(--gold); }
+
+    /* ---- Cart Badge ---- */
+    .cart-btn-wrap { position: relative; }
+    .cart-badge {
+      position: absolute; top: -6px; right: -6px;
+      background: #ef4444; color: #fff; border-radius: 50%;
+      font-size: .65rem; width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; pointer-events: none;
+      border: 1.5px solid #05020a;
+    }
+
+    /* ---- Cart Sidebar ---- */
+    .cart-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.65);
+      z-index: 1000; display: none;
+    }
+    .cart-backdrop.open { display: block; }
+    .cart-sidebar {
+      position: fixed; right: 0; top: 0;
+      width: min(420px, 95vw); height: 100%;
+      background: var(--surface); z-index: 1001;
+      transform: translateX(100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+      border-left: 1px solid var(--border-color);
+      display: flex; flex-direction: column;
+    }
+    .cart-sidebar.open { transform: translateX(0); }
+
+    .cart-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .cart-head h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .btn-icon-sm {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      background: rgba(255,255,255,.06); color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background .15s, color .15s;
+    }
+    .btn-icon-sm:hover { background: rgba(239,68,68,.15); color: #f87171; }
+
+    .cart-body { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; }
+    .cart-empty {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+    .cart-empty i { font-size: 2.5rem; margin-bottom: 1rem; opacity: .4; }
+    .cart-item {
+      display: flex; gap: .875rem; padding: .875rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item-img {
+      width: 70px; height: 70px; border-radius: 8px; object-fit: cover;
+      border: 1px solid var(--border-color); flex-shrink: 0;
+    }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name {
+      font-size: .88rem; font-weight: 600; color: var(--text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: .25rem;
+    }
+    .cart-item-price { font-size: .85rem; color: var(--gold); font-weight: 600; }
+    .cart-qty {
+      display: flex; align-items: center; gap: .4rem; margin-top: .4rem;
+    }
+    .qty-btn {
+      width: 26px; height: 26px; border-radius: 6px;
+      border: 1px solid var(--border-color); background: rgba(255,255,255,.05);
+      color: var(--text-secondary); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; font-size: .85rem;
+      transition: background .15s, border-color .15s;
+    }
+    .qty-btn:hover { background: rgba(201,164,92,.15); border-color: var(--gold); color: var(--gold); }
+    .qty-num { font-size: .85rem; color: var(--text-primary); font-weight: 600; min-width: 20px; text-align: center; }
+    .cart-remove {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; padding: 0 .25rem; align-self: flex-start;
+      font-size: .9rem; transition: color .15s;
+    }
+    .cart-remove:hover { color: #f87171; }
+
+    .cart-foot {
+      border-top: 1px solid var(--border-color);
+      padding: 1rem 1.25rem 1.5rem; flex-shrink: 0;
+    }
+    .delivery-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+    .delivery-row label { font-size: .82rem; color: var(--text-secondary); font-weight: 500; }
+    .delivery-select {
+      background: rgba(255,255,255,.05); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: .35rem .6rem; color: var(--text-primary);
+      font-size: .82rem; font-family: var(--font-sans); cursor: pointer; outline: none;
+    }
+    .delivery-select option { background: #111b2e; }
+    .cart-totals { margin-bottom: 1rem; }
+    .cart-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .85rem; color: var(--text-secondary); padding: .2rem 0;
+    }
+    .cart-row.total {
+      font-size: 1rem; font-weight: 700;
+      color: var(--text-primary); border-top: 1px solid var(--border-color);
+      padding-top: .625rem; margin-top: .4rem;
+    }
+    .cart-row.total .cart-total-val { color: var(--gold); font-size: 1.1rem; }
+    .btn-checkout {
+      width: 100%; padding: .85rem; background: var(--gold); color: #05020a;
+      border: none; border-radius: 10px; font-size: .95rem; font-weight: 700;
+      font-family: var(--font-sans); cursor: pointer;
+      transition: background .15s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-checkout:hover { background: #d4b06c; }
+    .btn-checkout:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ---- Quick View Modal ---- */
+    .shop-modal {
+      position: fixed; inset: 0; z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.8); padding: 1rem;
+      animation: fadeIn .2s;
+    }
+    .shop-modal.hidden { display: none; }
+    .shop-modal-box {
+      background: var(--surface); border: 1px solid var(--border-color);
+      border-radius: var(--radius); max-width: 860px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
+    }
+    .modal-head h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .modal-body-qv {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 1.5rem;
+    }
+    @media(max-width:640px){ .modal-body-qv { grid-template-columns: 1fr; } }
+    .qv-img { border-radius: 10px; overflow: hidden; aspect-ratio: 4/3; background: rgba(255,255,255,.03); }
+    .qv-img img { width: 100%; height: 100%; object-fit: cover; }
+    .qv-info {}
+    .qv-badges { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .75rem; }
+    .qv-name {
+      font-size: 1.3rem; font-weight: 700; color: var(--text-primary);
+      margin-bottom: .5rem; line-height: 1.25;
+    }
+    .qv-stars { margin-bottom: .75rem; display: flex; align-items: center; gap: .4rem; }
+    .qv-price { font-size: 1.75rem; font-weight: 800; color: var(--gold); margin-bottom: .75rem; }
+    .qv-desc { font-size: .88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem; }
+    .qv-specs { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+    .qv-specs li {
+      display: flex; align-items: flex-start; gap: .5rem;
+      font-size: .85rem; color: var(--text-secondary); padding: .3rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .qv-specs li:last-child { border-bottom: none; }
+    .qv-specs li i { color: var(--gold); margin-top: .1rem; flex-shrink: 0; }
+    .qv-qty-row {
+      display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem;
+    }
+    .qv-qty-label { font-size: .85rem; color: var(--text-secondary); font-weight: 500; }
+    .qv-actions { display: flex; gap: .625rem; flex-wrap: wrap; }
+    .btn-add-qv {
+      flex: 1; min-width: 140px; padding: .75rem 1rem;
+      background: var(--gold); color: #05020a; border: none;
+      border-radius: 10px; font-size: .9rem; font-weight: 700;
+      font-family: var(--font-sans); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: background .15s;
+    }
+    .btn-add-qv:hover { background: #d4b06c; }
+    .btn-buynow {
+      flex: 1; min-width: 120px; padding: .75rem 1rem;
+      background: transparent; color: var(--gold);
+      border: 1px solid var(--gold); border-radius: 10px;
+      font-size: .9rem; font-weight: 600; font-family: var(--font-sans);
+      cursor: pointer; transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-buynow:hover { background: rgba(201,164,92,.1); }
+
+    /* ---- Checkout Modal ---- */
+    .checkout-modal {
+      position: fixed; inset: 0; z-index: 3000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.85); padding: 1rem;
+      animation: fadeIn .2s;
+    }
+    .checkout-modal.hidden { display: none; }
+    .checkout-box {
+      background: var(--surface); border: 1px solid var(--border-color);
+      border-radius: var(--radius); max-width: 580px; width: 100%;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .co-head {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .co-head h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .co-steps {
+      display: flex; gap: 0; padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .co-step {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: .3rem; position: relative; font-size: .75rem;
+      color: var(--text-muted); font-weight: 500;
+    }
+    .co-step:not(:last-child)::after {
+      content: ''; position: absolute; top: 14px; left: calc(50% + 14px);
+      width: calc(100% - 28px); height: 2px; background: var(--border-color);
+    }
+    .co-step.done::after { background: var(--gold); }
+    .co-step-dot {
+      width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color);
+      background: transparent; display: flex; align-items: center; justify-content: center;
+      font-size: .78rem; color: var(--text-muted); font-weight: 700; z-index: 1;
+      transition: background .2s, border-color .2s;
+    }
+    .co-step.active .co-step-dot { border-color: var(--gold); background: var(--gold); color: #05020a; }
+    .co-step.done .co-step-dot { border-color: var(--gold); background: var(--gold); color: #05020a; }
+
+    .co-body { padding: 1.5rem; }
+    .co-panel { display: none; }
+    .co-panel.active { display: block; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media(max-width:480px){ .form-row { grid-template-columns: 1fr; } }
+    .form-grp { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .875rem; }
+    .form-grp label { font-size: .8rem; font-weight: 500; color: var(--text-secondary); }
+    .form-grp input, .form-grp select, .form-grp textarea {
+      background: rgba(255,255,255,.05); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: .6rem .875rem;
+      color: var(--text-primary); font-size: .88rem; font-family: var(--font-sans);
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      width: 100%;
+    }
+    .form-grp input:focus, .form-grp select:focus, .form-grp textarea:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,164,92,.15);
+    }
+    .form-grp select option { background: #111b2e; }
+
+    .pay-opts { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .pay-opt {
+      flex: 1; min-width: 120px; border: 2px solid var(--border-color);
+      border-radius: 10px; padding: 1rem; cursor: pointer;
+      display: flex; align-items: center; gap: .625rem;
+      transition: border-color .15s, background .15s;
+    }
+    .pay-opt.selected { border-color: var(--gold); background: rgba(201,164,92,.08); }
+    .pay-opt i { font-size: 1.3rem; }
+    .pay-opt-label { font-size: .85rem; font-weight: 600; color: var(--text-primary); }
+    .pay-opt-sub { font-size: .72rem; color: var(--text-muted); }
+
+    .mpesa-wrap { display: none; }
+    .card-wrap { display: none; }
+    .mpesa-wrap.show, .card-wrap.show { display: block; }
+
+    .stk-btn {
+      width: 100%; padding: .75rem; background: #00b264; color: #fff;
+      border: none; border-radius: 10px; font-size: .9rem; font-weight: 700;
+      font-family: var(--font-sans); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: background .15s;
+    }
+    .stk-btn:hover { background: #00994f; }
+    .stk-note { font-size: .78rem; color: var(--text-muted); margin-top: .5rem; }
+
+    .order-confirm { text-align: center; padding: 1rem 0; }
+    .order-check {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(16,185,129,.15); border: 2px solid #10b981;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem; font-size: 2rem; color: #10b981;
+    }
+    .order-num {
+      font-size: 1.5rem; font-weight: 800; color: var(--gold);
+      letter-spacing: .05em; margin-bottom: .4rem;
+    }
+    .order-eta { font-size: .85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .order-items-mini {
+      text-align: left; border: 1px solid var(--border-color);
+      border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .order-item-row {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .75rem 1rem; border-bottom: 1px solid var(--border-color);
+      font-size: .85rem;
+    }
+    .order-item-row:last-child { border-bottom: none; }
+    .order-item-img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .order-item-name { flex: 1; min-width: 0; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .order-item-price { color: var(--gold); font-weight: 600; white-space: nowrap; }
+
+    .co-foot {
+      padding: 1rem 1.5rem 1.5rem;
+      display: flex; justify-content: space-between; gap: .75rem;
+      border-top: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+    .btn-prev {
+      padding: .65rem 1.25rem; border: 1px solid var(--border-color);
+      border-radius: 10px; background: transparent; color: var(--text-secondary);
+      font-size: .88rem; font-weight: 600; font-family: var(--font-sans);
+      cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .btn-prev:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-next {
+      flex: 1; padding: .65rem 1.25rem; background: var(--gold); color: #05020a;
+      border: none; border-radius: 10px; font-size: .88rem; font-weight: 700;
+      font-family: var(--font-sans); cursor: pointer; transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-next:hover { background: #d4b06c; }
+    .btn-next:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ---- Toast ---- */
+    .toast-stack {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      z-index: 9999; display: flex; flex-direction: column; gap: .5rem;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--surface); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: .75rem 1rem;
+      display: flex; align-items: center; gap: .625rem;
+      font-size: .85rem; color: var(--text-primary);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      animation: slideUp .25s; pointer-events: auto;
+      min-width: 220px; max-width: 320px;
+    }
+    .toast i { flex-shrink: 0; }
+    .toast.success i { color: #10b981; }
+    .toast.error i { color: #f87171; }
+    .toast.info i { color: #60a5fa; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ---- Responsive ---- */
+    @media(max-width:480px){
+      .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+      .cart-sidebar { width: 100vw; }
+    }
+  </style>
+</head>
+<body class="dark">
+
+  <!-- ========== NAVBAR ========== -->
+  <header id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" alt="Logic Tech Logo" />
+        <span>Logic<span class="accent">Tech</span></span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="estimator.html">Estimator</a>
+        <a href="case-studies.html">Case Studies</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+        <a href="shop.html" class="active"><i class="fa-solid fa-shop" style="margin-right:.3rem;"></i> Shop</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="cart-btn-wrap">
+          <button class="icon-btn" id="cartToggleBtn" onclick="toggleCart()" aria-label="Shopping Cart" title="Cart (0 items)">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </button>
+          <span id="cartBadge" class="cart-badge" style="display:none">0</span>
+        </div>
+        <button id="themeToggle" class="icon-btn" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started &rarr;</a>
+        <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars" id="menuIcon"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="services.html" class="mobile-link">Services</a>
+      <a href="estimator.html" class="mobile-link">Estimator</a>
+      <a href="case-studies.html" class="mobile-link">Case Studies</a>
+      <a href="how-it-works.html" class="mobile-link">How It Works</a>
+      <a href="faq.html" class="mobile-link">FAQ</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <a href="shop.html" class="mobile-link active"><i class="fa-solid fa-shop"></i> Shop</a>
+      <div class="mobile-auth">
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== HERO ========== -->
+  <section class="shop-hero">
+    <div class="container">
+      <div class="badge-pill">
+        <i class="fa-solid fa-shop"></i> Logic Tech Store
+      </div>
+      <h1>Premium Tech, <span class="accent">Delivered</span> Across Kenya</h1>
+      <p>Shop brand-new laptops, desktops, smartphones and accessories — all warranted, all genuine, delivered nationwide.</p>
+      <div class="trust-chips">
+        <span class="trust-chip"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Products</span>
+        <span class="trust-chip"><i class="fa-solid fa-truck-fast"></i> Nationwide Delivery</span>
+        <span class="trust-chip"><i class="fa-solid fa-rotate-left"></i> 7-Day Returns</span>
+        <span class="trust-chip"><i class="fa-solid fa-headset"></i> Expert Support</span>
+      </div>
+      <div class="hero-search-wrap">
+        <i class="fa-solid fa-magnifying-glass search-ic"></i>
+        <input type="search" id="heroSearch" class="hero-search"
+          placeholder="Search products (e.g. MacBook, Samsung…)"
+          aria-label="Search products" autocomplete="off" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FILTER BAR ========== -->
+  <div class="filter-bar" id="filterBar">
+    <div class="container">
+      <div class="filter-inner">
+        <div class="filter-pills" id="filterPills">
+          <button class="filter-pill active" data-cat="all" onclick="setCategory('all',this)">
+            <i class="fa-solid fa-layer-group"></i> All <span class="pill-count" id="countAll">12</span>
+          </button>
+          <button class="filter-pill" data-cat="laptop" onclick="setCategory('laptop',this)">
+            <i class="fa-solid fa-laptop"></i> Laptops <span class="pill-count" id="countLaptop">4</span>
+          </button>
+          <button class="filter-pill" data-cat="desktop" onclick="setCategory('desktop',this)">
+            <i class="fa-solid fa-desktop"></i> Desktops <span class="pill-count" id="countDesktop">2</span>
+          </button>
+          <button class="filter-pill" data-cat="phone" onclick="setCategory('phone',this)">
+            <i class="fa-solid fa-mobile-screen-button"></i> Phones <span class="pill-count" id="countPhone">4</span>
+          </button>
+          <button class="filter-pill" data-cat="accessory" onclick="setCategory('accessory',this)">
+            <i class="fa-solid fa-plug"></i> Accessories <span class="pill-count" id="countAccessory">2</span>
+          </button>
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="renderProducts()" aria-label="Sort products">
+          <option value="default">Sort: Featured</option>
+          <option value="priceLow">Price: Low → High</option>
+          <option value="priceHigh">Price: High → Low</option>
+          <option value="rating">Top Rated</option>
+          <option value="nameAZ">Name A → Z</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PRODUCT SECTION ========== -->
+  <section class="shop-section">
+    <div class="container">
+      <div class="shop-header">
+        <p class="shop-count" id="shopCount"><strong>12</strong> products found</p>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <!-- ========== CART SIDEBAR ========== -->
+  <div class="cart-backdrop" id="cartBackdrop" onclick="toggleCart()"></div>
+  <aside class="cart-sidebar" id="cartSidebar" role="complementary" aria-label="Shopping cart">
+    <div class="cart-head">
+      <h3><i class="fa-solid fa-cart-shopping" style="color:var(--gold);margin-right:.5rem;"></i> Your Cart</h3>
+      <button class="btn-icon-sm" onclick="toggleCart()" aria-label="Close cart"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cart-body" id="cartBody"></div>
+    <div class="cart-foot" id="cartFoot" style="display:none">
+      <div class="delivery-row">
+        <label for="deliveryZone">Delivery Zone</label>
+        <select id="deliveryZone" class="delivery-select" onchange="updateCartTotals()">
+          <option value="free">Free (Order ≥ KES 10,000)</option>
+          <option value="nairobi">Nairobi (KES 300)</option>
+          <option value="county">Other Counties (KES 500)</option>
+        </select>
+      </div>
+      <div class="cart-totals" id="cartTotals"></div>
+      <button class="btn-checkout" id="checkoutBtn" onclick="openCheckout()">
+        <i class="fa-solid fa-lock"></i> Proceed to Checkout
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========== QUICK VIEW MODAL ========== -->
+  <div class="shop-modal hidden" id="quickViewModal" role="dialog" aria-modal="true" aria-label="Product Quick View">
+    <div class="shop-modal-box">
+      <div class="modal-head">
+        <h3>Quick View</h3>
+        <button class="btn-icon-sm" onclick="closeQuickView()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body-qv">
+        <div class="qv-img"><img id="qvImg" src="" alt="" /></div>
+        <div class="qv-info">
+          <div class="qv-badges" id="qvBadges"></div>
+          <div class="qv-name" id="qvName"></div>
+          <div class="qv-stars" id="qvStars"></div>
+          <div class="qv-price" id="qvPrice"></div>
+          <div class="qv-desc" id="qvDesc"></div>
+          <ul class="qv-specs" id="qvSpecs"></ul>
+          <div class="qv-qty-row">
+            <span class="qv-qty-label">Qty</span>
+            <div class="cart-qty">
+              <button class="qty-btn" onclick="changeQvQty(-1)" aria-label="Decrease">−</button>
+              <span class="qty-num" id="qvQtyNum">1</span>
+              <button class="qty-btn" onclick="changeQvQty(1)" aria-label="Increase">+</button>
+            </div>
+            <span style="font-size:.78rem;color:var(--text-muted);margin-left:.5rem;" id="qvStock"></span>
+          </div>
+          <div class="qv-actions">
+            <button class="btn-add-qv" id="qvAddBtn" onclick="addFromQuickView()">
+              <i class="fa-solid fa-cart-plus"></i> Add to Cart
+            </button>
+            <button class="btn-buynow" onclick="buyNowQuickView()">
+              <i class="fa-solid fa-bolt"></i> Buy Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== CHECKOUT MODAL ========== -->
+  <div class="checkout-modal hidden" id="checkoutModal" role="dialog" aria-modal="true" aria-label="Checkout">
+    <div class="checkout-box">
+      <div class="co-head">
+        <h3><i class="fa-solid fa-lock" style="color:var(--gold);margin-right:.5rem;"></i> Secure Checkout</h3>
+        <button class="btn-icon-sm" onclick="closeCheckout()" aria-label="Close checkout"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Steps indicator -->
+      <div class="co-steps" id="coSteps">
+        <div class="co-step active" id="coStep1">
+          <div class="co-step-dot">1</div>
+          <span>Delivery</span>
+        </div>
+        <div class="co-step" id="coStep2">
+          <div class="co-step-dot">2</div>
+          <span>Payment</span>
+        </div>
+        <div class="co-step" id="coStep3">
+          <div class="co-step-dot">3</div>
+          <span>Confirm</span>
+        </div>
+      </div>
+
+      <div class="co-body">
+        <!-- Panel 1: Delivery -->
+        <div class="co-panel active" id="coPanel1">
+          <h4 style="color:var(--text-primary);font-size:.95rem;margin-bottom:1rem;">Delivery Information</h4>
+          <div class="form-row">
+            <div class="form-grp">
+              <label>First Name *</label>
+              <input type="text" id="coFName" placeholder="John" required />
+            </div>
+            <div class="form-grp">
+              <label>Last Name *</label>
+              <input type="text" id="coLName" placeholder="Kamau" required />
+            </div>
+          </div>
+          <div class="form-grp">
+            <label>Email *</label>
+            <input type="email" id="coEmail" placeholder="you@example.com" required />
+          </div>
+          <div class="form-grp">
+            <label>Phone Number *</label>
+            <input type="tel" id="coPhone" placeholder="0712 345 678" required />
+          </div>
+          <div class="form-row">
+            <div class="form-grp">
+              <label>County *</label>
+              <select id="coCounty" required>
+                <option value="">Select County</option>
+                <option>Nairobi</option><option>Mombasa</option><option>Kisumu</option>
+                <option>Nakuru</option><option>Eldoret / Uasin Gishu</option>
+                <option>Kiambu</option><option>Machakos</option><option>Kajiado</option>
+                <option>Muranga</option><option>Nyeri</option><option>Meru</option>
+                <option>Embu</option><option>Kirinyaga</option><option>Nyandarua</option>
+                <option>Laikipia</option><option>Samburu</option><option>Trans Nzoia</option>
+                <option>West Pokot</option><option>Elgeyo-Marakwet</option><option>Nandi</option>
+                <option>Baringo</option><option>Bomet</option><option>Kericho</option>
+                <option>Narok</option><option>Kisii</option><option>Nyamira</option>
+                <option>Migori</option><option>Homa Bay</option><option>Siaya</option>
+                <option>Vihiga</option><option>Kakamega</option><option>Bungoma</option>
+                <option>Busia</option><option>Marsabit</option><option>Isiolo</option>
+                <option>Tharaka-Nithi</option><option>Kitui</option><option>Makueni</option>
+                <option>Kilifi</option><option>Kwale</option><option>Taita-Taveta</option>
+                <option>Tana River</option><option>Lamu</option><option>Garissa</option>
+                <option>Wajir</option><option>Mandera</option><option>Turkana</option>
+              </select>
+            </div>
+            <div class="form-grp">
+              <label>City / Town *</label>
+              <input type="text" id="coCity" placeholder="Nairobi CBD" required />
+            </div>
+          </div>
+          <div class="form-grp">
+            <label>Delivery Address *</label>
+            <input type="text" id="coAddress" placeholder="Street, Building, Apartment" required />
+          </div>
+        </div>
+
+        <!-- Panel 2: Payment -->
+        <div class="co-panel" id="coPanel2">
+          <h4 style="color:var(--text-primary);font-size:.95rem;margin-bottom:1rem;">Payment Method</h4>
+
+          <div class="pay-opts">
+            <div class="pay-opt selected" id="payOptMpesa" onclick="selectPayment('mpesa')">
+              <i class="fa-solid fa-mobile-screen-button" style="color:#00b264;"></i>
+              <div>
+                <div class="pay-opt-label">M-Pesa</div>
+                <div class="pay-opt-sub">STK Push to your phone</div>
+              </div>
+            </div>
+            <div class="pay-opt" id="payOptCard" onclick="selectPayment('card')">
+              <i class="fa-solid fa-credit-card" style="color:#60a5fa;"></i>
+              <div>
+                <div class="pay-opt-label">Card</div>
+                <div class="pay-opt-sub">Visa / Mastercard via Flutterwave</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- M-Pesa -->
+          <div class="mpesa-wrap show" id="mpesaWrap">
+            <div class="form-grp">
+              <label>M-Pesa Number *</label>
+              <input type="tel" id="mpesaPhone" placeholder="0712 345 678 or 254712…" />
+            </div>
+            <div style="background:rgba(0,178,100,.08);border:1px solid rgba(0,178,100,.25);border-radius:8px;padding:.875rem;margin-bottom:1rem;font-size:.82rem;color:var(--text-secondary);">
+              <i class="fa-solid fa-circle-info" style="color:#00b264;margin-right:.4rem;"></i>
+              You will receive an STK Push notification on your phone. Enter your M-Pesa PIN to complete payment.
+            </div>
+            <button class="stk-btn" onclick="sendSTKPush()">
+              <i class="fa-solid fa-paper-plane"></i> Send STK Push
+            </button>
+            <p class="stk-note">Ensure your phone is on and you have enough M-Pesa balance.</p>
+          </div>
+
+          <!-- Card -->
+          <div class="card-wrap" id="cardWrap">
+            <div style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);border-radius:8px;padding:.875rem;margin-bottom:1rem;font-size:.82rem;color:var(--text-secondary);">
+              <i class="fa-solid fa-shield-halved" style="color:#60a5fa;margin-right:.4rem;"></i>
+              You will be redirected to Flutterwave's secure payment page to complete card payment.
+            </div>
+            <div class="form-grp">
+              <label>Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)" />
+            </div>
+            <div class="form-row">
+              <div class="form-grp">
+                <label>Expiry</label>
+                <input type="text" placeholder="MM/YY" maxlength="5" />
+              </div>
+              <div class="form-grp">
+                <label>CVV</label>
+                <input type="text" placeholder="123" maxlength="4" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Summary in payment step -->
+          <div style="border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-top:1rem;">
+            <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Order Summary</p>
+            <div class="cart-totals" id="coSummary"></div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Confirmation -->
+        <div class="co-panel" id="coPanel3">
+          <div class="order-confirm">
+            <div class="order-check"><i class="fa-solid fa-check"></i></div>
+            <div class="order-num" id="coOrderNum">LT-SHOP-2026-0000</div>
+            <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.25rem;">Order Placed Successfully!</p>
+            <p class="order-eta" id="coEta">Estimated delivery: 3–5 business days</p>
+            <div class="order-items-mini" id="coItemsList"></div>
+            <p style="font-size:.82rem;color:var(--text-muted);">
+              A confirmation will be sent to <strong id="coEmailConfirm" style="color:var(--text-secondary);"></strong><br/>
+              For support: <a href="mailto:shop@logictech.co.ke" style="color:var(--gold);">shop@logictech.co.ke</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="co-foot" id="coFoot">
+        <button class="btn-prev" id="coBtnPrev" onclick="coStep(-1)" style="display:none">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <button class="btn-next" id="coBtnNext" onclick="coStep(1)">
+          Continue <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TOAST STACK ========== -->
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo">
+            <img src="assets/logo.png" alt="Logic Tech Logo" />
+            <span>Logic<span class="accent">Tech</span></span>
+          </a>
+          <p>Next-generation software engineering, cloud systems, and AI-enabled platforms built for scale, speed, and long-term success.</p>
+          <div class="social-links">
+            <a href="#" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="mailto:hello@logictech.co.ke" class="social-btn"><i class="fa-solid fa-envelope"></i></a>
+            <a href="https://wa.me/254702588886" target="_blank" class="social-btn whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-links-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="services.html">Software Engineering</a></li>
+            <li><a href="services.html">Cloud Architecture</a></li>
+            <li><a href="services.html">Cybersecurity</a></li>
+            <li><a href="services.html">Data &amp; Analytics</a></li>
+            <li><a href="services.html">Mobile Development</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="shop.html"><i class="fa-solid fa-shop" style="margin-right:.3rem;"></i> Shop</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="register.html">Get Started</a></li>
+          </ul>
+        </div>
+        <div class="footer-links-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="cookies.html">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p id="footerYear">&copy; 2026 Logic Tech. All rights reserved.</p>
+        <p>Made with <i class="fa-solid fa-heart red"></i> in Nairobi, Kenya</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script src="js/main.js?v=2.2"></script>
+  <script>
+  /* =====================================================
+     SHOP DATA & STATE
+     ===================================================== */
+  const PRODUCTS = [
+    {
+      id: 1, name: "Dell XPS 15", category: "laptop",
+      price: 185000, rating: 4.8, stock: 5,
+      img: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
+      desc: "A powerhouse laptop crafted for creators and professionals. Stunning InfinityEdge display, long battery life, and VR-ready graphics.",
+      specs: ["15.6\" OLED 3.5K display","Intel Core i9-13900H","32GB DDR5 RAM","1TB NVMe SSD","NVIDIA RTX 4070 8GB","Windows 11 Pro"]
+    },
+    {
+      id: 2, name: "MacBook Air M3", category: "laptop",
+      price: 145000, rating: 4.9, stock: 8,
+      img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=80",
+      desc: "The world's most capable 13-inch laptop. All-day battery life, fanless design, and breakthrough Apple M3 performance.",
+      specs: ["13.6\" Liquid Retina display","Apple M3 chip (8-core CPU)","16GB unified memory","512GB SSD","Up to 18 hrs battery","macOS Sonoma"]
+    },
+    {
+      id: 3, name: "HP Pavilion 15", category: "laptop",
+      price: 65000, rating: 4.3, stock: 12,
+      img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80",
+      desc: "Reliable everyday laptop for students and home users. Great value with solid performance and vivid display.",
+      specs: ["15.6\" FHD IPS display","AMD Ryzen 5 7530U","8GB DDR4 RAM","512GB SSD","AMD Radeon Graphics","Windows 11 Home"]
+    },
+    {
+      id: 4, name: "Lenovo ThinkPad X1 Carbon", category: "laptop",
+      price: 210000, rating: 4.9, stock: 3,
+      img: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&q=80",
+      desc: "The ultimate business laptop. MIL-SPEC durability, legendary keyboard, and exceptional security features.",
+      specs: ["14\" IPS 2.8K display","Intel Core i7-1365U","16GB LPDDR5 RAM","512GB SSD PCIe","IR Camera + Fingerprint","Windows 11 Pro"]
+    },
+    {
+      id: 5, name: "HP ProDesk 600 G6 MT", category: "desktop",
+      price: 95000, rating: 4.6, stock: 6,
+      img: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&q=80",
+      desc: "Enterprise-grade mini tower desktop built for business productivity. Expandable, manageable, and secure.",
+      specs: ["Intel Core i7-10700","16GB DDR4 RAM","512GB SSD + 1TB HDD","Intel UHD 630 Graphics","HP Wolf Security","Windows 11 Pro"]
+    },
+    {
+      id: 6, name: "iMac 24\" M3", category: "desktop",
+      price: 220000, rating: 4.9, stock: 4,
+      img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80",
+      desc: "The most colourful, most powerful 24-inch iMac ever. Stunning 4.5K Retina display in an impossibly thin design.",
+      specs: ["24\" 4.5K Retina display","Apple M3 (8-core CPU, 10-core GPU)","24GB unified memory","1TB SSD","1080p FaceTime HD camera","macOS Sonoma"]
+    },
+    {
+      id: 7, name: "iPhone 16 Pro Max", category: "phone",
+      price: 180000, rating: 5.0, stock: 10,
+      img: "https://images.unsplash.com/photo-1706355284897-9059ba2a3c3b?w=600&q=80",
+      desc: "Apple's most powerful iPhone ever. Titanium design, A18 Pro chip, and a pro camera system that redefines photography.",
+      specs: ["6.9\" Super Retina XDR ProMotion","Apple A18 Pro chip","256GB storage","48MP Fusion Camera + 5× Optical Zoom","4K 120fps ProRes video","iOS 18"]
+    },
+    {
+      id: 8, name: "Samsung Galaxy S25 Ultra", category: "phone",
+      price: 155000, rating: 4.8, stock: 7,
+      img: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=600&q=80",
+      desc: "Galaxy AI meets S Pen precision. The pinnacle of Android innovation with a stunning 200MP camera.",
+      specs: ["6.9\" Dynamic LTPO AMOLED 2X 120Hz","Snapdragon 8 Elite","12GB RAM / 256GB storage","200MP + 50MP + 10MP cameras","Built-in S Pen","Android 15 / One UI 7"]
+    },
+    {
+      id: 9, name: "Google Pixel 9 Pro", category: "phone",
+      price: 110000, rating: 4.7, stock: 9,
+      img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+      desc: "Google's smartest phone. Powered by Gemini AI and a Tensor G4 chip for the best of Google, all in one place.",
+      specs: ["6.3\" LTPO OLED 120Hz","Google Tensor G4 + Titan M2","16GB RAM / 256GB storage","50MP triple camera system","Magic Eraser & Best Take AI","Android 15"]
+    },
+    {
+      id: 10, name: "OnePlus 13", category: "phone",
+      price: 85000, rating: 4.6, stock: 15,
+      img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=600&q=80",
+      desc: "Flagship speed, legendary charging. The OnePlus 13 brings elite performance at a compelling price point.",
+      specs: ["6.82\" LTPO AMOLED 120Hz","Snapdragon 8 Elite","12GB RAM / 256GB storage","50MP Hasselblad triple camera","100W SUPERVOOC charging","OxygenOS 15"]
+    },
+    {
+      id: 11, name: "Logitech MX Master 3S", category: "accessory",
+      price: 12500, rating: 4.9, stock: 20,
+      img: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80",
+      desc: "The master of mice. 8K DPI tracking on any surface, ultra-fast MagSpeed scroll wheel, and all-day ergonomic comfort.",
+      specs: ["8,000 DPI MagSpeed sensor","Works on any surface incl. glass","Quiet clicks (90% less noise)","70-day battery (USB-C)","Logi Bolt + Bluetooth","Windows / macOS / Linux"]
+    },
+    {
+      id: 12, name: "Samsung T7 Shield 1TB SSD", category: "accessory",
+      price: 14500, rating: 4.7, stock: 18,
+      img: "https://images.unsplash.com/photo-1597733336794-12d05021d510?w=600&q=80",
+      desc: "Rugged portable SSD with IP65 dust & water resistance. Blazing-fast transfers and military-grade drop protection.",
+      specs: ["1TB capacity","1,050 MB/s read speed","IP65 water & dust resistant","1.5m drop resistant","256-bit AES encryption","USB 3.2 Gen 2 / USB-C"]
+    }
+  ];
+
+  /* =====================================================
+     STATE
+     ===================================================== */
+  let cart = JSON.parse(localStorage.getItem('lt_shop_cart') || '[]');
+  let activeCategory = 'all';
+  let activeSearch = '';
+  let qvProductId = null;
+  let qvQty = 1;
+  let coCurrentStep = 1;
+  let selectedPayment = 'mpesa';
+
+  /* =====================================================
+     UTILS
+     ===================================================== */
+  function formatKES(n) {
+    return 'KES ' + n.toLocaleString('en-KE');
+  }
+
+  function starsHTML(rating) {
+    let s = '';
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    for (let i = 0; i < full; i++) s += '<i class="fa-solid fa-star"></i>';
+    if (half) s += '<i class="fa-solid fa-star-half-stroke"></i>';
+    for (let i = full + (half ? 1 : 0); i < 5; i++) s += '<i class="fa-regular fa-star"></i>';
+    return s;
+  }
+
+  function catBadgeHTML(cat) {
+    const labels = { laptop:'Laptop', desktop:'Desktop', phone:'Phone', accessory:'Accessory' };
+    return `<span class="badge-cat ${cat}">${labels[cat] || cat}</span>`;
+  }
+
+  function toast(msg, type = 'success') {
+    const stack = document.getElementById('toastStack');
+    const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<i class="fa-solid ${icons[type]||icons.info}"></i><span>${msg}</span>`;
+    stack.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function saveCart() {
+    localStorage.setItem('lt_shop_cart', JSON.stringify(cart));
+  }
+
+  /* =====================================================
+     FILTER / SORT / RENDER PRODUCTS
+     ===================================================== */
+  function getFilteredProducts() {
+    let list = PRODUCTS.filter(p => {
+      const matchCat = activeCategory === 'all' || p.category === activeCategory;
+      const matchSearch = !activeSearch || p.name.toLowerCase().includes(activeSearch) || p.category.includes(activeSearch);
+      return matchCat && matchSearch;
+    });
+    const sort = document.getElementById('sortSelect').value;
+    if (sort === 'priceLow') list.sort((a,b) => a.price - b.price);
+    else if (sort === 'priceHigh') list.sort((a,b) => b.price - a.price);
+    else if (sort === 'rating') list.sort((a,b) => b.rating - a.rating);
+    else if (sort === 'nameAZ') list.sort((a,b) => a.name.localeCompare(b.name));
+    return list;
+  }
+
+  function renderProducts() {
+    const list = getFilteredProducts();
+    const grid = document.getElementById('productGrid');
+    const countEl = document.getElementById('shopCount');
+    countEl.innerHTML = `<strong>${list.length}</strong> product${list.length !== 1 ? 's' : ''} found`;
+
+    if (!list.length) {
+      grid.innerHTML = `<div class="no-results"><i class="fa-solid fa-box-open"></i><p>No products match your search.</p><p style="font-size:.85rem;margin-top:.5rem;">Try a different filter or search term.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(p => `
+      <article class="product-card" onclick="openQuickView(${p.id})">
+        <div class="product-img-wrap">
+          <img src="${p.img}" alt="${p.name}" loading="lazy" />
+          <div class="product-badges">
+            ${catBadgeHTML(p.category)}
+            ${p.stock <= 5 ? '<span class="badge-low"><i class="fa-solid fa-fire"></i> Low Stock</span>' : ''}
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          <div class="product-specs">${p.specs.slice(0,2).join(' · ')}</div>
+          <div class="product-stars">
+            <span class="stars">${starsHTML(p.rating)}</span>
+            <span class="rating-num">${p.rating} (${p.stock > 10 ? '50+' : p.stock * 4} reviews)</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">${formatKES(p.price)}</span>
+            <div class="product-actions">
+              <button class="btn-cart" onclick="event.stopPropagation();addToCart(${p.id})" aria-label="Add ${p.name} to cart">
+                <i class="fa-solid fa-cart-plus"></i> Add
+              </button>
+              <button class="btn-quick" onclick="event.stopPropagation();openQuickView(${p.id})" aria-label="Quick view ${p.name}" title="Quick View">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function setCategory(cat, btn) {
+    activeCategory = cat;
+    document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    renderProducts();
+  }
+
+  document.getElementById('heroSearch').addEventListener('input', function() {
+    activeSearch = this.value.trim().toLowerCase();
+    renderProducts();
+  });
+
+  /* =====================================================
+     CART
+     ===================================================== */
+  function addToCart(id, qty = 1) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    const existing = cart.find(x => x.id === id);
+    if (existing) {
+      if (existing.qty + qty > p.stock) { toast('Not enough stock available', 'error'); return; }
+      existing.qty += qty;
+    } else {
+      cart.push({ id, qty });
+    }
+    saveCart();
+    renderCartBadge();
+    renderCartBody();
+    toast(`${p.name} added to cart`, 'success');
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(x => x.id !== id);
+    saveCart();
+    renderCartBadge();
+    renderCartBody();
+  }
+
+  function changeCartQty(id, delta) {
+    const item = cart.find(x => x.id === id);
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!item || !p) return;
+    const newQty = item.qty + delta;
+    if (newQty < 1) { removeFromCart(id); return; }
+    if (newQty > p.stock) { toast('Not enough stock', 'error'); return; }
+    item.qty = newQty;
+    saveCart();
+    renderCartBody();
+  }
+
+  function renderCartBadge() {
+    const total = cart.reduce((s, x) => s + x.qty, 0);
+    const badge = document.getElementById('cartBadge');
+    const btn = document.getElementById('cartToggleBtn');
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'flex' : 'none';
+    btn.title = `Cart (${total} item${total !== 1 ? 's' : ''})`;
+  }
+
+  function getDeliveryFee() {
+    const zone = document.getElementById('deliveryZone').value;
+    const subtotal = cart.reduce((s, x) => {
+      const p = PRODUCTS.find(pr => pr.id === x.id);
+      return s + (p ? p.price * x.qty : 0);
+    }, 0);
+    if (subtotal >= 10000 && zone === 'free') return 0;
+    if (zone === 'nairobi') return 300;
+    if (zone === 'county') return 500;
+    return 0;
+  }
+
+  function getSubtotal() {
+    return cart.reduce((s, x) => {
+      const p = PRODUCTS.find(pr => pr.id === x.id);
+      return s + (p ? p.price * x.qty : 0);
+    }, 0);
+  }
+
+  function updateCartTotals() {
+    renderCartBody(); // re-renders totals too
+  }
+
+  function renderCartBody() {
+    const body = document.getElementById('cartBody');
+    const foot = document.getElementById('cartFoot');
+    if (!cart.length) {
+      body.innerHTML = `<div class="cart-empty"><i class="fa-solid fa-cart-shopping"></i><p>Your cart is empty.</p><p style="font-size:.82rem;margin-top:.4rem;">Browse our products and add items to get started.</p></div>`;
+      foot.style.display = 'none';
+      return;
+    }
+    foot.style.display = 'block';
+    body.innerHTML = cart.map(item => {
+      const p = PRODUCTS.find(x => x.id === item.id);
+      if (!p) return '';
+      return `
+        <div class="cart-item">
+          <img class="cart-item-img" src="${p.img}" alt="${p.name}" />
+          <div class="cart-item-info">
+            <div class="cart-item-name">${p.name}</div>
+            <div class="cart-item-price">${formatKES(p.price)}</div>
+            <div class="cart-qty">
+              <button class="qty-btn" onclick="changeCartQty(${p.id},-1)" aria-label="Decrease">−</button>
+              <span class="qty-num">${item.qty}</span>
+              <button class="qty-btn" onclick="changeCartQty(${p.id},1)" aria-label="Increase">+</button>
+            </div>
+          </div>
+          <button class="cart-remove" onclick="removeFromCart(${p.id})" aria-label="Remove ${p.name}">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    const sub = getSubtotal();
+    const fee = getDeliveryFee();
+    const total = sub + fee;
+    document.getElementById('cartTotals').innerHTML = `
+      <div class="cart-row"><span>Subtotal (${cart.reduce((s,x)=>s+x.qty,0)} items)</span><span>${formatKES(sub)}</span></div>
+      <div class="cart-row"><span>Delivery</span><span style="color:${fee===0?'#10b981':'inherit'}">${fee === 0 ? 'FREE' : formatKES(fee)}</span></div>
+      <div class="cart-row total"><span>Total</span><span class="cart-total-val">${formatKES(total)}</span></div>
+    `;
+  }
+
+  function toggleCart() {
+    const sidebar = document.getElementById('cartSidebar');
+    const backdrop = document.getElementById('cartBackdrop');
+    const isOpen = sidebar.classList.contains('open');
+    if (isOpen) {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    } else {
+      renderCartBody();
+      sidebar.classList.add('open');
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  /* =====================================================
+     QUICK VIEW MODAL
+     ===================================================== */
+  function openQuickView(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    qvProductId = id;
+    qvQty = 1;
+    document.getElementById('qvImg').src = p.img;
+    document.getElementById('qvImg').alt = p.name;
+    document.getElementById('qvBadges').innerHTML = catBadgeHTML(p.category) + (p.stock <= 5 ? ' <span class="badge-low"><i class="fa-solid fa-fire"></i> Low Stock</span>' : '');
+    document.getElementById('qvName').textContent = p.name;
+    document.getElementById('qvStars').innerHTML = `<span class="stars">${starsHTML(p.rating)}</span><span class="rating-num" style="color:var(--text-muted)">${p.rating} · ${p.stock > 10 ? '50+' : p.stock * 4} reviews</span>`;
+    document.getElementById('qvPrice').textContent = formatKES(p.price);
+    document.getElementById('qvDesc').textContent = p.desc;
+    document.getElementById('qvSpecs').innerHTML = p.specs.map(s => `<li><i class="fa-solid fa-check-circle"></i>${s}</li>`).join('');
+    document.getElementById('qvQtyNum').textContent = 1;
+    document.getElementById('qvStock').textContent = `${p.stock} in stock`;
+    const modal = document.getElementById('quickViewModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeQuickView() {
+    document.getElementById('quickViewModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function changeQvQty(delta) {
+    const p = PRODUCTS.find(x => x.id === qvProductId);
+    if (!p) return;
+    qvQty = Math.max(1, Math.min(p.stock, qvQty + delta));
+    document.getElementById('qvQtyNum').textContent = qvQty;
+  }
+
+  function addFromQuickView() {
+    addToCart(qvProductId, qvQty);
+    closeQuickView();
+  }
+
+  function buyNowQuickView() {
+    addToCart(qvProductId, qvQty);
+    closeQuickView();
+    openCheckout();
+  }
+
+  document.getElementById('quickViewModal').addEventListener('click', function(e) {
+    if (e.target === this) closeQuickView();
+  });
+
+  /* =====================================================
+     CHECKOUT
+     ===================================================== */
+  function openCheckout() {
+    if (!cart.length) { toast('Your cart is empty', 'error'); return; }
+    // close cart sidebar first
+    document.getElementById('cartSidebar').classList.remove('open');
+    document.getElementById('cartBackdrop').classList.remove('open');
+    coCurrentStep = 1;
+    renderCoStep();
+    document.getElementById('checkoutModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkoutModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function renderCoStep() {
+    // panels
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById(`coPanel${i}`).classList.toggle('active', i === coCurrentStep);
+    }
+    // step indicators
+    for (let i = 1; i <= 3; i++) {
+      const el = document.getElementById(`coStep${i}`);
+      el.classList.remove('active', 'done');
+      if (i === coCurrentStep) el.classList.add('active');
+      else if (i < coCurrentStep) el.classList.add('done');
+    }
+    // prev btn
+    const prev = document.getElementById('coBtnPrev');
+    prev.style.display = coCurrentStep > 1 && coCurrentStep < 3 ? 'block' : 'none';
+    // next btn
+    const next = document.getElementById('coBtnNext');
+    if (coCurrentStep === 3) {
+      next.innerHTML = '<i class="fa-solid fa-store"></i> Continue Shopping';
+      next.onclick = () => { closeCheckout(); };
+    } else if (coCurrentStep === 2) {
+      next.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>';
+      next.onclick = () => coStep(1);
+    } else {
+      next.innerHTML = 'Continue <i class="fa-solid fa-arrow-right"></i>';
+      next.onclick = () => coStep(1);
+    }
+    // payment summary
+    if (coCurrentStep === 2) renderCoSummary();
+    // order confirmation
+    if (coCurrentStep === 3) renderOrderConfirm();
+  }
+
+  function renderCoSummary() {
+    const sub = getSubtotal();
+    const fee = getDeliveryFee();
+    const total = sub + fee;
+    document.getElementById('coSummary').innerHTML = `
+      <div class="cart-row"><span>Subtotal</span><span>${formatKES(sub)}</span></div>
+      <div class="cart-row"><span>Delivery</span><span style="color:${fee===0?'#10b981':'inherit'}">${fee===0?'FREE':formatKES(fee)}</span></div>
+      <div class="cart-row total"><span>Total</span><span class="cart-total-val">${formatKES(total)}</span></div>
+    `;
+  }
+
+  function renderOrderConfirm() {
+    const orderId = 'LT-SHOP-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('coOrderNum').textContent = orderId;
+    const county = document.getElementById('coCounty').value || 'your location';
+    document.getElementById('coEta').textContent = county === 'Nairobi' ? 'Estimated delivery: 1–2 business days' : 'Estimated delivery: 3–5 business days';
+    const email = document.getElementById('coEmail').value || 'your email';
+    document.getElementById('coEmailConfirm').textContent = email;
+    document.getElementById('coItemsList').innerHTML = cart.map(item => {
+      const p = PRODUCTS.find(x => x.id === item.id);
+      if (!p) return '';
+      return `
+        <div class="order-item-row">
+          <img class="order-item-img" src="${p.img}" alt="${p.name}" />
+          <span class="order-item-name">${p.name} ×${item.qty}</span>
+          <span class="order-item-price">${formatKES(p.price * item.qty)}</span>
+        </div>
+      `;
+    }).join('');
+    // Clear cart after order
+    cart = [];
+    saveCart();
+    renderCartBadge();
+  }
+
+  function coStep(dir) {
+    const next = coCurrentStep + dir;
+    if (next < 1 || next > 3) return;
+    // validate step 1
+    if (coCurrentStep === 1 && dir > 0) {
+      const fields = ['coFName','coLName','coEmail','coPhone','coCounty','coCity','coAddress'];
+      for (const fid of fields) {
+        const el = document.getElementById(fid);
+        if (!el.value.trim()) {
+          el.focus(); toast('Please fill in all required fields', 'error'); return;
+        }
+      }
+    }
+    // validate step 2
+    if (coCurrentStep === 2 && dir > 0) {
+      if (selectedPayment === 'mpesa') {
+        const ph = document.getElementById('mpesaPhone').value.trim();
+        if (!ph) { document.getElementById('mpesaPhone').focus(); toast('Enter your M-Pesa number', 'error'); return; }
+      }
+    }
+    coCurrentStep = next;
+    renderCoStep();
+  }
+
+  function selectPayment(type) {
+    selectedPayment = type;
+    document.getElementById('payOptMpesa').classList.toggle('selected', type === 'mpesa');
+    document.getElementById('payOptCard').classList.toggle('selected', type === 'card');
+    document.getElementById('mpesaWrap').classList.toggle('show', type === 'mpesa');
+    document.getElementById('cardWrap').classList.toggle('show', type === 'card');
+  }
+
+  function sendSTKPush() {
+    const ph = document.getElementById('mpesaPhone').value.trim();
+    if (!ph) { toast('Enter your M-Pesa number', 'error'); return; }
+    toast('STK Push sent! Check your phone for the prompt.', 'info');
+    // Auto-advance after simulated delay
+    setTimeout(() => {
+      toast('Payment received via M-Pesa ✓', 'success');
+      coCurrentStep = 3;
+      renderCoStep();
+    }, 3000);
+  }
+
+  function formatCard(el) {
+    el.value = el.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().slice(0,19);
+  }
+
+  document.getElementById('checkoutModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCheckout();
+  });
+
+  /* =====================================================
+     KEYBOARD
+     ===================================================== */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (!document.getElementById('quickViewModal').classList.contains('hidden')) closeQuickView();
+      else if (!document.getElementById('checkoutModal').classList.contains('hidden')) closeCheckout();
+      else if (document.getElementById('cartSidebar').classList.contains('open')) toggleCart();
+    }
+  });
+
+  /* =====================================================
+     INIT
+     ===================================================== */
+  renderProducts();
+  renderCartBadge();
+  document.getElementById('footerYear').textContent = `© ${new Date().getFullYear()} Logic Tech. All rights reserved.`;
+  </script>
+</body>
+</html>
