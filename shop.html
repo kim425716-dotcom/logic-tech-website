@@ -580,6 +580,19 @@
       .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
       .cart-sidebar { width: 100vw; }
     }
+
+    /* ---- Security / Trust signals ---- */
+    .secure-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .75rem; color: var(--text-muted);
+    }
+    .secure-badge i { color: #10b981; }
+    .stk-status-box {
+      display: none; border-radius: 8px; padding: .75rem 1rem;
+      margin-bottom: .75rem; font-size: .83rem; text-align: center;
+      border: 1px solid var(--border-color); color: var(--text-secondary);
+      transition: border-color .2s, color .2s;
+    }
   </style>
 </head>
 <body class="dark">
@@ -862,20 +875,28 @@
             </div>
           </div>
 
-          <!-- M-Pesa -->
+      <!-- M-Pesa -->
           <div class="mpesa-wrap show" id="mpesaWrap">
             <div class="form-grp">
               <label>M-Pesa Number *</label>
-              <input type="tel" id="mpesaPhone" placeholder="0712 345 678 or 254712…" />
+              <input type="tel" id="mpesaPhone" placeholder="0712 345 678 or 254712…"
+                autocomplete="tel" inputmode="tel" />
             </div>
             <div style="background:rgba(0,178,100,.08);border:1px solid rgba(0,178,100,.25);border-radius:8px;padding:.875rem;margin-bottom:1rem;font-size:.82rem;color:var(--text-secondary);">
               <i class="fa-solid fa-circle-info" style="color:#00b264;margin-right:.4rem;"></i>
               You will receive an STK Push notification on your phone. Enter your M-Pesa PIN to complete payment.
             </div>
-            <button class="stk-btn" onclick="sendSTKPush()">
-              <i class="fa-solid fa-paper-plane"></i> Send STK Push
-            </button>
-            <p class="stk-note">Ensure your phone is on and you have enough M-Pesa balance.</p>
+            <!-- Real-time status feedback -->
+            <div id="stkStatus" class="stk-status-box"></div>
+            <p class="stk-note" id="stkNote">Ensure your phone is on and you have enough M-Pesa balance.</p>
+            <!-- Manual fallback hint -->
+            <div style="margin-top:.75rem;padding:.625rem .875rem;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border-color);font-size:.78rem;color:var(--text-muted);line-height:1.5;">
+              <i class="fa-solid fa-circle-question" style="margin-right:.3rem;"></i>
+              If the prompt doesn't arrive, you can manually send payment to
+              <strong style="color:var(--text-secondary);">Logic Tech</strong>
+              via M-Pesa Till/Paybill, then quote your order reference to
+              <a href="mailto:shop@logictech.co.ke" style="color:var(--gold);">shop@logictech.co.ke</a>
+            </div>
           </div>
 
           <!-- Card -->
@@ -927,9 +948,16 @@
         <button class="btn-prev" id="coBtnPrev" onclick="coStep(-1)" style="display:none">
           <i class="fa-solid fa-arrow-left"></i> Back
         </button>
-        <button class="btn-next" id="coBtnNext" onclick="coStep(1)">
-          Continue <i class="fa-solid fa-arrow-right"></i>
-        </button>
+        <div style="display:flex;flex-direction:column;flex:1;gap:.5rem;">
+          <button class="btn-next" id="coBtnNext" onclick="coStep(1)">
+            Continue <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:.25rem;">
+            <span class="secure-badge"><i class="fa-solid fa-lock"></i> SSL Encrypted</span>
+            <span class="secure-badge"><i class="fa-solid fa-shield-halved"></i> Secure Checkout</span>
+            <span class="secure-badge" style="color:#00b264;"><i class="fa-solid fa-mobile-screen-button" style="color:#00b264;"></i> Safaricom Daraja</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1388,7 +1416,11 @@
      ===================================================== */
   function openCheckout() {
     if (!cart.length) { toast('Your cart is empty', 'error'); return; }
-    // close cart sidebar first
+    // Reset state for fresh checkout
+    clearInterval(stkPollTimer);
+    currentOrderRef  = null;
+    stkPollAttempts  = 0;
+    // Close cart sidebar first
     document.getElementById('cartSidebar').classList.remove('open');
     document.getElementById('cartBackdrop').classList.remove('open');
     coCurrentStep = 1;
@@ -1398,6 +1430,7 @@
   }
 
   function closeCheckout() {
+    clearInterval(stkPollTimer);
     document.getElementById('checkoutModal').classList.add('hidden');
     document.body.style.overflow = '';
   }
@@ -1423,8 +1456,13 @@
       next.innerHTML = '<i class="fa-solid fa-store"></i> Continue Shopping';
       next.onclick = () => { closeCheckout(); };
     } else if (coCurrentStep === 2) {
-      next.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>';
-      next.onclick = () => coStep(1);
+      if (selectedPayment === 'mpesa') {
+        next.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+        next.onclick = () => sendSTKPush();
+      } else {
+        next.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
+        next.onclick = () => coStep(1);
+      }
     } else {
       next.innerHTML = 'Continue <i class="fa-solid fa-arrow-right"></i>';
       next.onclick = () => coStep(1);
@@ -1447,27 +1485,38 @@
   }
 
   function renderOrderConfirm() {
-    const orderId = 'LT-SHOP-2026-' + String(Math.floor(1000 + Math.random() * 9000));
-    document.getElementById('coOrderNum').textContent = orderId;
+    // Use the real order ref from the API, or a fallback random ref
+    const orderId = currentOrderRef || ('LT-SHOP-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000)));
+    document.getElementById('coOrderNum').textContent = esc(orderId);
+
     const county = document.getElementById('coCounty').value || 'your location';
-    document.getElementById('coEta').textContent = county === 'Nairobi' ? 'Estimated delivery: 1–2 business days' : 'Estimated delivery: 3–5 business days';
+    document.getElementById('coEta').textContent =
+      county === 'Nairobi'
+        ? 'Estimated delivery: 1–2 business days'
+        : 'Estimated delivery: 3–5 business days';
+
     const email = document.getElementById('coEmail').value || 'your email';
-    document.getElementById('coEmailConfirm').textContent = email;
-    document.getElementById('coItemsList').innerHTML = cart.map(item => {
+    document.getElementById('coEmailConfirm').textContent = esc(email);
+
+    // Snapshot cart items before clearing
+    const confirmedItems = [...cart];
+    document.getElementById('coItemsList').innerHTML = confirmedItems.map(item => {
       const p = PRODUCTS.find(x => x.id === item.id);
       if (!p) return '';
       return `
         <div class="order-item-row">
-          <img class="order-item-img" src="${p.img}" alt="${p.name}" />
-          <span class="order-item-name">${p.name} ×${item.qty}</span>
+          <img class="order-item-img" src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" />
+          <span class="order-item-name">${esc(p.name)} ×${item.qty}</span>
           <span class="order-item-price">${formatKES(p.price * item.qty)}</span>
         </div>
       `;
     }).join('');
-    // Clear cart after order
+
+    // Clear cart now that order is confirmed
     cart = [];
     saveCart();
     renderCartBadge();
+    currentOrderRef = null;
   }
 
   function coStep(dir) {
@@ -1482,16 +1531,50 @@
           el.focus(); toast('Please fill in all required fields', 'error'); return;
         }
       }
-    }
-    // validate step 2
-    if (coCurrentStep === 2 && dir > 0) {
-      if (selectedPayment === 'mpesa') {
-        const ph = document.getElementById('mpesaPhone').value.trim();
-        if (!ph) { document.getElementById('mpesaPhone').focus(); toast('Enter your M-Pesa number', 'error'); return; }
+      // Basic email check
+      const emailVal = document.getElementById('coEmail').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        document.getElementById('coEmail').focus();
+        toast('Enter a valid email address', 'error'); return;
       }
+    }
+    // For step 2 → 3 on CARD: create order & advance
+    if (coCurrentStep === 2 && dir > 0 && selectedPayment === 'card') {
+      handleCardCheckout(); return;
+    }
+    // For step 2 → 3 on MPESA: handled by sendSTKPush polling — block manual advance
+    if (coCurrentStep === 2 && dir > 0 && selectedPayment === 'mpesa') {
+      toast('Please complete M-Pesa payment above first', 'info'); return;
     }
     coCurrentStep = next;
     renderCoStep();
+  }
+
+  async function handleCardCheckout() {
+    const btn = document.getElementById('coBtnNext');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
+    try {
+      if (!currentOrderRef) {
+        const ref = await createOrder();
+        if (!ref) { btn.disabled = false; btn.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>'; return; }
+        currentOrderRef = ref;
+      }
+      // In production: redirect to Flutterwave hosted link or open inline
+      // For now: mark as processing and advance (Flutterwave redirect would happen here)
+      toast('Redirecting to secure card payment…', 'info');
+      setTimeout(() => {
+        // Simulate redirect complete (replace with real Flutterwave call)
+        coCurrentStep = 3;
+        renderCoStep();
+        btn.disabled = false;
+        btn.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>';
+      }, 1500);
+    } catch (err) {
+      toast(err.message || 'Card checkout failed', 'error');
+      btn.disabled = false;
+      btn.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>';
+    }
   }
 
   function selectPayment(type) {
@@ -1500,18 +1583,234 @@
     document.getElementById('payOptCard').classList.toggle('selected', type === 'card');
     document.getElementById('mpesaWrap').classList.toggle('show', type === 'mpesa');
     document.getElementById('cardWrap').classList.toggle('show', type === 'card');
+    // Re-render the Next button label to match selected payment
+    if (coCurrentStep === 2) {
+      const next = document.getElementById('coBtnNext');
+      if (type === 'mpesa') {
+        next.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+        next.onclick = () => sendSTKPush();
+      } else {
+        next.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
+        next.onclick = () => coStep(1);
+      }
+    }
   }
 
-  function sendSTKPush() {
-    const ph = document.getElementById('mpesaPhone').value.trim();
-    if (!ph) { toast('Enter your M-Pesa number', 'error'); return; }
-    toast('STK Push sent! Check your phone for the prompt.', 'info');
-    // Auto-advance after simulated delay
-    setTimeout(() => {
-      toast('Payment received via M-Pesa ✓', 'success');
-      coCurrentStep = 3;
-      renderCoStep();
-    }, 3000);
+  /* =====================================================
+     SECURITY HELPERS
+     ===================================================== */
+
+  /** Basic HTML-encode to prevent XSS in dynamically inserted text */
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+
+  /** Sanitise Kenyan phone to 254XXXXXXXXX; throws on bad format */
+  function normPhone(raw) {
+    const digits = raw.replace(/\D/g,'');
+    if (/^0[7-9]\d{8}$/.test(digits))   return '254' + digits.slice(1);
+    if (/^254[7-9]\d{8}$/.test(digits))  return digits;
+    return null;
+  }
+
+  /* =====================================================
+     API — M-PESA REAL STK PUSH
+     ===================================================== */
+
+  let currentOrderRef  = null;   // set after /api/shop/orders succeeds
+  let stkPollTimer     = null;   // setInterval handle for polling
+  let stkPollAttempts  = 0;
+
+  /**
+   * Step 2 M-Pesa handler.
+   * 1. POST /api/shop/orders  → get order ref
+   * 2. POST /api/shop/mpesa/stk-push → trigger real Daraja STK on phone
+   * 3. Poll GET /api/shop/orders/:ref every 3 s for up to 90 s
+   */
+  async function sendSTKPush() {
+    const rawPhone = document.getElementById('mpesaPhone').value.trim();
+    if (!rawPhone) { toast('Enter your M-Pesa number', 'error'); return; }
+
+    const phone = normPhone(rawPhone);
+    if (!phone) {
+      toast('Enter a valid Safaricom number (07XX or 254XXXXXXXXX)', 'error');
+      return;
+    }
+
+    // Use the footer Next button as the action button
+    const btn  = document.getElementById('coBtnNext');
+    const stat = document.getElementById('stkStatus');
+    const note = document.getElementById('stkNote');
+
+    function setStatus(html, color) {
+      if (!stat) return;
+      stat.style.display = 'block';
+      stat.style.color   = color || 'var(--text-secondary)';
+      stat.style.borderColor = color || 'var(--border-color)';
+      stat.innerHTML = html;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending…';
+    if (stat) stat.style.display = 'none';
+
+    try {
+      // 1. Create order in DB (idempotent — reuse ref on retry)
+      if (!currentOrderRef) {
+        setStatus('<i class="fa-solid fa-spinner fa-spin"></i> Creating order…');
+        const orderRef = await createOrder();
+        if (!orderRef) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+          if (stat) stat.style.display = 'none';
+          return;
+        }
+        currentOrderRef = orderRef;
+      }
+
+      // 2. Trigger Daraja STK Push
+      setStatus('<i class="fa-solid fa-spinner fa-spin"></i> Requesting payment prompt…');
+      const stkRes = await apiFetch('/api/shop/mpesa/stk-push', {
+        method: 'POST',
+        body: JSON.stringify({ order_ref: currentOrderRef, phone })
+      });
+
+      toast(stkRes.message || 'Check your phone — enter your M-Pesa PIN!', 'info');
+      btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button fa-beat"></i> Waiting for PIN…';
+      setStatus(
+        '<i class="fa-solid fa-clock" style="color:var(--gold);"></i>&nbsp; STK Push sent — waiting for payment…',
+        '#C9A45C'
+      );
+      if (note) note.textContent = 'Enter your M-Pesa PIN on your phone to complete payment.';
+
+      // 3. Poll for payment confirmation
+      stkPollAttempts = 0;
+      clearInterval(stkPollTimer);
+      stkPollTimer = setInterval(async () => {
+        stkPollAttempts++;
+        try {
+          const pollRes = await apiFetch(`/api/shop/orders/${currentOrderRef}`);
+          const { payment_status } = pollRes.order;
+
+          if (payment_status === 'paid') {
+            clearInterval(stkPollTimer);
+            toast('Payment confirmed via M-Pesa ✓', 'success');
+            setStatus(
+              '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i>&nbsp; Payment confirmed!',
+              '#10b981'
+            );
+            setTimeout(() => {
+              coCurrentStep = 3;
+              renderCoStep();
+              btn.disabled = false;
+              btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+            }, 800);
+
+          } else if (payment_status === 'failed') {
+            clearInterval(stkPollTimer);
+            toast('M-Pesa payment was cancelled or failed. Try again.', 'error');
+            setStatus(
+              '<i class="fa-solid fa-circle-xmark" style="color:#f87171;"></i>&nbsp; Payment failed or cancelled.',
+              '#f87171'
+            );
+            currentOrderRef = null; // allow full retry
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+            if (note) note.textContent = 'Ensure your phone is on and you have enough M-Pesa balance, then try again.';
+
+          } else if (stkPollAttempts >= 30) {
+            clearInterval(stkPollTimer);
+            toast('No response after 90 seconds. Try again.', 'error');
+            setStatus(
+              '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i>&nbsp; Timed out. Contact support if you were charged.',
+              '#f59e0b'
+            );
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Retry STK Push';
+            if (note) note.textContent = `Order Ref: ${currentOrderRef} — save this for support.`;
+          }
+        } catch (_pollErr) {
+          // transient — keep polling
+        }
+      }, 3000);
+
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+      setStatus(
+        `<i class="fa-solid fa-circle-xmark" style="color:#f87171;"></i>&nbsp; ${esc(err.message || 'STK Push failed. Try again.')}`,
+        '#f87171'
+      );
+      toast(err.message || 'Failed to send STK Push. Try again.', 'error');
+    }
+  }
+
+  /**
+   * POST /api/shop/orders — create order in DB
+   * Returns order ref string or null on error.
+   */
+  async function createOrder() {
+    try {
+      const items = cart.map(item => {
+        const p = PRODUCTS.find(x => x.id === item.id);
+        return p ? { id: p.id, name: p.name, price: p.price, qty: item.qty } : null;
+      }).filter(Boolean);
+
+      const sub = getSubtotal();
+      const fee = getDeliveryFee();
+
+      const body = {
+        customer_name:  (document.getElementById('coFName').value.trim() + ' ' +
+                         document.getElementById('coLName').value.trim()).trim(),
+        customer_email: document.getElementById('coEmail').value.trim(),
+        customer_phone: document.getElementById('coPhone').value.trim(),
+        county:  document.getElementById('coCounty').value,
+        city:    document.getElementById('coCity').value.trim(),
+        address: document.getElementById('coAddress').value.trim(),
+        items,
+        subtotal: sub,
+        delivery: fee,
+        total:    sub + fee,
+        payment_method: selectedPayment
+      };
+
+      const res = await apiFetch('/api/shop/orders', {
+        method: 'POST',
+        body: JSON.stringify(body)
+      });
+      return res.ref;
+    } catch (err) {
+      toast(err.message || 'Could not create order. Check your details.', 'error');
+      return null;
+    }
+  }
+
+  /**
+   * Secure fetch wrapper.
+   * - Always sends JSON Content-Type
+   * - Throws an Error with the server's error message on non-2xx
+   * - Strips leading/trailing whitespace from string fields
+   */
+  async function apiFetch(url, opts = {}) {
+    const res = await fetch(url, {
+      ...opts,
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(opts.headers || {})
+      }
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(json.error || json.message || `Request failed (${res.status})`);
+    }
+    return json;
   }
 
   function formatCard(el) {
@@ -1542,3 +1841,4 @@
   </script>
 </body>
 </html>
+

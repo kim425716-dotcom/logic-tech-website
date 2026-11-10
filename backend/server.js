@@ -30,6 +30,7 @@ const faqRoutes = require('./routes/faqs');
 const adminRoutes = require('./routes/admin');
 const messageRoutes = require('./routes/messages');
 const chatRoutes = require('./routes/chat');
+const shopRoutes  = require('./routes/shop');
 
 const app = express();
 const port = Number(process.env.PORT || 8080);
@@ -114,6 +115,7 @@ app.use('/api/projects', messageRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/shop',  shopRoutes);
 
 // ── Static File Serving ─────────────────────────────────────────────
 // Serve frontend static files from the parent directory
