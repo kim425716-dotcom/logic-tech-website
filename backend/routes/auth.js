@@ -134,6 +134,74 @@ router.get('/me', requireUser, (req, res) => {
   res.json({ user: publicUser(req.user) });
 });
 
+// ── PUT/POST /api/auth/profile (Update Username) ───────────────────
+async function handleUpdateProfile(req, res, next) {
+  try {
+    const name = stringField(req.body.name, 'Username / Name', 120);
+    if (name.length < 2) {
+      throw fail(400, 'Username must be at least 2 characters long.');
+    }
+
+    db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user.id);
+    const updated = statements.userById.get(req.user.id);
+    res.json({
+      message: 'Username updated successfully.',
+      user: publicUser(updated)
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+router.put('/profile', requireUser, handleUpdateProfile);
+router.post('/profile', requireUser, handleUpdateProfile);
+
+// ── POST/PUT /api/auth/change-password ──────────────────────────────
+async function handleChangePassword(req, res, next) {
+  try {
+    const currentPassword = stringField(req.body.currentPassword, 'Current password', 200);
+    const newPassword = stringField(req.body.newPassword, 'New password', 200);
+
+    if (req.body.confirmPassword !== undefined && req.body.confirmPassword !== null && req.body.confirmPassword !== '') {
+      const confirmPassword = stringField(req.body.confirmPassword, 'Confirm password', 200);
+      if (newPassword !== confirmPassword) {
+        throw fail(400, 'New passwords do not match.');
+      }
+    }
+
+    if (newPassword.length < 10) {
+      throw fail(400, 'New password must be at least 10 characters long.');
+    }
+
+    const user = db.prepare('SELECT id, name, email, password_hash, role FROM users WHERE id = ?').get(req.user.id);
+    if (!user) throw fail(404, 'User account not found.');
+
+    const isMatch = await passwordMatches(currentPassword, user.password_hash);
+    if (!isMatch) {
+      throw fail(400, 'Current password is incorrect.');
+    }
+
+    if (await passwordMatches(newPassword, user.password_hash)) {
+      throw fail(400, 'New password cannot be the same as your current password.');
+    }
+
+    const newHash = await hashPassword(newPassword);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, req.user.id);
+
+    // Invalidate other sessions for security while keeping current session active
+    const cookies = parseCookies(req.headers.cookie);
+    const currentToken = cookies[COOKIE_NAME];
+    if (currentToken) {
+      db.prepare('DELETE FROM sessions WHERE user_id = ? AND token_hash != ?').run(req.user.id, tokenHash(currentToken));
+    }
+
+    res.json({ message: 'Password changed successfully.' });
+  } catch (err) {
+    next(err);
+  }
+}
+router.post('/change-password', requireUser, rateLimit('change-password', 6, 15 * 60 * 1000), handleChangePassword);
+router.put('/change-password', requireUser, rateLimit('change-password', 6, 15 * 60 * 1000), handleChangePassword);
+
 // ── POST /api/auth/forgot-password ──────────────────────────────────
 router.post(
   '/forgot-password',

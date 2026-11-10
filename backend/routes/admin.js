@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Admin Routes
  * Full backoffice management endpoints for Logic Tech.
  *
@@ -183,6 +183,49 @@ router.get('/users', (_req, res) => {
   `).all();
 
   res.json({ users });
+});
+
+router.put('/users/:id', async (req, res, next) => {
+  try {
+    const targetId = Number(req.params.id);
+    if (!targetId || isNaN(targetId)) throw fail(400, 'Invalid user ID.');
+
+    const targetUser = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?').get(targetId);
+    if (!targetUser) throw fail(404, 'User account not found.');
+
+    const updates = [];
+    const params = [];
+
+    if (req.body.name !== undefined) {
+      const name = stringField(req.body.name, 'Name', 120);
+      if (name.length < 2) throw fail(400, 'Name must be at least 2 characters long.');
+      updates.push('name = ?');
+      params.push(name);
+    }
+
+    if (req.body.password !== undefined && req.body.password !== '') {
+      const password = stringField(req.body.password, 'Password', 200);
+      if (password.length < 10) throw fail(400, 'Password must be at least 10 characters long.');
+      const { hashPassword } = require('../utils/crypto');
+      const hash = await hashPassword(password);
+      updates.push('password_hash = ?');
+      params.push(hash);
+      // Invalidate sessions so user signs in fresh
+      db.prepare('DELETE FROM sessions WHERE user_id = ?').run(targetId);
+    }
+
+    if (updates.length === 0) {
+      throw fail(400, 'No fields provided to update.');
+    }
+
+    params.push(targetId);
+    db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+
+    const updated = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?').get(targetId);
+    res.json({ message: 'User updated successfully.', user: updated });
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.delete('/users/:id', (req, res, next) => {

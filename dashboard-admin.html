@@ -1075,6 +1075,9 @@
         <i class="fa-solid fa-shop"></i> Shop Manager
         <span id="shopOrderBadge" class="sidebar-badge hidden" style="background:rgba(201,164,92,0.15);color:#C9A45C;">0</span>
       </button>
+      <button class="sidebar-link" onclick="switchTab('account')">
+        <i class="fa-solid fa-user-gear"></i> Account &amp; Security
+      </button>
 
       <div class="sidebar-section-title" style="margin-top:0.5rem;">Shortcuts</div>
       <a href="dashboard-client.html" class="sidebar-link">
@@ -1186,6 +1189,9 @@
               </div>
             </div>
             <div class="user-dropdown-actions">
+              <button class="user-dropdown-action" onclick="switchTab('account'); closeUserDropdown();">
+                <i class="fa-solid fa-user-gear"></i> Account Settings
+              </button>
               <button class="user-dropdown-action" onclick="toggleTheme(); closeUserDropdown();">
                 <i class="fa-solid fa-moon"></i> Toggle Theme
               </button>
@@ -1830,6 +1836,144 @@
           </div>
         </section>
 
+        <!-- ==========================================
+             TAB 7: ACCOUNT & SECURITY SETTINGS
+             ========================================== -->
+        <section id="tab-account" class="hidden">
+          <div class="dash-title-bar" style="margin-bottom:1.5rem;">
+            <div>
+              <h2>Account &amp; Security Settings</h2>
+              <span class="dash-subtitle">Manage administrator credentials, profile identity, and authentication safeguards.</span>
+            </div>
+            <div class="dash-actions">
+              <span class="dash-telemetry-chip" style="cursor:default;">
+                <span class="pulse-dot"></span>
+                <span>Active Super Admin Session</span>
+              </span>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:1.5rem;">
+            <!-- Administrator Profile & Username Card -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <h3><i class="fa-solid fa-user-gear" style="color:var(--gold-primary, #C9A45C);"></i> Administrator Identity</h3>
+                <span class="badge-pill" style="background:rgba(201,164,92,0.15); color:var(--gold-light, #E0BC74); font-weight:700;">Super Admin</span>
+              </div>
+              <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
+                <div style="display:flex; align-items:center; gap:1rem;">
+                  <div class="dash-avatar admin-avatar" id="adminAccountAvatar" style="width:56px; height:56px; font-size:1.25rem; background:linear-gradient(135deg, #E0BC74, #C9A45C); color:#07040d; font-weight:800; border:2px solid rgba(201,164,92,0.4);">AD</div>
+                  <div style="flex:1; min-width:0;">
+                    <h4 id="adminAccountName" style="font-size:1.15rem; margin:0 0 0.2rem; color:var(--text-primary); font-family:var(--font-serif);">-</h4>
+                    <div id="adminAccountEmail" style="font-size:0.85rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">-</div>
+                  </div>
+                </div>
+
+                <!-- Update Admin Username Form -->
+                <form id="adminProfileForm" onsubmit="handleAdminUsernameUpdate(event)" style="border-top:1px solid var(--dash-border); padding-top:1.15rem; display:flex; flex-direction:column; gap:0.9rem;">
+                  <div class="form-group">
+                    <label for="adminUsernameInput" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary); display:flex; justify-content:space-between;">
+                      <span>Administrator Display Name</span>
+                      <span style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Visible in audit logs &amp; dashboard</span>
+                    </label>
+                    <div style="position:relative;">
+                      <i class="fa-regular fa-user" style="position:absolute; left:0.9rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.875rem;"></i>
+                      <input type="text" id="adminUsernameInput" required minlength="2" maxlength="120" placeholder="Enter administrator name" style="padding-left:2.5rem;" />
+                    </div>
+                  </div>
+
+                  <div id="adminProfileAlert" class="hidden" style="padding:0.65rem 0.9rem; border-radius:8px; font-size:0.825rem; display:flex; align-items:center; gap:0.5rem;"></div>
+
+                  <div style="display:flex; justify-content:flex-end;">
+                    <button type="submit" id="saveAdminUsernameBtn" class="btn btn-sm btn-primary" style="display:inline-flex; align-items:center; gap:0.5rem; font-weight:700;">
+                      <i class="fa-solid fa-check"></i> Save Username
+                    </button>
+                  </div>
+                </form>
+
+                <!-- Admin Security Attributes -->
+                <div style="border-top:1px solid var(--dash-border); padding-top:1rem; display:flex; flex-direction:column; gap:0.65rem; font-size:0.85rem;">
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Access Privilege:</span>
+                    <strong style="color:var(--text-primary);"><i class="fa-solid fa-crown" style="color:var(--gold-primary);"></i> Full Root Access</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Audit Policy:</span>
+                    <span style="color:#10b981; font-weight:600;"><i class="fa-solid fa-file-shield"></i> Cryptographic Audit Trail</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Session Encryption:</span>
+                    <span style="color:#10b981; font-weight:600;"><i class="fa-solid fa-lock"></i> AES-256 / SHA-256</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Change Admin Password Card -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <h3><i class="fa-solid fa-key" style="color:#818cf8;"></i> Change Admin Password</h3>
+                <span class="badge-pill" style="background:rgba(129,140,248,0.15); color:#818cf8;">Security</span>
+              </div>
+              <div style="padding:1.5rem;">
+                <form id="adminPasswordForm" onsubmit="handleAdminPasswordChange(event)" style="display:flex; flex-direction:column; gap:0.9rem;">
+                  <p style="font-size:0.825rem; color:var(--text-muted); margin:0 0 0.15rem; line-height:1.5;">
+                    Change your administrative access password. Must be at least 10 characters long.
+                  </p>
+
+                  <!-- Current Password -->
+                  <div class="form-group">
+                    <label for="adminCurrentPass" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary);">Current Password</label>
+                    <div style="position:relative;">
+                      <input type="password" id="adminCurrentPass" required autocomplete="current-password" placeholder="••••••••••••" style="padding-right:2.5rem;" />
+                      <button type="button" onclick="togglePassVisibility('adminCurrentPass', this)" style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.875rem;" aria-label="Toggle password visibility">
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- New Password -->
+                  <div class="form-group">
+                    <label for="adminNewPass" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary);">New Password (min 10 characters)</label>
+                    <div style="position:relative;">
+                      <input type="password" id="adminNewPass" required minlength="10" autocomplete="new-password" placeholder="••••••••••••" oninput="checkPassStrength(this.value, 'adminStrengthBar', 'adminStrengthText')" style="padding-right:2.5rem;" />
+                      <button type="button" onclick="togglePassVisibility('adminNewPass', this)" style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.875rem;" aria-label="Toggle password visibility">
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                    <!-- Password strength meter -->
+                    <div style="margin-top:0.35rem;">
+                      <div style="height:4px; border-radius:999px; background:rgba(255,255,255,0.08); overflow:hidden;">
+                        <div id="adminStrengthBar" style="height:100%; width:0%; transition:all 0.3s ease; background:#ef4444;"></div>
+                      </div>
+                      <span id="adminStrengthText" style="font-size:0.72rem; color:var(--text-muted); display:inline-block; margin-top:0.25rem;">Minimum 10 characters required</span>
+                    </div>
+                  </div>
+
+                  <!-- Confirm Password -->
+                  <div class="form-group">
+                    <label for="adminConfirmPass" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary);">Confirm New Password</label>
+                    <div style="position:relative;">
+                      <input type="password" id="adminConfirmPass" required minlength="10" autocomplete="new-password" placeholder="••••••••••••" style="padding-right:2.5rem;" />
+                      <button type="button" onclick="togglePassVisibility('adminConfirmPass', this)" style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.875rem;" aria-label="Toggle password visibility">
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="adminPassAlert" class="hidden" style="padding:0.65rem 0.9rem; border-radius:8px; font-size:0.825rem; display:flex; align-items:center; gap:0.5rem;"></div>
+
+                  <div style="display:flex; justify-content:flex-end; margin-top:0.25rem;">
+                    <button type="submit" id="adminPassBtn" class="btn btn-sm btn-primary" style="display:inline-flex; align-items:center; gap:0.5rem; font-weight:700;">
+                      <i class="fa-solid fa-lock"></i> Update Password
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>
@@ -2115,6 +2259,29 @@
           <h4 style="font-size:0.875rem; margin-bottom:0.6rem; color:var(--text-primary);"><i class="fa-solid fa-cubes" style="color:#818cf8;"></i> Assigned Client Projects</h4>
           <div id="clientDossierProjectsList" style="display:flex; flex-direction:column; gap:0.5rem;">
             <div style="font-size:0.8rem; color:var(--text-muted);">No projects currently assigned to this account.</div>
+          </div>
+        </div>
+
+        <!-- Admin Edit Client Username & Reset Password Section -->
+        <div style="margin-top:1.25rem; border-top:1px solid var(--dash-border); padding-top:1rem;">
+          <button type="button" class="btn btn-xs btn-outline" id="dossierToggleEditBtn" onclick="toggleDossierEditSection()" style="margin-bottom:0.75rem;">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Name or Reset Password
+          </button>
+          <div id="dossierEditBox" class="hidden" style="background:var(--dash-surface); padding:1rem; border-radius:var(--dash-radius-sm); border:1px solid var(--dash-border); margin-top:0.5rem;">
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label for="dossierEditName" style="font-size:0.8rem; font-weight:600;">Client Full Name / Username</label>
+              <input type="text" id="dossierEditName" placeholder="Client Name" />
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label for="dossierResetPass" style="font-size:0.8rem; font-weight:600;">Reset Password (leave blank to keep current)</label>
+              <input type="password" id="dossierResetPass" placeholder="New temporary password (min 10 chars)" />
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+              <button type="button" class="btn btn-xs btn-outline" onclick="toggleDossierEditSection(false)">Cancel</button>
+              <button type="button" class="btn btn-xs btn-primary" id="saveDossierUserBtn" onclick="saveDossierUserChanges()">
+                <i class="fa-solid fa-check"></i> Save Client Changes
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -2521,7 +2688,8 @@
         projects: 'Projects Pipeline',
         faqs: 'FAQ Knowledge Manager',
         users: 'Client Directory',
-        shop: 'Store Orders & Fulfilment'
+        shop: 'Store Orders & Fulfilment',
+        account: 'Account & Security Settings'
       };
 
       document.getElementById('breadcrumbCurrent').textContent = titles[tabId] || 'Admin';
@@ -2529,7 +2697,7 @@
       if (mobTitle) mobTitle.textContent = titles[tabId] || 'Executive Deck';
       if (window.innerWidth < 1024) closeSidebarMobile();
 
-      ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop'].forEach(t => {
+      ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'account'].forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
         if (sec) sec.classList.toggle('hidden', t !== tabId);
       });
@@ -2540,6 +2708,7 @@
       if (tabId === 'users') loadUsers();
       if (tabId === 'shop') loadShopOrders();
       if (tabId === 'overview') loadAdminStats();
+      if (tabId === 'account') loadAdminAccount();
     }
 
     // -- Auth Check ----------------------------------------------------
@@ -2559,6 +2728,12 @@
         document.getElementById('adminName').textContent = data.user.name || 'Admin';
         const initials = (data.user.name || 'AD').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
         document.getElementById('adminAvatar').textContent = initials;
+        const dropName = document.getElementById('dropdownName');
+        if (dropName) dropName.textContent = data.user.name || 'Administrator';
+        const dropAv = document.getElementById('dropdownAvatar');
+        if (dropAv) dropAv.textContent = initials;
+
+        loadAdminAccount();
 
         document.getElementById('authGateMsg').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
@@ -3644,8 +3819,73 @@ https://logictech.co.ke`;
         openNewProjectModal(u.id);
       };
 
+      // Reset inline edit box
+      const editBox = document.getElementById('dossierEditBox');
+      if (editBox) editBox.classList.add('hidden');
+      const editName = document.getElementById('dossierEditName');
+      if (editName) editName.value = u.name;
+      const resetPass = document.getElementById('dossierResetPass');
+      if (resetPass) resetPass.value = '';
+
       openModal('clientDossierModal');
     }
+
+    function toggleDossierEditSection(force) {
+      const box = document.getElementById('dossierEditBox');
+      if (!box) return;
+      if (force !== undefined) {
+        box.classList.toggle('hidden', !force);
+      } else {
+        box.classList.toggle('hidden');
+      }
+    }
+
+    async function saveDossierUserChanges() {
+      if (!state.currentDossierUser) return;
+      const u = state.currentDossierUser;
+      const newName = document.getElementById('dossierEditName').value.trim();
+      const newPass = document.getElementById('dossierResetPass').value;
+      const btn = document.getElementById('saveDossierUserBtn');
+
+      if (!newName || newName.length < 2) {
+        showToast('Client name must be at least 2 characters long.', 'warning', 'Invalid Name');
+        return;
+      }
+      if (newPass && newPass.length < 10) {
+        showToast('Password must be at least 10 characters long.', 'warning', 'Password Length');
+        return;
+      }
+
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+
+      try {
+        const payload = { name: newName };
+        if (newPass) payload.password = newPass;
+
+        const res = await apiFetch(`/api/admin/users/${u.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to update client profile.');
+
+        showToast('Client name and credentials updated successfully', 'success', 'Updated');
+        document.getElementById('clientDossierName').textContent = newName;
+        toggleDossierEditSection(false);
+        await loadUsers();
+      } catch (err) {
+        showToast(err.message || 'Error updating client', 'error', 'Error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    window.toggleDossierEditSection = toggleDossierEditSection;
+    window.saveDossierUserChanges = saveDossierUserChanges;
 
     // -- Audit Log Generator -------------------------------------------
     function updateActivityAudit() {
@@ -4320,7 +4560,210 @@ https://logictech.co.ke`;
       showToast('Shop orders exported to CSV', 'success');
     }
 
+    /* ── ADMINISTRATOR ACCOUNT & SECURITY HANDLERS ───────────────────── */
+    function loadAdminAccount() {
+      if (!state.currentUser) return;
+      const u = state.currentUser;
+      const initials = (u.name || 'AD').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const nameEl = document.getElementById('adminAccountName');
+      if (nameEl) nameEl.textContent = u.name || 'Administrator';
+      const emailEl = document.getElementById('adminAccountEmail');
+      if (emailEl) emailEl.textContent = u.email || 'admin@logictech.co.ke';
+      const avEl = document.getElementById('adminAccountAvatar');
+      if (avEl) avEl.textContent = initials;
+      const inputEl = document.getElementById('adminUsernameInput');
+      if (inputEl && (!inputEl.value || inputEl.value === '-')) inputEl.value = u.name || 'Administrator';
+    }
+
+    async function handleAdminUsernameUpdate(e) {
+      e.preventDefault();
+      const btn = document.getElementById('saveAdminUsernameBtn');
+      const input = document.getElementById('adminUsernameInput');
+      const alertBox = document.getElementById('adminProfileAlert');
+      const newName = input.value.trim();
+
+      if (!newName || newName.length < 2) {
+        showToast('Username must be at least 2 characters long.', 'warning', 'Invalid Name');
+        return;
+      }
+
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+      if (alertBox) alertBox.className = 'hidden';
+
+      try {
+        const res = await apiFetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to update administrator username.');
+
+        // Update local state
+        if (state.currentUser) state.currentUser.name = data.user.name;
+
+        const initials = (data.user.name || 'AD').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+        // Update header & dropdown
+        document.getElementById('adminName').textContent = data.user.name || 'Admin';
+        document.getElementById('adminAvatar').textContent = initials;
+        const dropName = document.getElementById('dropdownName');
+        if (dropName) dropName.textContent = data.user.name || 'Administrator';
+        const dropAv = document.getElementById('dropdownAvatar');
+        if (dropAv) dropAv.textContent = initials;
+
+        // Update Account tab card
+        const nameEl = document.getElementById('adminAccountName');
+        if (nameEl) nameEl.textContent = data.user.name;
+        const avEl = document.getElementById('adminAccountAvatar');
+        if (avEl) avEl.textContent = initials;
+
+        showToast(`Administrator username updated to "${data.user.name}"`, 'success', 'Saved');
+        if (alertBox) {
+          alertBox.className = '';
+          alertBox.style.background = 'rgba(16, 185, 129, 0.15)';
+          alertBox.style.color = '#10b981';
+          alertBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+          alertBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> Administrator display name saved.';
+        }
+      } catch (err) {
+        showToast(err.message || 'Error updating username', 'error', 'Error');
+        if (alertBox) {
+          alertBox.className = '';
+          alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+          alertBox.style.color = '#f87171';
+          alertBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+          alertBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${err.message}`;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    async function handleAdminPasswordChange(e) {
+      e.preventDefault();
+      const btn = document.getElementById('adminPassBtn');
+      const curPass = document.getElementById('adminCurrentPass').value;
+      const newPass = document.getElementById('adminNewPass').value;
+      const confPass = document.getElementById('adminConfirmPass').value;
+      const alertBox = document.getElementById('adminPassAlert');
+
+      if (newPass.length < 10) {
+        showToast('Password must be at least 10 characters long.', 'warning', 'Password Length');
+        return;
+      }
+
+      if (newPass !== confPass) {
+        showToast('New passwords do not match. Please re-type.', 'warning', 'Mismatch');
+        return;
+      }
+
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating…';
+      if (alertBox) alertBox.className = 'hidden';
+
+      try {
+        const res = await apiFetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentPassword: curPass,
+            newPassword: newPass,
+            confirmPassword: confPass
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to change password.');
+
+        document.getElementById('adminPasswordForm').reset();
+        const meterBar = document.getElementById('adminStrengthBar');
+        if (meterBar) meterBar.style.width = '0%';
+        const meterText = document.getElementById('adminStrengthText');
+        if (meterText) {
+          meterText.textContent = 'Minimum 10 characters required';
+          meterText.style.color = 'var(--text-muted)';
+        }
+
+        showToast('Administrator password updated successfully.', 'success', 'Password Changed');
+        if (alertBox) {
+          alertBox.className = '';
+          alertBox.style.background = 'rgba(16, 185, 129, 0.15)';
+          alertBox.style.color = '#10b981';
+          alertBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+          alertBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> Password updated. Next sign-in will require this new password.';
+        }
+      } catch (err) {
+        showToast(err.message || 'Error updating password', 'error', 'Error');
+        if (alertBox) {
+          alertBox.className = '';
+          alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+          alertBox.style.color = '#f87171';
+          alertBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+          alertBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${err.message}`;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    function togglePassVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      const icon = btn.querySelector('i');
+      if (icon) {
+        icon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+      }
+    }
+
+    function checkPassStrength(val, barId, textId) {
+      const bar = document.getElementById(barId);
+      const text = document.getElementById(textId);
+      if (!bar || !text) return;
+
+      if (!val) {
+        bar.style.width = '0%';
+        bar.style.background = '#ef4444';
+        text.textContent = 'Minimum 10 characters required';
+        text.style.color = 'var(--text-muted)';
+        return;
+      }
+
+      let score = 0;
+      if (val.length >= 10) score += 25;
+      if (val.length >= 14) score += 15;
+      if (/[A-Z]/.test(val)) score += 20;
+      if (/[0-9]/.test(val)) score += 20;
+      if (/[^A-Za-z0-9]/.test(val)) score += 20;
+
+      bar.style.width = `${score}%`;
+      if (score < 40) {
+        bar.style.background = '#ef4444';
+        text.textContent = 'Weak: needs 10+ characters with mixed cases & digits';
+        text.style.color = '#ef4444';
+      } else if (score < 75) {
+        bar.style.background = '#f59e0b';
+        text.textContent = 'Moderate: add special symbols (!@#$) for maximum security';
+        text.style.color = '#f59e0b';
+      } else {
+        bar.style.background = '#10b981';
+        text.textContent = 'Strong: high-entropy enterprise standard';
+        text.style.color = '#10b981';
+      }
+    }
+
     // Expose handlers globally
+    window.loadAdminAccount = loadAdminAccount;
+    window.handleAdminUsernameUpdate = handleAdminUsernameUpdate;
+    window.handleAdminPasswordChange = handleAdminPasswordChange;
+    window.togglePassVisibility = togglePassVisibility;
+    window.checkPassStrength = checkPassStrength;
     window.loadShopOrders = loadShopOrders;
     window.filterShopOrders = filterShopOrders;
     window.openShopOrderModal = openShopOrderModal;
