@@ -877,25 +877,47 @@
 
       <!-- M-Pesa -->
           <div class="mpesa-wrap show" id="mpesaWrap">
-            <div class="form-grp">
-              <label>M-Pesa Number *</label>
-              <input type="tel" id="mpesaPhone" placeholder="0712 345 678 or 254712…"
-                autocomplete="tel" inputmode="tel" />
+            <!-- Account Info Pill -->
+            <div style="background:rgba(0,178,100,0.08); border:1px solid rgba(0,178,100,0.3); border-radius:10px; padding:0.85rem 1rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="width:36px; height:36px; border-radius:50%; background:#00b264; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+                  <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <div>
+                  <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.04em;">Official Payment Receiver</div>
+                  <div style="font-size:0.95rem; font-weight:700; color:var(--text-primary);"><span style="color:#00b264;">0702588886</span></div>
+                  <div style="font-size:0.75rem; color:var(--text-secondary);">Logic Tech / Brian Kimani</div>
+                </div>
+              </div>
+              <span class="secure-badge" style="color:#00b264; font-size:0.75rem;"><i class="fa-solid fa-circle-check"></i> Verified Receiver</span>
             </div>
-            <div style="background:rgba(0,178,100,.08);border:1px solid rgba(0,178,100,.25);border-radius:8px;padding:.875rem;margin-bottom:1rem;font-size:.82rem;color:var(--text-secondary);">
-              <i class="fa-solid fa-circle-info" style="color:#00b264;margin-right:.4rem;"></i>
-              You will receive an STK Push notification on your phone. Enter your M-Pesa PIN to complete payment.
+
+            <!-- Option 1: Instant STK Push -->
+            <div style="margin-bottom:1rem;">
+              <label style="font-size:0.85rem; font-weight:600; color:var(--text-primary); margin-bottom:0.3rem; display:block;">Option 1: Instant STK Push Prompt</label>
+              <div class="form-grp" style="margin-bottom:0.4rem;">
+                <label style="font-size:0.78rem; color:var(--text-secondary);">Your Safaricom phone number *</label>
+                <input type="tel" id="mpesaPhone" placeholder="0712 345 678 or 254..." autocomplete="tel" inputmode="tel" />
+              </div>
+              <!-- Real-time status feedback -->
+              <div id="stkStatus" class="stk-status-box"></div>
+              <p class="stk-note" id="stkNote" style="font-size:0.78rem; color:var(--text-muted);">
+                Click "Send STK Push" below. An M-Pesa prompt will pop up on your phone asking for your PIN.
+              </p>
             </div>
-            <!-- Real-time status feedback -->
-            <div id="stkStatus" class="stk-status-box"></div>
-            <p class="stk-note" id="stkNote">Ensure your phone is on and you have enough M-Pesa balance.</p>
-            <!-- Manual fallback hint -->
-            <div style="margin-top:.75rem;padding:.625rem .875rem;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border-color);font-size:.78rem;color:var(--text-muted);line-height:1.5;">
-              <i class="fa-solid fa-circle-question" style="margin-right:.3rem;"></i>
-              If the prompt doesn't arrive, you can manually send payment to
-              <strong style="color:var(--text-secondary);">Logic Tech</strong>
-              via M-Pesa Till/Paybill, then quote your order reference to
-              <a href="mailto:shop@logictech.co.ke" style="color:var(--gold);">shop@logictech.co.ke</a>
+
+            <!-- Option 2: Direct Send Money / Till -->
+            <div style="border-top:1px dashed var(--border-color); padding-top:0.85rem; margin-top:0.85rem;">
+              <label style="font-size:0.85rem; font-weight:600; color:var(--text-primary); margin-bottom:0.3rem; display:block;">Option 2: Direct Send Money</label>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem; line-height:1.4;">
+                Prefer sending directly? Send order amount to <strong style="color:var(--gold);">0702588886</strong>, then paste your M-Pesa transaction code below to confirm instantly.
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="text" id="manualMpesaCode" placeholder="e.g. QK84ND92KL" maxlength="15" style="text-transform:uppercase; font-family:monospace; font-weight:700; flex:1;" />
+                <button type="button" class="btn btn-sm" id="manualVerifyBtn" onclick="verifyManualMpesa()" style="background:#00b264; color:#fff; font-weight:700; padding:0 1rem; border-radius:8px; white-space:nowrap;">
+                  Verify &amp; Confirm
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1537,6 +1559,12 @@
         document.getElementById('coEmail').focus();
         toast('Enter a valid email address', 'error'); return;
       }
+      // Auto-fill M-Pesa phone if blank
+      const delPhone = document.getElementById('coPhone').value.trim();
+      const mpesaInp = document.getElementById('mpesaPhone');
+      if (mpesaInp && !mpesaInp.value.trim() && delPhone) {
+        mpesaInp.value = delPhone;
+      }
     }
     // For step 2 → 3 on CARD: create order & advance
     if (coCurrentStep === 2 && dir > 0 && selectedPayment === 'card') {
@@ -1747,6 +1775,59 @@
         '#f87171'
       );
       toast(err.message || 'Failed to send STK Push. Try again.', 'error');
+    }
+  }
+
+  /**
+   * Option 2: Verify direct payment made to 0702588886 via M-Pesa transaction code
+   */
+  async function verifyManualMpesa() {
+    const codeInp = document.getElementById('manualMpesaCode');
+    const rawCode = (codeInp?.value || '').trim().toUpperCase();
+    if (!rawCode) {
+      toast('Please enter your M-Pesa transaction code', 'error');
+      codeInp?.focus();
+      return;
+    }
+    if (!/^[A-Z0-9]{8,15}$/.test(rawCode)) {
+      toast('Invalid M-Pesa code format (e.g. QK84ND92KL)', 'error');
+      codeInp?.focus();
+      return;
+    }
+
+    const btn = document.getElementById('manualVerifyBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying…';
+    }
+
+    try {
+      if (!currentOrderRef) {
+        const orderRef = await createOrder();
+        if (!orderRef) {
+          if (btn) { btn.disabled = false; btn.innerHTML = 'Verify &amp; Confirm'; }
+          return;
+        }
+        currentOrderRef = orderRef;
+      }
+
+      const res = await apiFetch('/api/shop/mpesa/manual-verify', {
+        method: 'POST',
+        body: JSON.stringify({ order_ref: currentOrderRef, mpesa_code: rawCode })
+      });
+
+      toast(res.message || 'M-Pesa payment verified! ✓', 'success');
+      setTimeout(() => {
+        coCurrentStep = 3;
+        renderCoStep();
+        if (btn) { btn.disabled = false; btn.innerHTML = 'Verify &amp; Confirm'; }
+      }, 500);
+    } catch (err) {
+      toast(err.message || 'Could not verify M-Pesa code. Check and try again.', 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Verify &amp; Confirm';
+      }
     }
   }
 

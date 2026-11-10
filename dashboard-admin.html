@@ -1071,10 +1071,17 @@
       <button class="sidebar-link" onclick="switchTab('users')">
         <i class="fa-solid fa-users"></i> Client Directory
       </button>
+      <button class="sidebar-link" onclick="switchTab('shop')">
+        <i class="fa-solid fa-shop"></i> Shop Manager
+        <span id="shopOrderBadge" class="sidebar-badge hidden" style="background:rgba(201,164,92,0.15);color:#C9A45C;">0</span>
+      </button>
 
       <div class="sidebar-section-title" style="margin-top:0.5rem;">Shortcuts</div>
       <a href="dashboard-client.html" class="sidebar-link">
         <i class="fa-solid fa-arrow-up-right-from-square"></i> Client Portal View
+      </a>
+      <a href="shop.html" class="sidebar-link" target="_blank">
+        <i class="fa-solid fa-store"></i> View Live Shop
       </a>
       <a href="index.html" class="sidebar-link">
         <i class="fa-solid fa-globe"></i> Public Website
@@ -1718,6 +1725,111 @@
           </div>
         </section>
 
+        <!-- ---- TAB: SHOP ORDERS & INVENTORY ---- -->
+        <section id="tab-shop" class="hidden">
+          <!-- Shop Metrics Overview -->
+          <div class="dash-grid-4" style="margin-bottom:1.5rem;">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(201,164,92,0.15); color:var(--gold);"><i class="fa-solid fa-cart-shopping"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value" id="shopTotalOrders">0</div>
+                <div class="stat-sub">Lifetime e-commerce</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(16,185,129,0.15); color:#10b981;"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value" id="shopTotalRevenue">KES 0</div>
+                <div class="stat-sub">Paid transactions</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Pending / Processing</div>
+                <div class="stat-value" id="shopPendingOrders">0</div>
+                <div class="stat-sub">Requires fulfillment</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(99,102,241,0.15); color:#818cf8;"><i class="fa-solid fa-truck-fast"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Completed / Shipped</div>
+                <div class="stat-value" id="shopCompletedOrders">0</div>
+                <div class="stat-sub">Dispatched to customers</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3><i class="fa-solid fa-shop" style="color:var(--gold);"></i> Store Orders &amp; Fulfilment</h3>
+                <div class="dash-card-header-subtitle">Manage customer orders, M-Pesa payments (receiving on 0702588886), and dispatch</div>
+              </div>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <a href="shop.html" target="_blank" class="btn btn-sm btn-outline">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Live Store</span>
+                </a>
+                <button class="btn btn-sm btn-export" onclick="exportShopOrdersCsv()">
+                  <i class="fa-solid fa-download"></i> <span>Export CSV</span>
+                </button>
+                <button class="btn btn-sm btn-outline" onclick="loadShopOrders()">
+                  <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Toolbar & Filtering -->
+            <div class="dash-toolbar">
+              <div class="dash-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="shopSearchInput" placeholder="Search orders by Ref, Customer, Phone, or City..." oninput="filterShopOrders()" />
+              </div>
+              <div class="dash-filters">
+                <select id="shopStatusFilter" onchange="filterShopOrders()" class="filter-select">
+                  <option value="">All Fulfilment Statuses</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+                <select id="shopPaymentFilter" onchange="filterShopOrders()" class="filter-select">
+                  <option value="">All Payment Statuses</option>
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="failed">Failed</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="table-responsive">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Order Ref</th>
+                    <th>Customer</th>
+                    <th>Destination</th>
+                    <th>Items</th>
+                    <th>Total KES</th>
+                    <th>Payment</th>
+                    <th>Fulfilment</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="shopTableBody">
+                  <tr><td colspan="8" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading shop orders...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>
@@ -2132,6 +2244,71 @@
     </div>
   </div>
 
+  <!-- ---- MODAL: SHOP ORDER DETAILS ---- -->
+  <div id="shopOrderModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:700px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="shopModalRef">Order Details</h3>
+          <span style="font-size:0.775rem; color:var(--text-muted);" id="shopModalDate">Placed on ...</span>
+        </div>
+        <button class="icon-btn" onclick="closeModal('shopOrderModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
+        <!-- Customer & Delivery info -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+          <div style="background:var(--surface); border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem;">Customer Details</div>
+            <div style="font-weight:600; color:var(--text-primary);" id="shopModalCustomerName">-</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:0.25rem;" id="shopModalCustomerPhone">-</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary);" id="shopModalCustomerEmail">-</div>
+          </div>
+          <div style="background:var(--surface); border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem;">Delivery Destination</div>
+            <div style="font-weight:600; color:var(--text-primary);" id="shopModalLocation">-</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:0.25rem;" id="shopModalAddress">-</div>
+            <div style="font-size:0.85rem; color:var(--gold); margin-top:0.25rem;" id="shopModalDeliveryFee">Fee: -</div>
+          </div>
+        </div>
+
+        <!-- Payment details -->
+        <div style="background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.25); border-radius:8px; padding:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Payment &amp; Receiving</div>
+            <div style="font-weight:600; color:var(--text-primary); margin-top:0.25rem;" id="shopModalPaymentInfo">M-Pesa (Receiving: 0702588886)</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;" id="shopModalReceipt">Receipt: None</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">Total Amount</div>
+            <div style="font-size:1.35rem; font-weight:800; color:var(--gold);" id="shopModalTotal">KES 0</div>
+          </div>
+        </div>
+
+        <!-- Items Ordered -->
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem;">Items in Order</div>
+          <div id="shopModalItemsList" style="border:1px solid var(--border-color); border-radius:8px; overflow:hidden;"></div>
+        </div>
+
+        <!-- Fulfilment Action -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:1rem; flex-wrap:wrap; gap:0.75rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <label style="font-size:0.85rem; color:var(--text-secondary);">Fulfilment Status:</label>
+            <select id="shopModalStatusSelect" class="filter-select" style="min-width:140px;">
+              <option value="Processing">Processing</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-sm btn-primary" onclick="saveShopModalStatus()">Update Status</button>
+          </div>
+          <button class="btn btn-sm btn-outline" style="color:#f87171; border-color:rgba(239,68,68,0.3);" onclick="deleteCurrentShopOrder()"><i class="fa-solid fa-trash"></i> Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/main.js?v=2.2"></script>
   <script>
     // State management
@@ -2141,6 +2318,8 @@
       projects: [],
       faqs: [],
       users: [],
+      shopOrders: [],
+      currentShopOrder: null,
       currentInquiryForConvert: null,
       currentInquiry: null,
       editingProjectId: null,
@@ -2341,7 +2520,8 @@
         inquiries: 'Client Inquiries',
         projects: 'Projects Pipeline',
         faqs: 'FAQ Knowledge Manager',
-        users: 'Client Directory'
+        users: 'Client Directory',
+        shop: 'Store Orders & Fulfilment'
       };
 
       document.getElementById('breadcrumbCurrent').textContent = titles[tabId] || 'Admin';
@@ -2349,7 +2529,7 @@
       if (mobTitle) mobTitle.textContent = titles[tabId] || 'Executive Deck';
       if (window.innerWidth < 1024) closeSidebarMobile();
 
-      ['overview', 'inquiries', 'projects', 'faqs', 'users'].forEach(t => {
+      ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop'].forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
         if (sec) sec.classList.toggle('hidden', t !== tabId);
       });
@@ -2358,6 +2538,7 @@
       if (tabId === 'projects') loadProjects();
       if (tabId === 'faqs') loadFaqs();
       if (tabId === 'users') loadUsers();
+      if (tabId === 'shop') loadShopOrders();
       if (tabId === 'overview') loadAdminStats();
     }
 
@@ -2388,7 +2569,8 @@
           loadInquiries(),
           loadProjects(),
           loadUsers(),
-          loadFaqs()
+          loadFaqs(),
+          loadShopOrders()
         ]);
 
         startClock();
@@ -2408,7 +2590,8 @@
           loadInquiries(),
           loadProjects(),
           loadUsers(),
-          loadFaqs()
+          loadFaqs(),
+          loadShopOrders()
         ]);
         showToast('All administrative records updated.', 'success', 'Synced');
       } catch (err) {
@@ -3841,8 +4024,311 @@ https://logictech.co.ke`;
     window.toggleSidebarMobile = toggleSidebarMobile;
     window.closeSidebarMobile = closeSidebarMobile;
 
-    
+    /* ── SHOP ORDERS MANAGEMENT ─────────────────────────────────────── */
+    async function loadShopOrders() {
+      try {
+        const res = await apiFetch('/api/shop/admin/orders');
+        if (!res.ok) return;
+        const data = await res.json();
+        state.shopOrders = data.orders || [];
+
+        // Compute metrics
+        const total = state.shopOrders.length;
+        const revenue = state.shopOrders.reduce((sum, o) => {
+          return sum + (o.payment_status === 'paid' ? Number(o.total || 0) : 0);
+        }, 0);
+        const pending = state.shopOrders.filter(o => o.status === 'Processing').length;
+        const completed = state.shopOrders.filter(o => o.status === 'Shipped' || o.status === 'Delivered').length;
+
+        const totalEl = document.getElementById('shopTotalOrders');
+        const revEl = document.getElementById('shopTotalRevenue');
+        const pendEl = document.getElementById('shopPendingOrders');
+        const compEl = document.getElementById('shopCompletedOrders');
+        const badgeEl = document.getElementById('shopOrderBadge');
+
+        if (totalEl) totalEl.textContent = total;
+        if (revEl) revEl.textContent = 'KES ' + revenue.toLocaleString();
+        if (pendEl) pendEl.textContent = pending;
+        if (compEl) compEl.textContent = completed;
+
+        if (badgeEl) {
+          if (pending > 0) {
+            badgeEl.textContent = pending;
+            badgeEl.classList.remove('hidden');
+          } else {
+            badgeEl.classList.add('hidden');
+          }
+        }
+
+        renderShopOrders(state.shopOrders);
+      } catch (err) {
+        console.error('Failed to load shop orders:', err);
+      }
+    }
+
+    function renderShopOrders(list) {
+      const tbody = document.getElementById('shopTableBody');
+      if (!tbody) return;
+
+      if (!list || !list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                <div class="empty-title">No shop orders yet</div>
+                <div class="empty-sub">Customer orders from the store will appear here with real-time M-Pesa receipt verification and fulfillment dispatch.</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(order => {
+        let itemsCount = 0;
+        let itemsSummary = '';
+        try {
+          const items = JSON.parse(order.items_json || '[]');
+          itemsCount = items.reduce((s, it) => s + (it.qty || 1), 0);
+          itemsSummary = items.map(it => `${it.name || 'Item'} (x${it.qty || 1})`).join(', ');
+        } catch (_e) {
+          itemsCount = 1;
+        }
+
+        const payBadgeClass = order.payment_status === 'paid' ? 'badge-emerald' :
+                              order.payment_status === 'processing' ? 'badge-amber' :
+                              order.payment_status === 'failed' ? 'badge-rose' : 'badge-slate';
+
+        const payIcon = order.payment_status === 'paid' ? 'fa-check' :
+                        order.payment_status === 'processing' ? 'fa-spinner fa-spin' :
+                        order.payment_status === 'failed' ? 'fa-xmark' : 'fa-clock';
+
+        const statusColors = {
+          'Processing': 'color:#f59e0b; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3);',
+          'Confirmed': 'color:#10b981; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3);',
+          'Shipped': 'color:#818cf8; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3);',
+          'Delivered': 'color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4);',
+          'Cancelled': 'color:#f87171; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);'
+        };
+
+        return `
+          <tr>
+            <td>
+              <button class="table-link-btn" onclick="openShopOrderModal(${order.id})" style="font-weight:700; color:var(--gold); font-family:monospace;">
+                ${escapeHtml(order.ref)}
+              </button>
+              <div style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml(order.created_at || '')}</div>
+            </td>
+            <td>
+              <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(order.customer_name)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:0.3rem;">
+                <i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(order.customer_phone)}
+              </div>
+            </td>
+            <td>
+              <div style="font-weight:500; color:var(--text-secondary);">${escapeHtml(order.county)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(order.city)}</div>
+            </td>
+            <td>
+              <div style="font-weight:600; color:var(--text-primary);">${itemsCount} item${itemsCount !== 1 ? 's' : ''}</div>
+              <div style="font-size:0.72rem; color:var(--text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(itemsSummary)}">
+                ${escapeHtml(itemsSummary)}
+              </div>
+            </td>
+            <td>
+              <div style="font-weight:700; color:var(--gold);">KES ${Number(order.total).toLocaleString()}</div>
+            </td>
+            <td>
+              <span class="badge ${payBadgeClass}" style="display:inline-flex; align-items:center; gap:0.3rem;">
+                <i class="fa-solid ${payIcon}"></i> ${order.payment_status.toUpperCase()}
+              </span>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.2rem; font-family:monospace;">
+                ${order.mpesa_receipt ? escapeHtml(order.mpesa_receipt) : (order.payment_method || 'mpesa').toUpperCase()}
+              </div>
+            </td>
+            <td>
+              <select onchange="updateShopOrderStatus(${order.id}, this.value)" style="padding:0.3rem 0.5rem; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; ${statusColors[order.status] || ''}">
+                <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+            <td style="text-align:right;">
+              <div style="display:inline-flex; gap:0.4rem;">
+                <button class="action-btn" title="View Order Details" onclick="openShopOrderModal(${order.id})">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="action-btn text-rose" title="Delete Order" onclick="deleteShopOrder(${order.id}, '${escapeHtml(order.ref)}')">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterShopOrders() {
+      const q = (document.getElementById('shopSearchInput')?.value || '').toLowerCase().trim();
+      const statusF = document.getElementById('shopStatusFilter')?.value || '';
+      const payF = document.getElementById('shopPaymentFilter')?.value || '';
+
+      const filtered = state.shopOrders.filter(order => {
+        const matchesQ = !q ||
+          order.ref.toLowerCase().includes(q) ||
+          order.customer_name.toLowerCase().includes(q) ||
+          order.customer_phone.toLowerCase().includes(q) ||
+          order.county.toLowerCase().includes(q) ||
+          order.city.toLowerCase().includes(q) ||
+          (order.mpesa_receipt && order.mpesa_receipt.toLowerCase().includes(q));
+
+        const matchesStatus = !statusF || order.status === statusF;
+        const matchesPay = !payF || order.payment_status === payF;
+
+        return matchesQ && matchesStatus && matchesPay;
+      });
+
+      renderShopOrders(filtered);
+    }
+
+    function openShopOrderModal(id) {
+      const order = state.shopOrders.find(o => o.id === id);
+      if (!order) return;
+      state.currentShopOrder = order;
+
+      document.getElementById('shopModalRef').textContent = `Order ${order.ref}`;
+      document.getElementById('shopModalDate').textContent = `Placed on ${order.created_at || 'Recently'}`;
+      document.getElementById('shopModalCustomerName').textContent = order.customer_name;
+      document.getElementById('shopModalCustomerPhone').textContent = order.customer_phone;
+      document.getElementById('shopModalCustomerEmail').textContent = order.customer_email;
+      document.getElementById('shopModalLocation').textContent = `${order.county}, ${order.city}`;
+      document.getElementById('shopModalAddress').textContent = order.address;
+      document.getElementById('shopModalDeliveryFee').textContent = `Delivery: ${order.delivery === 0 ? 'FREE' : 'KES ' + Number(order.delivery).toLocaleString()}`;
+      document.getElementById('shopModalPaymentInfo').textContent = `${(order.payment_method || 'mpesa').toUpperCase()} (${order.payment_status.toUpperCase()}) — Receiving: 0702588886`;
+      document.getElementById('shopModalReceipt').textContent = order.mpesa_receipt ? `M-Pesa Receipt: ${order.mpesa_receipt}` : 'Receipt: Pending verification';
+      document.getElementById('shopModalTotal').textContent = `KES ${Number(order.total).toLocaleString()}`;
+      document.getElementById('shopModalStatusSelect').value = order.status;
+
+      let items = [];
+      try {
+        items = JSON.parse(order.items_json || '[]');
+      } catch (_e) {
+        items = [];
+      }
+
+      const itemsList = document.getElementById('shopModalItemsList');
+      if (itemsList) {
+        itemsList.innerHTML = items.map(it => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.85rem; border-bottom:1px solid var(--border-color); font-size:0.85rem;">
+            <div>
+              <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(it.name || 'Product')}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Quantity: ${it.qty || 1} &times; KES ${Number(it.price || 0).toLocaleString()}</div>
+            </div>
+            <div style="font-weight:700; color:var(--gold);">
+              KES ${((it.qty || 1) * (it.price || 0)).toLocaleString()}
+            </div>
+          </div>
+        `).join('') || '<div style="padding:1rem; text-align:center; color:var(--text-muted);">No item details found</div>';
+      }
+
+      openModal('shopOrderModal');
+    }
+
+    async function saveShopModalStatus() {
+      if (!state.currentShopOrder) return;
+      const newStatus = document.getElementById('shopModalStatusSelect').value;
+      await updateShopOrderStatus(state.currentShopOrder.id, newStatus);
+      closeModal('shopOrderModal');
+    }
+
+    async function updateShopOrderStatus(id, newStatus) {
+      try {
+        const res = await apiFetch(`/api/shop/admin/orders/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (!res.ok) throw new Error('Failed to update status');
+        showToast(`Order status updated to "${newStatus}"`, 'success');
+        await loadShopOrders();
+      } catch (err) {
+        showToast(err.message || 'Error updating order', 'error');
+      }
+    }
+
+    function deleteShopOrder(id, ref) {
+      requestDeleteConfirm({
+        title: 'Delete Shop Order',
+        desc: `Are you sure you want to delete order ${ref}? This will remove all associated payment and delivery records.`,
+        targetName: `Order ${ref}`,
+        onConfirm: async () => {
+          try {
+            const res = await apiFetch(`/api/shop/admin/orders/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete order');
+            showToast(`Order ${ref} deleted successfully`, 'success');
+            if (state.currentShopOrder && state.currentShopOrder.id === id) {
+              closeModal('shopOrderModal');
+            }
+            await loadShopOrders();
+          } catch (err) {
+            showToast(err.message || 'Error deleting order', 'error');
+          }
+        }
+      });
+    }
+
+    function deleteCurrentShopOrder() {
+      if (!state.currentShopOrder) return;
+      deleteShopOrder(state.currentShopOrder.id, state.currentShopOrder.ref);
+    }
+
+    function exportShopOrdersCsv() {
+      if (!state.shopOrders || !state.shopOrders.length) {
+        showToast('No orders to export', 'info');
+        return;
+      }
+
+      const headers = ['Ref', 'Customer Name', 'Phone', 'Email', 'County', 'City', 'Address', 'Total KES', 'Payment Method', 'Payment Status', 'Receipt', 'Fulfilment Status', 'Created At'];
+      const rows = state.shopOrders.map(o => [
+        o.ref,
+        `"${(o.customer_name || '').replace(/"/g, '""')}"`,
+        `"${o.customer_phone}"`,
+        `"${o.customer_email}"`,
+        `"${o.county}"`,
+        `"${o.city}"`,
+        `"${(o.address || '').replace(/"/g, '""')}"`,
+        o.total,
+        o.payment_method,
+        o.payment_status,
+        `"${o.mpesa_receipt || ''}"`,
+        o.status,
+        `"${o.created_at}"`
+      ]);
+
+      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `logic-tech-orders-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Shop orders exported to CSV', 'success');
+    }
+
     // Expose handlers globally
+    window.loadShopOrders = loadShopOrders;
+    window.filterShopOrders = filterShopOrders;
+    window.openShopOrderModal = openShopOrderModal;
+    window.saveShopModalStatus = saveShopModalStatus;
+    window.updateShopOrderStatus = updateShopOrderStatus;
+    window.deleteShopOrder = deleteShopOrder;
+    window.deleteCurrentShopOrder = deleteCurrentShopOrder;
+    window.exportShopOrdersCsv = exportShopOrdersCsv;
     window.openAdminChat = openAdminChat;
     window.closeAdminChat = closeAdminChat;
     window.sendAdminChatMessage = sendAdminChatMessage;

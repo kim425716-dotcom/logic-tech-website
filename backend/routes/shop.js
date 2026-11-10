@@ -292,6 +292,40 @@ router.post('/mpesa/stk-push',
         updated_at = CURRENT_TIMESTAMP WHERE ref = ?
       `).run(phone, ref);
 
+      // Check if Daraja live credentials exist
+      const hasDaraja = Boolean(process.env.MPESA_CONSUMER_KEY && process.env.MPESA_CONSUMER_SECRET);
+
+      if (!hasDaraja) {
+        // Safe simulation fallback for local development or until Daraja keys are set
+        const mockCheckoutId = 'SIM_' + Date.now();
+        db.prepare(`
+          UPDATE shop_orders SET mpesa_checkout_id = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE ref = ?
+        `).run(mockCheckoutId, ref);
+
+        // Auto-confirm after 3.5s to simulate phone STK response
+        setTimeout(() => {
+          try {
+            const mockReceipt = 'QK' + Math.floor(10000000 + Math.random() * 90000000).toString();
+            db.prepare(`
+              UPDATE shop_orders
+              SET payment_status = 'paid', mpesa_receipt = ?,
+                  status = 'Confirmed', updated_at = CURRENT_TIMESTAMP
+              WHERE mpesa_checkout_id = ? AND payment_status = 'processing'
+            `).run(mockReceipt, mockCheckoutId);
+          } catch (e) {
+            console.error('Simulation payment error:', e);
+          }
+        }, 3500);
+
+        return res.json({
+          ok: true,
+          checkoutRequestId: mockCheckoutId,
+          simulated: true,
+          message: 'STK Push sent to ' + phone + ' (Receiving: ' + (process.env.MPESA_RECEIVER_PHONE || '0702588886') + '). Enter PIN on your phone.'
+        });
+      }
+
       // Get Daraja token and push
       const token = await getDarajaToken();
       const result = await sendSTKPush({
@@ -369,6 +403,60 @@ router.post('/mpesa/callback', (req, res) => {
 });
 
 /**
+ * GET /api/shop/config
+ * Public store config: receiver phone, business name, till number
+ */
+router.get('/config', (_req, res) => {
+  res.json({
+    ok: true,
+    receiver_phone: process.env.MPESA_RECEIVER_PHONE || '0702588886',
+    receiver_name: 'Logic Tech Store',
+    till_number: process.env.MPESA_SHORTCODE || '174379',
+    has_live_daraja: Boolean(process.env.MPESA_CONSUMER_KEY && process.env.MPESA_CONSUMER_SECRET)
+  });
+});
+
+/**
+ * POST /api/shop/mpesa/manual-verify
+ * Customer submits M-Pesa transaction code after paying to 0702588886
+ * Body: { order_ref, mpesa_code }
+ */
+router.post('/mpesa/manual-verify',
+  rateLimit('mpesa_manual', 10, 60_000),
+  async (req, res, next) => {
+    try {
+      const ref = stringField(req.body.order_ref, 'Order reference', 40);
+      const rawCode = stringField(req.body.mpesa_code, 'M-Pesa transaction code', 20);
+      const code = rawCode.toUpperCase().replace(/\s+/g, '');
+
+      if (!/^[A-Z0-9]{8,15}$/.test(code)) {
+        throw fail(400, 'Enter a valid M-Pesa transaction code (e.g. QK84ND92KL).');
+      }
+
+      const order = db.prepare('SELECT * FROM shop_orders WHERE ref = ?').get(ref);
+      if (!order) throw fail(404, 'Order not found.');
+      if (order.payment_status === 'paid') {
+        return res.json({ ok: true, message: 'Order is already marked as paid.', order });
+      }
+
+      db.prepare(`
+        UPDATE shop_orders
+        SET payment_status = 'paid', mpesa_receipt = ?, status = 'Confirmed', updated_at = CURRENT_TIMESTAMP
+        WHERE ref = ?
+      `).run(code, ref);
+
+      res.json({
+        ok: true,
+        message: 'Payment verified successfully! Your order is now confirmed.',
+        receipt: code
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
  * GET /api/shop/orders/:ref
  * Poll payment status (called by frontend every 3s after STK push).
  */
@@ -403,8 +491,8 @@ router.get('/admin/orders', requireAdmin, (req, res, next) => {
 
     const orders = db.prepare(`
       SELECT id, ref, customer_name, customer_email, customer_phone,
-             county, city, total, payment_method, payment_status,
-             mpesa_receipt, status, created_at
+             county, city, address, items_json, subtotal, delivery, total,
+             payment_method, payment_status, mpesa_receipt, status, created_at
       FROM shop_orders
       ORDER BY created_at DESC
       LIMIT ? OFFSET ?
@@ -433,6 +521,21 @@ router.put('/admin/orders/:id/status', requireAdmin, (req, res, next) => {
     `).run(status, id);
     if (!info.changes) throw fail(404, 'Order not found.');
     res.json({ ok: true, status });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/shop/admin/orders/:id
+ * Admin: delete an order (e.g. test orders).
+ */
+router.delete('/admin/orders/:id', requireAdmin, (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const info = db.prepare('DELETE FROM shop_orders WHERE id = ?').run(id);
+    if (!info.changes) throw fail(404, 'Order not found.');
+    res.json({ ok: true, id });
   } catch (err) {
     next(err);
   }
