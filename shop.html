@@ -1264,7 +1264,7 @@
   /* =====================================================
      SHOP DATA & STATE
      ===================================================== */
-  const PRODUCTS = [
+  const DEFAULT_PRODUCTS = [
     {
       id: 1, name: "Dell XPS 15", category: "laptop",
       price: 185000, rating: 4.8, stock: 5,
@@ -1350,6 +1350,35 @@
       specs: ["1TB capacity","1,050 MB/s read speed","IP65 water & dust resistant","1.5m drop resistant","256-bit AES encryption","USB 3.2 Gen 2 / USB-C"]
     }
   ];
+
+  let PRODUCTS = [...DEFAULT_PRODUCTS];
+
+  async function syncProductsFromBackend() {
+    try {
+      const res = await fetch('/api/shop/products');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.products) && data.products.length > 0) {
+        PRODUCTS = data.products.map(p => {
+          const fallback = DEFAULT_PRODUCTS.find(x => x.id === p.id || x.name.toLowerCase() === p.name.toLowerCase()) || {};
+          return {
+            id: p.id,
+            name: p.name,
+            category: (p.category || 'accessory').toLowerCase(),
+            price: Number(p.price),
+            stock: Number(p.stock),
+            img: p.image_url || fallback.img || 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80',
+            desc: p.description || fallback.desc || '',
+            specs: fallback.specs || ['Enterprise Hardware Specification', 'Certified Authentic', 'Official Warranty Coverage'],
+            rating: fallback.rating || 4.8
+          };
+        });
+        renderProducts();
+      }
+    } catch (err) {
+      console.warn('Backend products unavailable, using offline defaults:', err.message);
+    }
+  }
 
   /* =====================================================
      STATE
@@ -2196,6 +2225,7 @@
      ===================================================== */
   renderProducts();
   renderCartBadge();
+  syncProductsFromBackend();
   document.getElementById('footerYear').textContent = `© ${new Date().getFullYear()} Logic Tech. All rights reserved.`;
   </script>
 </body>

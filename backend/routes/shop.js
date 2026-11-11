@@ -63,6 +63,93 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_shop_orders_mpesa ON shop_orders(mpesa_checkout_id);
 `);
 
+// ── Default Store Products (Website Synchronization) ────────────────
+const INITIAL_PRODUCTS = [
+  {
+    name: "Dell XPS 15", category: "Laptop", price: 185000, stock: 5, sku: "LT-XPS-15",
+    image_url: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
+    description: "A powerhouse laptop crafted for creators and professionals. Stunning InfinityEdge display, long battery life, and VR-ready graphics."
+  },
+  {
+    name: "MacBook Air M3", category: "Laptop", price: 145000, stock: 8, sku: "LT-MBA-M3",
+    image_url: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=80",
+    description: "The world's most capable 13-inch laptop. All-day battery life, fanless design, and breakthrough Apple M3 performance."
+  },
+  {
+    name: "HP Pavilion 15", category: "Laptop", price: 65000, stock: 12, sku: "LT-HP-PAV15",
+    image_url: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80",
+    description: "Reliable everyday laptop for students and home users. Great value with solid performance and vivid display."
+  },
+  {
+    name: "Lenovo ThinkPad X1 Carbon", category: "Laptop", price: 210000, stock: 3, sku: "LT-TP-X1C",
+    image_url: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&q=80",
+    description: "The ultimate business laptop. MIL-SPEC durability, legendary keyboard, and exceptional security features."
+  },
+  {
+    name: "HP ProDesk 600 G6 MT", category: "Desktop", price: 95000, stock: 6, sku: "LT-HP-PD600",
+    image_url: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&q=80",
+    description: "Enterprise-grade mini tower desktop built for business productivity. Expandable, manageable, and secure."
+  },
+  {
+    name: "iMac 24\" M3", category: "Desktop", price: 220000, stock: 4, sku: "LT-IMAC-24M3",
+    image_url: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80",
+    description: "The most colourful, most powerful 24-inch iMac ever. Stunning 4.5K Retina display in an impossibly thin design."
+  },
+  {
+    name: "iPhone 16 Pro Max", category: "Phone", price: 180000, stock: 10, sku: "LT-IPH-16PM",
+    image_url: "https://images.unsplash.com/photo-1706355284897-9059ba2a3c3b?w=600&q=80",
+    description: "Apple's most powerful iPhone ever. Titanium design, A18 Pro chip, and a pro camera system that redefines photography."
+  },
+  {
+    name: "Samsung Galaxy S25 Ultra", category: "Phone", price: 155000, stock: 7, sku: "LT-SAM-S25U",
+    image_url: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=600&q=80",
+    description: "Galaxy AI meets S Pen precision. The pinnacle of Android innovation with a stunning 200MP camera."
+  },
+  {
+    name: "Google Pixel 9 Pro", category: "Phone", price: 110000, stock: 9, sku: "LT-PIX-9PRO",
+    image_url: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+    description: "Google's smartest phone. Powered by Gemini AI and a Tensor G4 chip for the best of Google, all in one place."
+  },
+  {
+    name: "OnePlus 13", category: "Phone", price: 85000, stock: 15, sku: "LT-OP-13",
+    image_url: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=600&q=80",
+    description: "Flagship speed, legendary charging. The OnePlus 13 brings elite performance at a compelling price point."
+  },
+  {
+    name: "Logitech MX Master 3S", category: "Accessory", price: 12500, stock: 20, sku: "LT-LOGI-MX3S",
+    image_url: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80",
+    description: "The master of mice. 8K DPI tracking on any surface, ultra-fast MagSpeed scroll wheel, and all-day ergonomic comfort."
+  },
+  {
+    name: "Samsung T7 Shield 1TB SSD", category: "Accessory", price: 14500, stock: 18, sku: "LT-SAM-T7S1TB",
+    image_url: "https://images.unsplash.com/photo-1597733336794-12d05021d510?w=600&q=80",
+    description: "Rugged portable SSD with IP65 dust & water resistance. Blazing-fast transfers and military-grade drop protection."
+  }
+];
+
+function seedInitialProducts() {
+  const countRow = db.prepare('SELECT COUNT(*) AS count FROM shop_products').get();
+  if (countRow && countRow.count === 0) {
+    const insertStmt = db.prepare(`
+      INSERT INTO shop_products (name, category, price, stock, sku, image_url, description, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+    `);
+    const seedTx = db.transaction((items) => {
+      for (const item of items) {
+        insertStmt.run(
+          item.name, item.category, item.price, item.stock, item.sku, item.image_url, item.description
+        );
+      }
+    });
+    seedTx(INITIAL_PRODUCTS);
+  }
+}
+try {
+  seedInitialProducts();
+} catch (err) {
+  console.warn('Initial product seed skipped:', err.message);
+}
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 /** Generate order reference: LT-SHOP-2026-XXXX */
@@ -249,6 +336,24 @@ function validateOrderBody(body) {
 }
 
 // ── Routes ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/shop/products
+ * Public catalogue list for shop.html storefront
+ */
+router.get('/products', (_req, res, next) => {
+  try {
+    const products = db.prepare(`
+      SELECT id, name, description, category, price, stock, sku, image_url, status
+      FROM shop_products
+      WHERE status = 'active'
+      ORDER BY id ASC
+    `).all();
+    res.json({ ok: true, products });
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**
  * POST /api/shop/orders
@@ -644,6 +749,37 @@ router.delete('/admin/products/:id', requireAdmin, (req, res, next) => {
     const info = db.prepare('DELETE FROM shop_products WHERE id = ?').run(id);
     if (!info.changes) throw fail(404, 'Product not found.');
     res.json({ ok: true, id });
+  } catch (err) { next(err); }
+});
+
+/**
+ * POST /api/shop/admin/products/sync-defaults
+ * Sync/restore initial 12 store products from website catalog
+ */
+router.post('/admin/products/sync-defaults', requireAdmin, (_req, res, next) => {
+  try {
+    const insertStmt = db.prepare(`
+      INSERT INTO shop_products (name, category, price, stock, sku, image_url, description, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+      ON CONFLICT(sku) DO UPDATE SET
+        name = excluded.name,
+        category = excluded.category,
+        price = excluded.price,
+        stock = excluded.stock,
+        image_url = excluded.image_url,
+        description = excluded.description,
+        status = 'active',
+        updated_at = CURRENT_TIMESTAMP
+    `);
+    const syncTx = db.transaction((items) => {
+      for (const item of items) {
+        insertStmt.run(
+          item.name, item.category, item.price, item.stock, item.sku, item.image_url, item.description
+        );
+      }
+    });
+    syncTx(INITIAL_PRODUCTS);
+    res.json({ ok: true, message: `Synced ${INITIAL_PRODUCTS.length} store catalogue items.` });
   } catch (err) { next(err); }
 });
 

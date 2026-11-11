@@ -1902,6 +1902,9 @@
                   <button class="btn btn-sm btn-outline" onclick="loadInventory()" title="Refresh">
                     <i class="fa-solid fa-arrows-rotate"></i>
                   </button>
+                  <button class="btn btn-sm btn-outline" id="syncStoreBtn" onclick="syncDefaultWebsiteProducts()" title="Sync with store catalogue items" style="display:inline-flex; align-items:center; gap:0.4rem;">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> <span>Sync Store Items</span>
+                  </button>
                   <button class="btn btn-sm btn-primary" onclick="openProductModal()" style="display:inline-flex; align-items:center; gap:0.5rem; font-weight:700; letter-spacing:0.03em;">
                     <i class="fa-solid fa-plus"></i> New Product
                   </button>
@@ -5362,9 +5365,33 @@ https://logictech.co.ke`;
       } catch (err) { showToast(err.message, 'error', 'Error'); }
     }
 
+    async function syncDefaultWebsiteProducts() {
+      const btn = document.getElementById('syncStoreBtn');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+      }
+      try {
+        const res = await apiFetch('/api/shop/admin/products/sync-defaults', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to sync catalogue.');
+        showToast(data.message || 'Store items synced successfully.', 'success', 'Synced');
+        await loadInventory();
+      } catch (err) {
+        showToast(err.message || 'Sync failed', 'error', 'Error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
+    }
+
     // Expose inventory handlers
     window.switchShopSubTab = switchShopSubTab;
     window.loadInventory = loadInventory;
+    window.syncDefaultWebsiteProducts = syncDefaultWebsiteProducts;
     window.filterInventory = filterInventory;
     window.openProductModal = openProductModal;
     window.previewProductImg = previewProductImg;
