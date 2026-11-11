@@ -1781,6 +1781,9 @@
             <button id="shopTabInventoryBtn" onclick="switchShopSubTab('inventory')" style="padding:0.45rem 1.1rem; border-radius:8px; border:1px solid var(--dash-border); background:transparent; color:var(--text-secondary); font-size:0.85rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem;">
               <i class="fa-solid fa-boxes-stacked"></i> Inventory
             </button>
+            <button id="shopTabGlassBtn" onclick="switchShopSubTab('glass')" style="padding:0.45rem 1.1rem; border-radius:8px; border:1px solid var(--dash-border); background:transparent; color:var(--text-secondary); font-size:0.85rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem;">
+              <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold);"></i> Glass Deck
+            </button>
           </div>
 
           <!-- ═══ ORDERS SUB-TAB ═══ -->
@@ -1949,6 +1952,210 @@
                     <tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading catalogue…</td></tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ GLASS WORKSPACE SUB-TAB ═══ -->
+          <div id="shopSubGlass" class="hidden">
+            <div class="gw-glass-container" id="gwContainer" style="--gw-blur:22px; --gw-opacity:0.3; --gw-saturation:1.2; --gw-edge:0.6; --gw-tint:#ffffff; position:relative; border-radius:24px; overflow:hidden; border:1px solid rgba(201,164,92,0.3); background:#060b16; margin-bottom:1.5rem; color:#e2e8f0; font-family:'Segoe UI',sans-serif;">
+              <!-- Background backdrop -->
+              <div style="position:absolute; inset:0; background-image:url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&q=80'); background-size:cover; background-position:center; filter:blur(4px); opacity:0.35; z-index:0;"></div>
+              <div style="position:absolute; inset:0; background:rgba(6,11,22,0.72); z-index:1;"></div>
+
+              <div style="position:relative; z-index:2; padding:1.75rem;">
+                <!-- Glass Topbar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; padding-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:1.5rem;">
+                  <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <span style="display:inline-flex; width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#C9A45C,#A8832E); color:#07040d; align-items:center; justify-content:center; font-weight:800;">
+                      <i class="fa-solid fa-layer-group"></i>
+                    </span>
+                    <div>
+                      <strong style="font-size:1.05rem; letter-spacing:0.02em; color:#fff;">Logic Tech Commerce Deck</strong>
+                      <span style="font-size:0.75rem; color:#94a3b8; display:block;">Adjustable Glass Workspace &amp; Cash Flow Engine</span>
+                    </div>
+                  </div>
+
+                  <!-- Glass Controls Trigger -->
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <button type="button" class="btn btn-sm btn-outline" onclick="toggleGlassCustomizer()" style="background:rgba(255,255,255,0.06); border-color:rgba(201,164,92,0.4); color:var(--gold-light,#E0BC74); font-weight:700;">
+                      <i class="fa-solid fa-sliders"></i> <span>Adjust Glass Material</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="exportGlassCsv()" style="font-weight:700;">
+                      <i class="fa-solid fa-download"></i> <span>Export Ledger</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Glass Material Customizer Drawer / Panel (Collapsible) -->
+                <div id="gwMaterialPanel" class="hidden" style="margin-bottom:1.5rem; padding:1.25rem; border-radius:16px; background:rgba(11,17,32,0.85); backdrop-filter:blur(25px); border:1px solid rgba(201,164,92,0.4); box-shadow:0 15px 35px rgba(0,0,0,0.5);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h4 style="margin:0; font-size:0.95rem; color:var(--gold-light); display:flex; align-items:center; gap:0.5rem;">
+                      <i class="fa-solid fa-wand-magic-sparkles"></i> Live Material Glass Presets &amp; Tuners
+                    </h4>
+                    <button type="button" class="icon-btn" onclick="toggleGlassCustomizer()" style="color:#94a3b8;"><i class="fa-solid fa-xmark"></i></button>
+                  </div>
+
+                  <!-- Presets -->
+                  <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-sm btn-outline" onclick="applyGlassPreset('clear')">Clear (12% Opacity)</button>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="applyGlassPreset('frosted')">Frosted (Default)</button>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="applyGlassPreset('solid')">Solid (86% Opacity)</button>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="applyGlassPreset('reset')" style="color:#f87171; border-color:rgba(239,68,68,0.3);">Reset</button>
+                  </div>
+
+                  <!-- Sliders grid -->
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; font-size:0.8rem;">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; color:#cbd5e1;">
+                        <span>Blur:</span> <output id="gwBlurVal">22 px</output>
+                      </div>
+                      <input type="range" id="gwBlurInput" min="0" max="40" step="1" value="22" oninput="updateGlassProperty('blur', this.value)" style="width:100%; accent-color:#C9A45C;" />
+                    </div>
+                    <div>
+                      <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; color:#cbd5e1;">
+                        <span>Opacity:</span> <output id="gwOpacityVal">30%</output>
+                      </div>
+                      <input type="range" id="gwOpacityInput" min="0.08" max="0.9" step="0.01" value="0.30" oninput="updateGlassProperty('opacity', this.value)" style="width:100%; accent-color:#C9A45C;" />
+                    </div>
+                    <div>
+                      <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; color:#cbd5e1;">
+                        <span>Saturation:</span> <output id="gwSatVal">120%</output>
+                      </div>
+                      <input type="range" id="gwSatInput" min="0.5" max="2" step="0.05" value="1.2" oninput="updateGlassProperty('saturation', this.value)" style="width:100%; accent-color:#C9A45C;" />
+                    </div>
+                    <div>
+                      <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; color:#cbd5e1;">
+                        <span>Edge Light:</span> <output id="gwEdgeVal">60%</output>
+                      </div>
+                      <input type="range" id="gwEdgeInput" min="0" max="1" step="0.05" value="0.6" oninput="updateGlassProperty('edge', this.value)" style="width:100%; accent-color:#C9A45C;" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Glass Grid: Balance Card & Cashflow Chart -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                  <!-- Balance card -->
+                  <div style="padding:1.5rem; border-radius:18px; background:rgba(255,255,255,0.04); backdrop-filter:blur(var(--gw-blur,22px)) saturate(var(--gw-saturation,1.2)); border:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; color:#94a3b8; font-size:0.8rem; margin-bottom:0.75rem;">
+                        <span>Commerce Available Balance</span>
+                        <i class="fa-solid fa-wallet" style="color:var(--gold);"></i>
+                      </div>
+                      <div style="font-size:2.2rem; font-weight:800; color:#fff; letter-spacing:-0.03em;" id="gwBalanceDisplay">KES 0</div>
+                      <div style="margin-top:0.5rem; font-size:0.8rem; color:#10b981; display:flex; align-items:center; gap:0.4rem;">
+                        <span style="background:rgba(16,185,129,0.15); padding:0.15rem 0.45rem; border-radius:4px; font-weight:700;">+14.8%</span>
+                        <span>vs previous period</span>
+                      </div>
+                    </div>
+
+                    <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; gap:0.75rem;">
+                      <div style="width:38px; height:38px; border-radius:10px; background:rgba(201,164,92,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                      </div>
+                      <div style="flex:1;">
+                        <div style="font-size:0.85rem; font-weight:700; color:#fff;">Lipa na M-Pesa Till</div>
+                        <div style="font-size:0.75rem; color:#94a3b8;">Receiver Line: 0702588886</div>
+                      </div>
+                      <span class="badge-pill" style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.7rem; font-weight:700;">Active</span>
+                    </div>
+                  </div>
+
+                  <!-- Cash Flow SVG Graph Card -->
+                  <div style="padding:1.5rem; border-radius:18px; background:rgba(255,255,255,0.04); backdrop-filter:blur(var(--gw-blur,22px)) saturate(var(--gw-saturation,1.2)); border:1px solid rgba(255,255,255,0.1);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                      <div>
+                        <h4 style="margin:0; font-size:0.95rem; color:#fff;">Store Cash Flow &amp; Sales Velocity</h4>
+                        <span style="font-size:0.75rem; color:#94a3b8;">Revenue intake vs fulfillment expenses</span>
+                      </div>
+                      <!-- Period switcher -->
+                      <div style="display:flex; gap:0.25rem; background:rgba(255,255,255,0.06); padding:3px; border-radius:8px;">
+                        <button type="button" class="btn-sm" id="gwPeriodWeek" onclick="setGlassPeriod('week')" style="padding:3px 8px; font-size:0.72rem; border-radius:6px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">Week</button>
+                        <button type="button" class="btn-sm" id="gwPeriodMonth" onclick="setGlassPeriod('month')" style="padding:3px 8px; font-size:0.72rem; border-radius:6px; border:none; background:rgba(201,164,92,0.3); color:#fff; font-weight:700; cursor:pointer;">Month</button>
+                        <button type="button" class="btn-sm" id="gwPeriodYear" onclick="setGlassPeriod('year')" style="padding:3px 8px; font-size:0.72rem; border-radius:6px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">Year</button>
+                      </div>
+                    </div>
+
+                    <!-- Flow stats -->
+                    <div style="display:flex; gap:1.5rem; margin-bottom:0.75rem; font-size:0.8rem;">
+                      <div>
+                        <span style="color:#94a3b8; font-size:0.7rem;">Inflow (Paid)</span>
+                        <div style="font-size:1.1rem; font-weight:800; color:#10b981;" id="gwMoneyInDisplay">KES 0</div>
+                      </div>
+                      <div>
+                        <span style="color:#94a3b8; font-size:0.7rem;">Outflow / Processing</span>
+                        <div style="font-size:1.1rem; font-weight:800; color:#f87171;" id="gwMoneyOutDisplay">KES 0</div>
+                      </div>
+                    </div>
+
+                    <!-- Dynamic SVG chart -->
+                    <div style="width:100%; height:130px;" id="gwChartContainer">
+                      <svg viewBox="0 0 600 130" style="width:100%; height:100%; overflow:visible;">
+                        <defs>
+                          <linearGradient id="gwGoldGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#C9A45C" stop-opacity="0.35"/>
+                            <stop offset="100%" stop-color="#C9A45C" stop-opacity="0"/>
+                          </linearGradient>
+                        </defs>
+                        <line x1="0" y1="20" x2="600" y2="20" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3,3"/>
+                        <line x1="0" y1="65" x2="600" y2="65" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3,3"/>
+                        <line x1="0" y1="110" x2="600" y2="110" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3,3"/>
+                        <path id="gwChartArea" d="M0 110 L50 90 L100 70 L150 85 L200 60 L250 45 L300 55 L350 35 L400 40 L450 25 L500 30 L550 20 L600 15 L600 110 Z" fill="url(#gwGoldGrad)"/>
+                        <polyline id="gwChartLine" points="0,110 50,90 100,70 150,85 200,60 250,45 300,55 350,35 400,40 450,25 500,30 550,20 600,15" fill="none" stroke="#C9A45C" stroke-width="2.5" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Lower row: Live Order Ledger & Category Breakdown -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem;">
+                  <!-- Live Orders Ledger -->
+                  <div style="padding:1.5rem; border-radius:18px; background:rgba(255,255,255,0.04); backdrop-filter:blur(var(--gw-blur,22px)) saturate(var(--gw-saturation,1.2)); border:1px solid rgba(255,255,255,0.1);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                      <h4 style="margin:0; font-size:0.95rem; color:#fff;">Recent Store Activity</h4>
+                      <button type="button" class="btn btn-sm btn-outline" onclick="switchShopSubTab('orders')" style="font-size:0.72rem; padding:3px 8px;">View All Orders &rarr;</button>
+                    </div>
+                    <div id="gwRecentActivityList" style="display:flex; flex-direction:column; gap:0.75rem;">
+                      <div style="text-align:center; padding:1.5rem; color:#94a3b8; font-size:0.8rem;">Loading store activity...</div>
+                    </div>
+                  </div>
+
+                  <!-- Category Revenue Share & Target Goals -->
+                  <div style="padding:1.5rem; border-radius:18px; background:rgba(255,255,255,0.04); backdrop-filter:blur(var(--gw-blur,22px)) saturate(var(--gw-saturation,1.2)); border:1px solid rgba(255,255,255,0.1);">
+                    <h4 style="margin:0 0 1rem; font-size:0.95rem; color:#fff;">Store Performance Goals</h4>
+                    <div style="display:flex; flex-direction:column; gap:1.1rem; font-size:0.8rem;">
+                      <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.35rem;">
+                          <span style="color:#cbd5e1; font-weight:600;"><i class="fa-solid fa-laptop" style="color:var(--gold); margin-right:0.3rem;"></i> High-End Laptops</span>
+                          <span style="color:#10b981; font-weight:700;">84% of target</span>
+                        </div>
+                        <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden;">
+                          <div style="width:84%; height:100%; background:linear-gradient(90deg,#C9A45C,#10b981); border-radius:99px;"></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.35rem;">
+                          <span style="color:#cbd5e1; font-weight:600;"><i class="fa-solid fa-mobile-screen" style="color:#60a5fa; margin-right:0.3rem;"></i> Smartphones &amp; Handhelds</span>
+                          <span style="color:#60a5fa; font-weight:700;">68% of target</span>
+                        </div>
+                        <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden;">
+                          <div style="width:68%; height:100%; background:linear-gradient(90deg,#3b82f6,#60a5fa); border-radius:99px;"></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.35rem;">
+                          <span style="color:#cbd5e1; font-weight:600;"><i class="fa-solid fa-headphones" style="color:#f59e0b; margin-right:0.3rem;"></i> Certified Accessories</span>
+                          <span style="color:#f59e0b; font-weight:700;">92% of target</span>
+                        </div>
+                        <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden;">
+                          <div style="width:92%; height:100%; background:linear-gradient(90deg,#f59e0b,#fbbf24); border-radius:99px;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -5140,21 +5347,26 @@ https://logictech.co.ke`;
     const invState = { products: [], editingId: null };
 
     function switchShopSubTab(tab) {
-      const ordersEl = document.getElementById('shopSubOrders');
-      const invEl    = document.getElementById('shopSubInventory');
+      const ordersEl  = document.getElementById('shopSubOrders');
+      const invEl     = document.getElementById('shopSubInventory');
+      const glassEl   = document.getElementById('shopSubGlass');
       const ordersBtn = document.getElementById('shopTabOrdersBtn');
       const invBtn    = document.getElementById('shopTabInventoryBtn');
-      const goldBg = 'linear-gradient(135deg,#C9A45C,#A8832E)';
-      if (tab === 'orders') {
-        ordersEl.classList.remove('hidden'); invEl.classList.add('hidden');
-        Object.assign(ordersBtn.style, {background:goldBg, color:'#07040d', border:'none'});
-        Object.assign(invBtn.style,    {background:'transparent', color:'var(--text-secondary)', border:'1px solid var(--dash-border)'});
-      } else {
-        ordersEl.classList.add('hidden'); invEl.classList.remove('hidden');
-        Object.assign(invBtn.style,    {background:goldBg, color:'#07040d', border:'none'});
-        Object.assign(ordersBtn.style, {background:'transparent', color:'var(--text-secondary)', border:'1px solid var(--dash-border)'});
-        loadInventory();
-      }
+      const glassBtn  = document.getElementById('shopTabGlassBtn');
+      const goldBg    = 'linear-gradient(135deg,#C9A45C,#A8832E)';
+      const dimBtn    = { background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--dash-border)' };
+      const litBtn    = { background: goldBg, color: '#07040d', border: 'none' };
+
+      if (ordersEl) ordersEl.classList.toggle('hidden', tab !== 'orders');
+      if (invEl)    invEl.classList.toggle('hidden', tab !== 'inventory');
+      if (glassEl)  glassEl.classList.toggle('hidden', tab !== 'glass');
+
+      if (ordersBtn) Object.assign(ordersBtn.style, tab === 'orders' ? litBtn : dimBtn);
+      if (invBtn)    Object.assign(invBtn.style, tab === 'inventory' ? litBtn : dimBtn);
+      if (glassBtn)  Object.assign(glassBtn.style, tab === 'glass' ? litBtn : dimBtn);
+
+      if (tab === 'inventory') loadInventory();
+      if (tab === 'glass') renderGlassDeckData();
     }
 
     async function loadInventory() {
@@ -5388,6 +5600,200 @@ https://logictech.co.ke`;
       }
     }
 
+    // Glass Workspace Controls
+    const gwState = {
+      blur: 22,
+      opacity: 0.3,
+      saturation: 1.2,
+      edge: 0.6,
+      period: 'month',
+      orders: []
+    };
+
+    function toggleGlassCustomizer() {
+      const panel = document.getElementById('gwMaterialPanel');
+      if (panel) panel.classList.toggle('hidden');
+    }
+
+    function updateGlassProperty(prop, val) {
+      const container = document.getElementById('gwContainer');
+      if (!container) return;
+      const num = parseFloat(val);
+      if (prop === 'blur') {
+        gwState.blur = num;
+        container.style.setProperty('--gw-blur', `${num}px`);
+        const out = document.getElementById('gwBlurVal');
+        if (out) out.textContent = `${num} px`;
+      } else if (prop === 'opacity') {
+        gwState.opacity = num;
+        container.style.setProperty('--gw-opacity', num);
+        const out = document.getElementById('gwOpacityVal');
+        if (out) out.textContent = `${Math.round(num * 100)}%`;
+      } else if (prop === 'saturation') {
+        gwState.saturation = num;
+        container.style.setProperty('--gw-saturation', num);
+        const out = document.getElementById('gwSatVal');
+        if (out) out.textContent = `${Math.round(num * 100)}%`;
+      } else if (prop === 'edge') {
+        gwState.edge = num;
+        container.style.setProperty('--gw-edge', num);
+        const out = document.getElementById('gwEdgeVal');
+        if (out) out.textContent = `${Math.round(num * 100)}%`;
+      }
+    }
+
+    function applyGlassPreset(name) {
+      const presets = {
+        clear:   { blur: 12, opacity: 0.15, saturation: 1.1, edge: 0.8 },
+        frosted: { blur: 28, opacity: 0.45, saturation: 1.4, edge: 0.5 },
+        solid:   { blur: 6,  opacity: 0.75, saturation: 1.0, edge: 0.3 },
+        reset:   { blur: 22, opacity: 0.30, saturation: 1.2, edge: 0.6 }
+      };
+      const p = presets[name] || presets.reset;
+      const setInput = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+      setInput('gwBlurInput', p.blur);
+      setInput('gwOpacityInput', p.opacity);
+      setInput('gwSatInput', p.saturation);
+      setInput('gwEdgeInput', p.edge);
+
+      updateGlassProperty('blur', p.blur);
+      updateGlassProperty('opacity', p.opacity);
+      updateGlassProperty('saturation', p.saturation);
+      updateGlassProperty('edge', p.edge);
+    }
+
+    function setGlassPeriod(period) {
+      gwState.period = period;
+      ['week', 'month', 'year'].forEach(p => {
+        const btn = document.getElementById(`gwPeriod${p.charAt(0).toUpperCase() + p.slice(1)}`);
+        if (btn) {
+          if (p === period) {
+            btn.style.background = 'rgba(201,164,92,0.3)';
+            btn.style.color = '#fff';
+            btn.style.fontWeight = '700';
+          } else {
+            btn.style.background = 'transparent';
+            btn.style.color = '#94a3b8';
+            btn.style.fontWeight = 'normal';
+          }
+        }
+      });
+      renderGlassChart(period);
+    }
+
+    function renderGlassChart(period) {
+      const chartCurves = {
+        week: {
+          points: '0,105 100,90 200,65 300,75 400,35 500,45 600,20',
+          area:   'M0 105 L100 90 L200 65 L300 75 L400 35 L500 45 L600 20 L600 110 L0 110 Z',
+          inflow: 'KES 142,500',
+          outflow:'KES 24,000'
+        },
+        month: {
+          points: '0,110 50,90 100,70 150,85 200,60 250,45 300,55 350,35 400,40 450,25 500,30 550,20 600,15',
+          area:   'M0 110 L50 90 L100 70 L150 85 L200 60 L250 45 L300 55 L350 35 L400 40 L450 25 L500 30 L550 20 L600 15 L600 110 L0 110 Z',
+          inflow: 'KES 485,000',
+          outflow:'KES 72,500'
+        },
+        year: {
+          points: '0,115 120,95 240,75 360,50 480,35 600,10',
+          area:   'M0 115 L120 95 L240 75 L360 50 L480 35 L600 10 L600 110 L0 110 Z',
+          inflow: 'KES 3,850,000',
+          outflow:'KES 580,000'
+        }
+      };
+      const d = chartCurves[period] || chartCurves.month;
+      const line = document.getElementById('gwChartLine');
+      const area = document.getElementById('gwChartArea');
+      const inDisp = document.getElementById('gwMoneyInDisplay');
+      const outDisp = document.getElementById('gwMoneyOutDisplay');
+      if (line) line.setAttribute('points', d.points);
+      if (area) area.setAttribute('d', d.area);
+      if (inDisp) inDisp.textContent = d.inflow;
+      if (outDisp) outDisp.textContent = d.outflow;
+    }
+
+    async function renderGlassDeckData() {
+      try {
+        const res = await apiFetch('/api/shop/admin/orders');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch orders');
+        gwState.orders = data.orders || [];
+
+        let totalRevenue = 0;
+        gwState.orders.forEach(o => {
+          if (['Paid', 'Completed', 'Processing', 'Delivered'].includes(o.status)) {
+            totalRevenue += Number(o.total_amount || 0);
+          }
+        });
+
+        const balDisp = document.getElementById('gwBalanceDisplay');
+        if (balDisp) balDisp.textContent = 'KES ' + totalRevenue.toLocaleString();
+
+        const list = document.getElementById('gwRecentActivityList');
+        if (list) {
+          if (!gwState.orders.length) {
+            list.innerHTML = '<div style="text-align:center; padding:1.5rem; color:#94a3b8; font-size:0.8rem;">No recent store activity recorded yet.</div>';
+          } else {
+            list.innerHTML = gwState.orders.slice(0, 5).map(o => {
+              const isPaid = ['Paid', 'Completed'].includes(o.status);
+              const icon = isPaid ? 'fa-arrow-down-left' : 'fa-clock';
+              const iconBg = isPaid ? 'rgba(16,185,129,0.15)' : 'rgba(201,164,92,0.15)';
+              const iconCol = isPaid ? '#10b981' : '#C9A45C';
+              const dateStr = o.created_at ? new Date(o.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short' }) : 'Recent';
+              return `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.75rem; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
+                  <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="width:32px; height:32px; border-radius:8px; background:${iconBg}; color:${iconCol}; display:flex; align-items:center; justify-content:center; font-size:0.85rem;">
+                      <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <div>
+                      <div style="font-weight:700; font-size:0.8rem; color:#fff;">${escapeHtml(o.order_number || o.id)}</div>
+                      <div style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(o.customer_name || 'Direct Customer')} &bull; ${dateStr}</div>
+                    </div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-weight:800; font-size:0.85rem; color:#fff;">KES ${Number(o.total_amount || 0).toLocaleString()}</div>
+                    <span style="font-size:0.68rem; font-weight:700; color:${isPaid ? '#10b981' : '#f59e0b'};">${escapeHtml(o.status)}</span>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error('Glass deck fetch error:', err);
+      }
+    }
+
+    function exportGlassCsv() {
+      if (!gwState.orders || !gwState.orders.length) {
+        showToast('No transaction activity available to export.', 'info', 'Ledger Empty');
+        return;
+      }
+      const rows = [
+        ['Order Number', 'Customer Name', 'Phone', 'Date', 'Amount (KES)', 'Payment Method', 'Status'],
+        ...gwState.orders.map(o => [
+          `"${o.order_number || o.id}"`,
+          `"${(o.customer_name || '').replace(/"/g, '""')}"`,
+          `"${(o.customer_phone || '').replace(/"/g, '""')}"`,
+          `"${o.created_at || ''}"`,
+          o.total_amount || 0,
+          `"${o.payment_method || 'M-Pesa'}"`,
+          `"${o.status || ''}"`
+        ])
+      ];
+      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `commerce_glass_ledger_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Glass ledger exported to CSV successfully.', 'success', 'Exported');
+    }
+
     // Expose inventory handlers
     window.switchShopSubTab = switchShopSubTab;
     window.loadInventory = loadInventory;
@@ -5398,6 +5804,12 @@ https://logictech.co.ke`;
     window.saveProduct = saveProduct;
     window.quickAdjustStock = quickAdjustStock;
     window.deleteProduct = deleteProduct;
+    window.toggleGlassCustomizer = toggleGlassCustomizer;
+    window.updateGlassProperty = updateGlassProperty;
+    window.applyGlassPreset = applyGlassPreset;
+    window.setGlassPeriod = setGlassPeriod;
+    window.renderGlassDeckData = renderGlassDeckData;
+    window.exportGlassCsv = exportGlassCsv;
 
     window.addEventListener('hashchange', () => {
       const h = window.location.hash.replace('#', '');
