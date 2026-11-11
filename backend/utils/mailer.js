@@ -99,4 +99,149 @@ async function sendBrandedEmail({ to, subject, preheader, headline, contentHtml,
   });
 }
 
-module.exports = { mailer, smtpConfigured, verifySmtp, sendBrandedEmail, defaultFrom };
+/**
+ * Send order confirmation & receipt email to customer
+ */
+async function sendOrderConfirmationEmail(order) {
+  if (!mailer) return null;
+  try {
+    const items = typeof order.items_json === 'string'
+      ? JSON.parse(order.items_json)
+      : (order.items || []);
+
+    const itemsRows = items.map(item => `
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <td style="padding: 10px 0; color: #fff; font-weight: 600;">${item.name || 'Product'} <span style="color:#94a3b8; font-size:12px;">&times; ${item.qty || 1}</span></td>
+        <td style="padding: 10px 0; text-align: right; color: #c9a45c; font-weight: 700;">KES ${(Number(item.price || 0) * (item.qty || 1)).toLocaleString()}</td>
+      </tr>
+    `).join('');
+
+    const contentHtml = `
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="display:inline-block; width:52px; height:52px; border-radius:50%; background:rgba(0,178,100,0.15); color:#00b264; line-height:52px; font-size:24px; font-weight:bold; margin-bottom:12px;">✓</div>
+        <div style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">Official Store Receipt</div>
+        <div style="font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 4px;">Thank you for your purchase, ${order.customer_name}!</div>
+      </div>
+
+      <div class="meta-box" style="background: rgba(201,164,92,0.05); border: 1px solid rgba(201,164,92,0.25); border-radius: 12px; padding: 16px 20px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <tr>
+            <td style="padding: 4px 0; color: #94a3b8;">Order Reference:</td>
+            <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #c9a45c; font-family: monospace; font-size: 14px;">${order.ref}</td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: #94a3b8;">M-Pesa Receipt Code:</td>
+            <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #10b981; font-family: monospace; font-size: 14px;">${order.mpesa_receipt || 'PAID'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: #94a3b8;">Payment Method:</td>
+            <td style="padding: 4px 0; text-align: right; color: #fff;">${order.payment_method === 'card' ? 'Credit / Debit Card' : 'Lipa na M-Pesa'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: #94a3b8;">Delivery Destination:</td>
+            <td style="padding: 4px 0; text-align: right; color: #fff;">${order.address}, ${order.city}, ${order.county}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin: 24px 0;">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 10px;">Itemized Invoice</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          ${itemsRows}
+          <tr>
+            <td style="padding: 10px 0; color: #94a3b8;">Delivery &amp; Logistics:</td>
+            <td style="padding: 10px 0; text-align: right; color: #cbd5e1;">KES ${Number(order.delivery || 0).toLocaleString()}</td>
+          </tr>
+          <tr style="border-top: 2px solid rgba(201,164,92,0.4);">
+            <td style="padding: 14px 0 0; font-size: 16px; font-weight: 800; color: #ffffff;">Total Paid:</td>
+            <td style="padding: 14px 0 0; text-align: right; font-size: 18px; font-weight: 800; color: #c9a45c;">KES ${Number(order.total || 0).toLocaleString()}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="text-align: center; margin-top: 28px;">
+        <a href="https://wa.me/254702588886?text=Hi%20Logic%20Tech%2C%20following%20up%20on%20my%20order%20${encodeURIComponent(order.ref)}" class="btn" style="background:#25D366; color:#ffffff !important;">
+          💬 Track Delivery via WhatsApp
+        </a>
+      </div>
+    `;
+
+    return await sendBrandedEmail({
+      to: order.customer_email,
+      subject: `Order Confirmed: ${order.ref} — Logic Tech`,
+      preheader: `Your order ${order.ref} has been confirmed. Receipt: ${order.mpesa_receipt || 'PAID'}`,
+      headline: '',
+      contentHtml,
+      textFallback: `Order Confirmed: ${order.ref}\nTotal: KES ${Number(order.total).toLocaleString()}\nM-Pesa Receipt: ${order.mpesa_receipt || 'PAID'}\nDelivery: ${order.address}, ${order.city}, ${order.county}`
+    });
+  } catch (err) {
+    console.error('Failed to send order confirmation email:', err);
+    return null;
+  }
+}
+
+/**
+ * Send admin alert email when a new paid order arrives
+ */
+async function sendAdminOrderNotification(order) {
+  if (!mailer) return null;
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@logictech.co.ke';
+  try {
+    const items = typeof order.items_json === 'string'
+      ? JSON.parse(order.items_json)
+      : (order.items || []);
+
+    const itemsSummary = items.map(i => `• ${i.name} (x${i.qty}) — KES ${(i.price * i.qty).toLocaleString()}`).join('<br>');
+
+    const contentHtml = `
+      <div style="font-size: 18px; font-weight: 700; color: #10b981; margin-bottom: 12px;">
+        💰 New Paid Order Received: ${order.ref}
+      </div>
+      <p style="color: #cbd5e1; margin-bottom: 16px;">
+        A customer has completed payment. Please prepare items for dispatch.
+      </p>
+
+      <div class="meta-box">
+        <strong>Customer:</strong> ${order.customer_name}<br>
+        <strong>Phone:</strong> <a href="tel:${order.customer_phone}" style="color:#c9a45c;">${order.customer_phone}</a> (<a href="https://wa.me/${String(order.customer_phone).replace(/\\D/g,'')}" style="color:#25D366;">WhatsApp</a>)<br>
+        <strong>Email:</strong> ${order.customer_email}<br>
+        <strong>Address:</strong> ${order.address}, ${order.city}, ${order.county}<br>
+        <strong>Amount Paid:</strong> KES ${Number(order.total).toLocaleString()}<br>
+        <strong>M-Pesa Receipt:</strong> <span style="color:#10b981; font-family:monospace; font-weight:bold;">${order.mpesa_receipt || 'VERIFIED'}</span><br>
+        <strong>Payment Method:</strong> ${order.payment_method}
+      </div>
+
+      <div style="margin: 16px 0;">
+        <strong style="color: #fff;">Items to Pack:</strong><br>
+        <div style="margin-top:6px; line-height:1.6; color:#cbd5e1;">${itemsSummary}</div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <a href="${process.env.PUBLIC_URL || 'https://logictech.co.ke'}/dashboard-admin.html#shop" class="btn">
+          View in Admin Dashboard &rarr;
+        </a>
+      </div>
+    `;
+
+    return await sendBrandedEmail({
+      to: adminEmail,
+      subject: `[PAID ORDER] ${order.ref} — KES ${Number(order.total).toLocaleString()} (${order.customer_name})`,
+      preheader: `New paid order from ${order.customer_name}: KES ${Number(order.total).toLocaleString()}`,
+      contentHtml,
+      textFallback: `New Paid Order: ${order.ref} by ${order.customer_name} for KES ${order.total}. Receipt: ${order.mpesa_receipt}`
+    });
+  } catch (err) {
+    console.error('Failed to send admin order notification:', err);
+    return null;
+  }
+}
+
+module.exports = {
+  mailer,
+  smtpConfigured,
+  verifySmtp,
+  sendBrandedEmail,
+  sendOrderConfirmationEmail,
+  sendAdminOrderNotification,
+  defaultFrom
+};

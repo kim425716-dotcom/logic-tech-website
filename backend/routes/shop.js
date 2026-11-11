@@ -14,6 +14,7 @@ const { db } = require('../config/database');
 const { requireAdmin } = require('../middleware/auth');
 const rateLimit = require('../middleware/rateLimit');
 const { fail, stringField, validEmail } = require('../utils/validation');
+const { sendOrderConfirmationEmail, sendAdminOrderNotification } = require('../utils/mailer');
 
 const router = express.Router();
 
@@ -292,6 +293,113 @@ function sendSTKPush({ token, phone, amount, orderId, ref }) {
   });
 }
 
+/**
+ * Query Daraja STK Push transaction status
+ */
+function querySTKPush({ token, checkoutRequestId }) {
+  return new Promise((resolve, reject) => {
+    const shortcode = process.env.MPESA_SHORTCODE;
+    const passkey   = process.env.MPESA_PASSKEY;
+
+    if (!shortcode || !passkey) {
+      return reject(fail(503, 'M-Pesa shortcode/passkey not configured.'));
+    }
+
+    const timestamp = new Date().toISOString()
+      .replace(/[-T:.Z]/g, '').slice(0, 14); // YYYYMMDDHHmmss
+    const password  = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString('base64');
+
+    const isSandbox = process.env.MPESA_ENVIRONMENT !== 'production';
+    const host      = isSandbox ? 'sandbox.safaricom.co.ke' : 'api.safaricom.co.ke';
+
+    const payload = JSON.stringify({
+      BusinessShortCode: shortcode,
+      Password: password,
+      Timestamp: timestamp,
+      CheckoutRequestID: checkoutRequestId
+    });
+
+    const options = {
+      hostname: host,
+      path: '/mpesa/stkpushquery/v1/query',
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          resolve(json);
+        } catch (_e) {
+          reject(fail(502, 'Invalid response from M-Pesa query.'));
+        }
+      });
+    });
+    req.on('error', (e) => reject(fail(502, `M-Pesa query request error: ${e.message}`)));
+    req.write(payload);
+    req.end();
+  });
+}
+
+/**
+ * Fulfill an order when payment is successfully verified.
+ * - Updates order payment_status to 'paid' and status to 'Confirmed'
+ * - Decrements inventory stock for each purchased item
+ * - Triggers branded customer confirmation email & admin alert email
+ */
+async function fulfillOrderPayment(order, receipt, paymentMethod = 'mpesa') {
+  if (!order) return null;
+  if (order.payment_status === 'paid') return order;
+
+  // 1. Update order status in SQLite
+  db.prepare(`
+    UPDATE shop_orders
+    SET payment_status = 'paid',
+        mpesa_receipt = COALESCE(?, mpesa_receipt),
+        payment_method = ?,
+        status = CASE WHEN status = 'Processing' THEN 'Confirmed' ELSE status END,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(receipt || null, paymentMethod, order.id);
+
+  // 2. Decrement inventory stock
+  try {
+    const items = typeof order.items_json === 'string'
+      ? JSON.parse(order.items_json)
+      : (order.items || []);
+
+    const updateStockStmt = db.prepare(`
+      UPDATE shop_products
+      SET stock = MAX(0, stock - ?),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+
+    for (const item of items) {
+      if (item.id && item.qty) {
+        updateStockStmt.run(Number(item.qty), Number(item.id));
+      }
+    }
+  } catch (err) {
+    console.error('Error decrementing inventory stock:', err);
+  }
+
+  const updatedOrder = db.prepare('SELECT * FROM shop_orders WHERE id = ?').get(order.id);
+
+  // 3. Send notifications asynchronously
+  sendOrderConfirmationEmail(updatedOrder).catch(e => console.error('Customer email notification error:', e));
+  sendAdminOrderNotification(updatedOrder).catch(e => console.error('Admin email notification error:', e));
+
+  return updatedOrder;
+}
+
 // ── Validation helpers ───────────────────────────────────────────────
 
 const KENYA_COUNTIES = new Set([
@@ -424,15 +532,13 @@ router.post('/mpesa/stk-push',
         `).run(mockCheckoutId, ref);
 
         // Auto-confirm after 3.5s to simulate phone STK response
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
             const mockReceipt = 'QK' + Math.floor(10000000 + Math.random() * 90000000).toString();
-            db.prepare(`
-              UPDATE shop_orders
-              SET payment_status = 'paid', mpesa_receipt = ?,
-                  status = 'Confirmed', updated_at = CURRENT_TIMESTAMP
-              WHERE mpesa_checkout_id = ? AND payment_status = 'processing'
-            `).run(mockReceipt, mockCheckoutId);
+            const currOrder = db.prepare('SELECT * FROM shop_orders WHERE mpesa_checkout_id = ?').get(mockCheckoutId);
+            if (currOrder && currOrder.payment_status === 'processing') {
+              await fulfillOrderPayment(currOrder, mockReceipt, 'mpesa_simulated');
+            }
           } catch (e) {
             console.error('Simulation payment error:', e);
           }
@@ -486,7 +592,7 @@ router.post('/mpesa/stk-push',
  * Safaricom Daraja posts payment result here.
  * No auth required — verified by CheckoutRequestID match.
  */
-router.post('/mpesa/callback', (req, res) => {
+router.post('/mpesa/callback', async (req, res) => {
   try {
     const body = req.body;
     const stk  = body?.Body?.stkCallback;
@@ -494,31 +600,120 @@ router.post('/mpesa/callback', (req, res) => {
 
     const checkoutId = stk.CheckoutRequestID;
     const resultCode = stk.ResultCode;
+    const order = db.prepare('SELECT * FROM shop_orders WHERE mpesa_checkout_id = ?').get(checkoutId);
 
-    if (resultCode === 0) {
+    if (resultCode === 0 && order) {
       // Payment successful
       const meta = stk.CallbackMetadata?.Item || [];
       const get  = (name) => meta.find(i => i.Name === name)?.Value;
       const receipt = get('MpesaReceiptNumber') || null;
 
-      db.prepare(`
-        UPDATE shop_orders
-        SET payment_status = 'paid', mpesa_receipt = ?,
-            status = 'Confirmed', updated_at = CURRENT_TIMESTAMP
-        WHERE mpesa_checkout_id = ?
-      `).run(receipt, checkoutId);
-    } else {
+      await fulfillOrderPayment(order, receipt, 'mpesa_stk');
+    } else if (order) {
       // Payment failed or cancelled
       db.prepare(`
         UPDATE shop_orders
         SET payment_status = 'failed', updated_at = CURRENT_TIMESTAMP
-        WHERE mpesa_checkout_id = ?
-      `).run(checkoutId);
+        WHERE id = ?
+      `).run(order.id);
     }
   } catch (err) {
     console.error('M-Pesa callback error:', err);
   }
   // Always respond 200 to Safaricom
+  res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
+});
+
+/**
+ * POST /api/shop/mpesa/query
+ * Actively query Safaricom Daraja STK Push status.
+ * Body: { order_ref, checkout_request_id }
+ */
+router.post('/mpesa/query',
+  rateLimit('mpesa_query', 30, 60_000),
+  async (req, res, next) => {
+    try {
+      const ref = req.body.order_ref ? String(req.body.order_ref).trim() : null;
+      const checkoutId = req.body.checkout_request_id ? String(req.body.checkout_request_id).trim() : null;
+
+      let order = null;
+      if (ref) {
+        order = db.prepare('SELECT * FROM shop_orders WHERE ref = ?').get(ref);
+      } else if (checkoutId) {
+        order = db.prepare('SELECT * FROM shop_orders WHERE mpesa_checkout_id = ?').get(checkoutId);
+      }
+
+      if (!order) throw fail(404, 'Order not found.');
+      if (order.payment_status === 'paid') {
+        return res.json({ ok: true, paid: true, status: 'paid', receipt: order.mpesa_receipt, order });
+      }
+
+      const targetCheckoutId = checkoutId || order.mpesa_checkout_id;
+      if (!targetCheckoutId) {
+        return res.json({ ok: true, paid: false, status: order.payment_status, message: 'No active STK Push found.' });
+      }
+
+      if (targetCheckoutId.startsWith('SIM_')) {
+        return res.json({ ok: true, paid: order.payment_status === 'paid', status: order.payment_status });
+      }
+
+      const hasDaraja = Boolean(process.env.MPESA_CONSUMER_KEY && process.env.MPESA_CONSUMER_SECRET);
+      if (!hasDaraja) {
+        return res.json({ ok: true, paid: order.payment_status === 'paid', status: order.payment_status });
+      }
+
+      const token = await getDarajaToken();
+      const result = await querySTKPush({ token, checkoutRequestId: targetCheckoutId });
+
+      if (result.ResultCode === '0' || result.ResultCode === 0) {
+        const receipt = result.MpesaReceiptNumber || result.CheckoutRequestID;
+        const fulfilled = await fulfillOrderPayment(order, receipt, 'mpesa_stk');
+        return res.json({ ok: true, paid: true, status: 'paid', receipt, order: fulfilled });
+      } else if (result.ResultCode === '1032' || result.ResultCode === 1032) {
+        db.prepare(`UPDATE shop_orders SET payment_status = 'failed', updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(order.id);
+        return res.json({ ok: true, paid: false, status: 'failed', message: 'Transaction cancelled by user.' });
+      }
+
+      res.json({ ok: true, paid: false, status: order.payment_status, raw: result });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * C2B Webhooks: Lipa na M-Pesa Buy Goods (Till) & Paybill
+ */
+router.post('/mpesa/c2b-validation', (_req, res) => {
+  res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
+});
+
+router.post('/mpesa/c2b-confirmation', async (req, res) => {
+  try {
+    const { TransID, TransAmount, BillRefNumber, MSISDN } = req.body;
+    const ref = BillRefNumber ? String(BillRefNumber).trim() : '';
+    let phone = '';
+    try { if (MSISDN) phone = normaliseMpesaPhone(MSISDN); } catch (_) {}
+
+    let order = null;
+    if (ref) {
+      order = db.prepare('SELECT * FROM shop_orders WHERE ref = ?').get(ref);
+    }
+    if (!order && phone) {
+      order = db.prepare(`
+        SELECT * FROM shop_orders
+        WHERE (customer_phone = ? OR customer_phone LIKE ?)
+          AND payment_status IN ('pending', 'processing')
+        ORDER BY created_at DESC LIMIT 1
+      `).get(phone, `%${phone.slice(-9)}`);
+    }
+
+    if (order && TransID) {
+      await fulfillOrderPayment(order, TransID, 'mpesa_c2b');
+    }
+  } catch (err) {
+    console.error('C2B confirmation error:', err);
+  }
   res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
 });
 
@@ -559,22 +754,118 @@ router.post('/mpesa/manual-verify',
         return res.json({ ok: true, message: 'Order is already marked as paid.', order });
       }
 
-      db.prepare(`
-        UPDATE shop_orders
-        SET payment_status = 'paid', mpesa_receipt = ?, status = 'Confirmed', updated_at = CURRENT_TIMESTAMP
-        WHERE ref = ?
-      `).run(code, ref);
+      const fulfilled = await fulfillOrderPayment(order, code, 'mpesa_manual');
 
       res.json({
         ok: true,
         message: 'Payment verified successfully! Your order is now confirmed.',
-        receipt: code
+        receipt: code,
+        order: fulfilled
       });
     } catch (err) {
       next(err);
     }
   }
 );
+
+/**
+ * Card Payments: Initiate & Webhook
+ */
+router.post('/api/shop/card/initiate',
+  rateLimit('card_init', 10, 60_000),
+  async (req, res, next) => {
+    try {
+      const ref = stringField(req.body.order_ref, 'Order reference', 40);
+      const order = db.prepare('SELECT * FROM shop_orders WHERE ref = ?').get(ref);
+      if (!order) throw fail(404, 'Order not found.');
+
+      const flwKey = process.env.FLW_SECRET_KEY;
+      if (!flwKey) {
+        // Safe simulation fallback for Card payment
+        const mockReceipt = 'FLW-' + Date.now().toString(36).toUpperCase();
+        const fulfilled = await fulfillOrderPayment(order, mockReceipt, 'card_simulated');
+        return res.json({
+          ok: true,
+          simulated: true,
+          receipt: mockReceipt,
+          order: fulfilled,
+          message: 'Card payment processed successfully.'
+        });
+      }
+
+      // Flutterwave standard checkout payload
+      const flwPayload = JSON.stringify({
+        tx_ref: order.ref,
+        amount: order.total,
+        currency: 'KES',
+        redirect_url: `${process.env.PUBLIC_URL || 'https://logictech.co.ke'}/shop.html?payment=complete&ref=${order.ref}`,
+        customer: {
+          email: order.customer_email,
+          phonenumber: order.customer_phone,
+          name: order.customer_name
+        },
+        customizations: {
+          title: 'Logic Tech Store Checkout',
+          description: `Payment for order ${order.ref}`,
+          logo: `${process.env.PUBLIC_URL || 'https://logictech.co.ke'}/assets/logo.png`
+        }
+      });
+
+      const options = {
+        hostname: 'api.flutterwave.com',
+        path: '/v3/payments',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${flwKey}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(flwPayload)
+        }
+      };
+
+      const flwReq = https.request(options, (flwRes) => {
+        let data = '';
+        flwRes.on('data', chunk => { data += chunk; });
+        flwRes.on('end', () => {
+          try {
+            const json = JSON.parse(data);
+            if (json.status === 'success' && json.data?.link) {
+              return res.json({ ok: true, payment_url: json.data.link });
+            }
+            throw new Error(json.message || 'Failed to initiate card gateway.');
+          } catch (e) {
+            next(fail(502, `Card gateway error: ${e.message}`));
+          }
+        });
+      });
+      flwReq.on('error', (e) => next(fail(502, `Card gateway connection error: ${e.message}`)));
+      flwReq.write(flwPayload);
+      flwReq.end();
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.post('/card/webhook', async (req, res) => {
+  try {
+    const signature = req.headers['verif-hash'];
+    const expectedHash = process.env.FLW_WEBHOOK_HASH;
+    if (expectedHash && signature !== expectedHash) {
+      return res.status(401).end();
+    }
+
+    const { status, txRef, id } = req.body?.data || {};
+    if (status === 'successful' && txRef) {
+      const order = db.prepare('SELECT * FROM shop_orders WHERE ref = ?').get(txRef);
+      if (order && order.payment_status !== 'paid') {
+        await fulfillOrderPayment(order, `FLW-${id || txRef}`, 'card');
+      }
+    }
+  } catch (err) {
+    console.error('Card webhook error:', err);
+  }
+  res.status(200).end();
+});
 
 /**
  * GET /api/shop/orders/:ref
@@ -586,7 +877,7 @@ router.get('/orders/:ref',
     try {
       const ref = stringField(req.params.ref, 'Order reference', 40);
       const order = db.prepare(`
-        SELECT ref, status, payment_status, mpesa_receipt, created_at
+        SELECT ref, status, payment_status, mpesa_receipt, total, customer_name, customer_email, created_at
         FROM shop_orders WHERE ref = ?
       `).get(ref);
       if (!order) throw fail(404, 'Order not found.');
@@ -647,6 +938,41 @@ router.put('/admin/orders/:id/status', requireAdmin, (req, res, next) => {
 });
 
 /**
+ * POST /api/shop/admin/orders/:id/confirm-payment
+ * Admin: manually mark an order as paid (e.g. manual Till payment or Bank Wire)
+ */
+router.post('/admin/orders/:id/confirm-payment', requireAdmin, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const receipt = req.body.receipt ? String(req.body.receipt).trim().toUpperCase() : `ADM-${Date.now().toString(36).toUpperCase()}`;
+    const order = db.prepare('SELECT * FROM shop_orders WHERE id = ?').get(id);
+    if (!order) throw fail(404, 'Order not found.');
+
+    const updated = await fulfillOrderPayment(order, receipt, 'admin_manual');
+    res.json({ ok: true, message: 'Order payment confirmed & stock updated.', order: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * POST /api/shop/admin/orders/:id/resend-receipt
+ * Admin: re-send branded receipt email to customer
+ */
+router.post('/admin/orders/:id/resend-receipt', requireAdmin, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const order = db.prepare('SELECT * FROM shop_orders WHERE id = ?').get(id);
+    if (!order) throw fail(404, 'Order not found.');
+
+    const mailRes = await sendOrderConfirmationEmail(order);
+    res.json({ ok: true, message: mailRes ? 'Receipt email resent successfully.' : 'Email transport skipped or not configured.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * DELETE /api/shop/admin/orders/:id
  * Admin: delete an order (e.g. test orders).
  */
@@ -660,8 +986,6 @@ router.delete('/admin/orders/:id', requireAdmin, (req, res, next) => {
     next(err);
   }
 });
-
-module.exports = router;
 
 // ── Admin: Product / Inventory Management ─────────────────────────
 
@@ -782,4 +1106,6 @@ router.post('/admin/products/sync-defaults', requireAdmin, (_req, res, next) => 
     res.json({ ok: true, message: `Synced ${INITIAL_PRODUCTS.length} store catalogue items.` });
   } catch (err) { next(err); }
 });
+
+module.exports = router;
 

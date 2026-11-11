@@ -1161,6 +1161,9 @@
               <span id="coOrderNum">LT-SHOP-2026-0000</span>
               <i class="fa-regular fa-copy" style="font-size:1rem; opacity:0.8;"></i>
             </div>
+            <div id="coReceiptPill" style="display:none; margin:0.35rem auto 0.75rem; font-family:monospace; font-weight:700; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:0.35rem 0.85rem; border-radius:8px; font-size:0.85rem; width:fit-content; align-items:center; gap:0.4rem;">
+              <i class="fa-solid fa-receipt"></i> <span id="coReceiptLabel">Receipt Code:</span> <span id="coReceiptValue">—</span>
+            </div>
             <p style="font-size:1.15rem;font-weight:700;color:var(--text-primary);margin-bottom:.25rem;font-family:var(--font-serif);letter-spacing:0.02em;">Order Placed Successfully</p>
             <p class="order-eta" id="coEta">Estimated delivery: 3–5 business days</p>
             <div class="order-items-mini" id="coItemsList"></div>
@@ -1808,10 +1811,21 @@
     `;
   }
 
+  let lastConfirmedReceipt = null;
+
   function renderOrderConfirm() {
     // Use the real order ref from the API, or a fallback random ref
     const orderId = currentOrderRef || ('LT-SHOP-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000)));
     document.getElementById('coOrderNum').textContent = esc(orderId);
+
+    const pill = document.getElementById('coReceiptPill');
+    const val = document.getElementById('coReceiptValue');
+    if (pill && val && lastConfirmedReceipt) {
+      val.textContent = esc(lastConfirmedReceipt);
+      pill.style.display = 'inline-flex';
+    } else if (pill) {
+      pill.style.display = 'none';
+    }
 
     const waBtn = document.getElementById('coWhatsAppBtn');
     if (waBtn) {
@@ -1892,23 +1906,35 @@
     try {
       if (!currentOrderRef) {
         const ref = await createOrder();
-        if (!ref) { btn.disabled = false; btn.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>'; return; }
+        if (!ref) { btn.disabled = false; btn.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>'; return; }
         currentOrderRef = ref;
       }
-      // In production: redirect to Flutterwave hosted link or open inline
-      // For now: mark as processing and advance (Flutterwave redirect would happen here)
-      toast('Redirecting to secure card payment…', 'info');
-      setTimeout(() => {
-        // Simulate redirect complete (replace with real Flutterwave call)
-        coCurrentStep = 3;
-        renderCoStep();
-        btn.disabled = false;
-        btn.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>';
-      }, 1500);
+      toast('Connecting to secure card payment gateway…', 'info');
+      const res = await apiFetch('/api/shop/card/initiate', {
+        method: 'POST',
+        body: JSON.stringify({ order_ref: currentOrderRef })
+      });
+
+      if (res.payment_url) {
+        toast('Redirecting to payment gateway…', 'info');
+        window.location.href = res.payment_url;
+        return;
+      }
+
+      if (res.ok) {
+        lastConfirmedReceipt = res.receipt || 'CARD-AUTHORIZED';
+        toast('Card payment authorized successfully! ✓', 'success');
+        setTimeout(() => {
+          coCurrentStep = 3;
+          renderCoStep();
+          btn.disabled = false;
+          btn.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
+        }, 800);
+      }
     } catch (err) {
       toast(err.message || 'Card checkout failed', 'error');
       btn.disabled = false;
-      btn.innerHTML = 'Place Order <i class="fa-solid fa-check"></i>';
+      btn.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
     }
   }
 
@@ -2034,6 +2060,7 @@
 
           if (payment_status === 'paid') {
             clearInterval(stkPollTimer);
+            lastConfirmedReceipt = pollRes.order.mpesa_receipt;
             toast('Payment confirmed via M-Pesa ✓', 'success');
             setStatus(
               '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i>&nbsp; Payment confirmed!',
@@ -2045,6 +2072,31 @@
               btn.disabled = false;
               btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
             }, 800);
+
+          } else if (payment_status === 'processing' && stkPollAttempts > 2 && stkPollAttempts % 4 === 0) {
+            // Actively query Safaricom Daraja STK status in case webhook was delayed
+            try {
+              const qRes = await apiFetch('/api/shop/mpesa/query', {
+                method: 'POST',
+                body: JSON.stringify({ order_ref: currentOrderRef })
+              });
+              if (qRes.paid) {
+                clearInterval(stkPollTimer);
+                lastConfirmedReceipt = qRes.receipt || (qRes.order && qRes.order.mpesa_receipt);
+                toast('Payment confirmed via M-Pesa ✓', 'success');
+                setStatus(
+                  '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i>&nbsp; Payment confirmed!',
+                  '#10b981'
+                );
+                setTimeout(() => {
+                  coCurrentStep = 3;
+                  renderCoStep();
+                  btn.disabled = false;
+                  btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+                }, 800);
+                return;
+              }
+            } catch (_) {}
 
           } else if (payment_status === 'failed') {
             clearInterval(stkPollTimer);
@@ -2123,6 +2175,7 @@
         body: JSON.stringify({ order_ref: currentOrderRef, mpesa_code: rawCode })
       });
 
+      lastConfirmedReceipt = res.receipt || rawCode;
       toast(res.message || 'M-Pesa payment verified! ✓', 'success');
       setTimeout(() => {
         coCurrentStep = 3;
