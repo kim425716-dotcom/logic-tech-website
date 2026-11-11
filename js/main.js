@@ -497,3 +497,361 @@ window.resetContact = resetContact;
   });
 })();
 
+/* ═════════════════════════════════════════════════════════════════════
+   EVERY SERVICE INTERACTIVE ENQUIRY SYSTEM
+   ═════════════════════════════════════════════════════════════════════ */
+(function () {
+  function ensureServiceModal() {
+    if (document.getElementById('serviceEnquiryModal')) return;
+
+    var modalHtml = `
+      <div id="serviceEnquiryModal" class="service-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="serviceEnquiryTitle">
+        <div class="service-modal-backdrop" onclick="closeServiceEnquiry()"></div>
+        <div class="service-modal-card">
+          <div class="service-modal-header">
+            <div class="service-modal-badge"><i class="fa-solid fa-paper-plane"></i> Direct Project Inquiry</div>
+            <button type="button" class="service-modal-close" onclick="closeServiceEnquiry()" aria-label="Close modal">&times;</button>
+          </div>
+          
+          <div class="service-modal-hero">
+            <h3 id="serviceEnquiryTitle">Enterprise Service</h3>
+            <p id="serviceEnquiryCategory" class="service-modal-category">Core Capability</p>
+            <div id="serviceEnquiryDesc" class="service-modal-desc">Technical engineering, deployment, and SLA support.</div>
+          </div>
+
+          <form id="serviceEnquiryForm" onsubmit="handleServiceEnquirySubmit(event)">
+            <input type="hidden" id="serviceEnquirySubject" name="subject" value="" />
+            
+            <div class="service-form-grid">
+              <div class="service-form-group">
+                <label for="serviceEnquiryName">Full Name *</label>
+                <div class="service-input-wrap">
+                  <i class="fa-solid fa-user"></i>
+                  <input type="text" id="serviceEnquiryName" name="name" required placeholder="e.g. John Doe" />
+                </div>
+              </div>
+
+              <div class="service-form-group">
+                <label for="serviceEnquiryEmail">Work Email *</label>
+                <div class="service-input-wrap">
+                  <i class="fa-solid fa-envelope"></i>
+                  <input type="email" id="serviceEnquiryEmail" name="email" required placeholder="john@company.com" />
+                </div>
+              </div>
+            </div>
+
+            <div class="service-form-grid">
+              <div class="service-form-group">
+                <label for="serviceEnquiryPhone">Phone / WhatsApp</label>
+                <div class="service-input-wrap">
+                  <i class="fa-solid fa-phone"></i>
+                  <input type="tel" id="serviceEnquiryPhone" name="phone" placeholder="0702 588 886 / +254..." />
+                </div>
+              </div>
+
+              <div class="service-form-group">
+                <label for="serviceEnquiryBudget">Estimated Budget Range</label>
+                <div class="service-input-wrap">
+                  <i class="fa-solid fa-coins"></i>
+                  <select id="serviceEnquiryBudget" name="budget">
+                    <option value="Flexible Budget (Open to Recommendations)">Flexible Budget</option>
+                    <option value="Under KSh 50,000">Under KSh 50,000 (Starter)</option>
+                    <option value="KSh 50,000 – 150,000">KSh 50,000 – 150,000 (Standard)</option>
+                    <option value="KSh 150,000 – 250,000">KSh 150,000 – 250,000 (Growth)</option>
+                    <option value="KSh 250,000+ (Larger Projects)">KSh 250,000+ (Enterprise)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="service-form-group">
+              <label for="serviceEnquiryMessage">Project Scope &amp; Technical Requirements *</label>
+              <textarea id="serviceEnquiryMessage" name="message" rows="3" required placeholder="Tell us about your project requirements, deliverables, or desired milestones..."></textarea>
+            </div>
+
+            <div class="service-modal-actions">
+              <button type="submit" class="btn btn-primary btn-lg service-submit-btn" id="serviceEnquirySubmitBtn">
+                <span>Send Project Inquiry</span> <i class="fa-solid fa-paper-plane"></i>
+              </button>
+              <a id="serviceEnquiryWhatsAppBtn" href="#" target="_blank" class="btn btn-outline btn-lg service-wa-btn">
+                <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> <span>WhatsApp Concierge</span>
+              </a>
+            </div>
+
+            <div class="service-modal-footer-meta">
+              <span class="service-modal-sla"><i class="fa-solid fa-shield-halved"></i> 24-hr Response SLA &bull; Confidential &amp; Protected</span>
+              <a id="serviceEnquiryFullPageLink" href="contact.html" class="service-modal-fullpage-link">Open Full Contact Page &rarr;</a>
+            </div>
+          </form>
+
+          <div id="serviceEnquirySuccess" class="service-modal-success" style="display:none;">
+            <div class="service-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h4>Inquiry Received!</h4>
+            <p id="serviceSuccessText">Our solutions architect squad has received your request and will get back to you within 24 hours with architectural scoping and pricing.</p>
+            <div class="service-success-actions">
+              <button type="button" class="btn btn-primary" onclick="closeServiceEnquiry()">Done</button>
+              <a id="serviceSuccessWhatsApp" href="#" target="_blank" class="btn btn-outline" style="border-color:rgba(37,211,102,0.4); color:#86efac;">
+                <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> Chat on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  }
+
+  function openServiceEnquiry(serviceName, serviceDesc, serviceCategory) {
+    ensureServiceModal();
+    var modal = document.getElementById('serviceEnquiryModal');
+    var form = document.getElementById('serviceEnquiryForm');
+    var success = document.getElementById('serviceEnquirySuccess');
+    var titleEl = document.getElementById('serviceEnquiryTitle');
+    var catEl = document.getElementById('serviceEnquiryCategory');
+    var descEl = document.getElementById('serviceEnquiryDesc');
+    var subjectInput = document.getElementById('serviceEnquirySubject');
+    var msgInput = document.getElementById('serviceEnquiryMessage');
+    var waBtn = document.getElementById('serviceEnquiryWhatsAppBtn');
+    var fullLink = document.getElementById('serviceEnquiryFullPageLink');
+
+    var name = (serviceName || 'Custom Technology Solution').trim();
+    var cat = (serviceCategory || 'Enterprise Service Pillar').trim();
+    var desc = (serviceDesc || 'Enterprise engineering, deployment, and SLA support.').trim();
+
+    titleEl.textContent = name;
+    catEl.textContent = cat;
+    descEl.textContent = desc;
+    subjectInput.value = name + ' (' + cat + ')';
+    
+    msgInput.value = 'Hello Logic Tech team,\n\nI would like to inquire about your ' + name + ' service. Please share details on technical scope, estimated delivery timeline, and pricing.\n\nThank you.';
+
+    var waMsg = encodeURIComponent('Hi Logic Tech, I would like to make an inquiry regarding: ' + name);
+    waBtn.href = 'https://wa.me/254702588886?text=' + waMsg;
+
+    fullLink.href = 'contact.html?service=' + encodeURIComponent(name) + '&category=' + encodeURIComponent(cat);
+
+    // Reset form view
+    form.style.display = 'block';
+    success.style.display = 'none';
+    var submitBtn = document.getElementById('serviceEnquirySubmitBtn');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span>Send Project Inquiry</span> <i class="fa-solid fa-paper-plane"></i>';
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(function () {
+      var nameInput = document.getElementById('serviceEnquiryName');
+      if (nameInput) nameInput.focus();
+    }, 150);
+  }
+  window.openServiceEnquiry = openServiceEnquiry;
+
+  function closeServiceEnquiry() {
+    var modal = document.getElementById('serviceEnquiryModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+  window.closeServiceEnquiry = closeServiceEnquiry;
+
+  async function handleServiceEnquirySubmit(e) {
+    e.preventDefault();
+    var form = document.getElementById('serviceEnquiryForm');
+    var submitBtn = document.getElementById('serviceEnquirySubmitBtn');
+    var success = document.getElementById('serviceEnquirySuccess');
+    var title = document.getElementById('serviceEnquiryTitle')?.textContent || 'this service';
+
+    var data = new FormData(form);
+    var payload = Object.fromEntries(data.entries());
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting Inquiry...';
+
+    try {
+      var res = await apiFetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to submit inquiry.');
+
+      form.style.display = 'none';
+      success.style.display = 'block';
+      
+      var succText = document.getElementById('serviceSuccessText');
+      if (succText) {
+        succText.innerHTML = 'Our solutions architect squad has received your request regarding <strong>' + title + '</strong> and will get back to you within 24 hours with architectural scoping and pricing.';
+      }
+
+      var waSuccess = document.getElementById('serviceSuccessWhatsApp');
+      if (waSuccess) {
+        var waMsg = encodeURIComponent('Hi Logic Tech, I just submitted an inquiry on logictech.co.ke regarding: ' + title);
+        waSuccess.href = 'https://wa.me/254702588886?text=' + waMsg;
+      }
+
+      if (typeof showToast === 'function') {
+        showToast('Inquiry for ' + title + ' sent successfully!', 'success');
+      }
+    } catch (err) {
+      if (typeof showToast === 'function') {
+        showToast(err.message || 'Error submitting inquiry. Please try again.', 'error');
+      } else {
+        alert(err.message || 'Error submitting inquiry.');
+      }
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span>Send Project Inquiry</span> <i class="fa-solid fa-paper-plane"></i>';
+    }
+  }
+  window.handleServiceEnquirySubmit = handleServiceEnquirySubmit;
+
+  // Escape key closes modal
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeServiceEnquiry();
+  });
+
+  // Attach interactive click behavior to all service items and service cards across DOM
+  function initServiceClickHandlers() {
+    // 1. All 190+ catalog service items
+    var items = document.querySelectorAll('.service-item');
+    items.forEach(function (item) {
+      if (item.dataset.enquiryBound) return;
+      item.dataset.enquiryBound = 'true';
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('role', 'button');
+
+      var h4 = item.querySelector('h4');
+      var p = item.querySelector('p');
+      var serviceName = h4 ? h4.textContent.replace(/^✦\s*/, '').trim() : 'Service';
+      item.setAttribute('aria-label', 'Send inquiry for ' + serviceName);
+
+      // Add visual affordance pill if not already there
+      if (!item.querySelector('.service-item-cta')) {
+        var cta = document.createElement('span');
+        cta.className = 'service-item-cta';
+        cta.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enquire &rarr;';
+        item.appendChild(cta);
+      }
+
+      var catCard = item.closest('.cat-card');
+      var catTitle = catCard ? (catCard.querySelector('.cat-title-wrap h3')?.textContent || catCard.querySelector('.cat-code')?.textContent || 'Solutions') : 'Services';
+
+      function trigger(e) {
+        e.preventDefault();
+        openServiceEnquiry(serviceName, p ? p.textContent : '', catTitle);
+      }
+
+      item.addEventListener('click', trigger);
+      item.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          trigger(e);
+        }
+      });
+    });
+
+    // 2. Core Service Pillars (.service-card) in services.html & index.html
+    var cards = document.querySelectorAll('.service-card');
+    cards.forEach(function (card) {
+      if (card.dataset.enquiryBound) return;
+      card.dataset.enquiryBound = 'true';
+
+      var h3 = card.querySelector('h3');
+      var p = card.querySelector('p');
+      var serviceName = h3 ? h3.textContent.trim() : 'Core Service';
+
+      // If there's an action container, add a direct Enquire button
+      var actions = card.querySelector('.service-card-actions');
+      if (actions && !actions.querySelector('.service-card-enquire-btn')) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'service-card-enquire-btn';
+        btn.title = 'Send direct inquiry for ' + serviceName;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enquire';
+        btn.style.cssText = 'display:inline-flex; align-items:center; gap:0.4rem; font-size:0.8rem; font-weight:700; color:#c9a45c; background:rgba(201,164,92,0.12); border:1px solid rgba(201,164,92,0.3); border-radius:8px; padding:0.4rem 0.75rem; cursor:pointer; transition:all 0.2s ease;';
+        btn.onmouseover = function() { this.style.background = 'rgba(201,164,92,0.25)'; this.style.color = '#fff'; };
+        btn.onmouseout = function() { this.style.background = 'rgba(201,164,92,0.12)'; this.style.color = '#c9a45c'; };
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openServiceEnquiry(serviceName, p ? p.textContent : '', 'Core Pillar');
+        });
+        actions.prepend(btn);
+      }
+
+      // Also on services.html where buttons are full width
+      var existingBtn = card.querySelector('a.btn[href*="estimator.html"]');
+      if (existingBtn && !card.querySelector('.pillar-enquire-row')) {
+        var row = document.createElement('div');
+        row.className = 'pillar-enquire-row';
+        row.style.cssText = 'display:flex; gap:0.5rem; margin-top:0.75rem;';
+        row.innerHTML = `
+          <button type="button" class="btn btn-primary btn-sm" style="flex:1; justify-content:center;">
+            <i class="fa-solid fa-paper-plane"></i> Send Enquiry &rarr;
+          </button>
+        `;
+        row.querySelector('button').addEventListener('click', function(e) {
+          e.preventDefault();
+          openServiceEnquiry(serviceName, p ? p.textContent : '', 'Core Pillar');
+        });
+        existingBtn.parentNode.insertBefore(row, existingBtn.nextSibling);
+      }
+    });
+  }
+
+  // Auto-init on DOMContentLoaded or immediately
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initServiceClickHandlers);
+  } else {
+    initServiceClickHandlers();
+  }
+
+  // 3. Pre-fill contact.html if arrived with ?service=...
+  if (window.location.pathname.endsWith('contact.html') || window.location.pathname.endsWith('contact')) {
+    var params = new URLSearchParams(window.location.search);
+    var serviceParam = params.get('service') || params.get('subject');
+    if (serviceParam) {
+      var select = document.querySelector('select[name="subject"]');
+      if (select) {
+        var found = false;
+        for (var i = 0; i < select.options.length; i++) {
+          if (select.options[i].value.toLowerCase().includes(serviceParam.toLowerCase()) ||
+              serviceParam.toLowerCase().includes(select.options[i].value.toLowerCase())) {
+            select.selectedIndex = i;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          var opt = document.createElement('option');
+          opt.value = serviceParam;
+          opt.textContent = serviceParam + ' (Custom Service Inquiry)';
+          opt.selected = true;
+          select.prepend(opt);
+        }
+      }
+
+      var textarea = document.querySelector('textarea[name="message"]');
+      if (textarea && (!textarea.value || textarea.value.trim() === '')) {
+        textarea.value = 'Hello Logic Tech team,\n\nI would like to inquire about your ' + serviceParam + ' service. Please provide project timelines, technical scope details, and pricing.\n\nThank you.';
+      }
+
+      var form = document.getElementById('contactForm');
+      if (form) {
+        var alertBox = document.createElement('div');
+        alertBox.style.cssText = 'background:rgba(201,164,92,0.12); border:1px solid rgba(201,164,92,0.4); border-radius:10px; padding:0.85rem 1.25rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.75rem; color:#f8fafc; font-size:0.875rem;';
+        alertBox.innerHTML = '<i class="fa-solid fa-paper-plane" style="color:#c9a45c; font-size:1.1rem;"></i> <div>Direct Inquiry: <strong>' + serviceParam + '</strong> &mdash; form pre-filled below.</div>';
+        form.prepend(alertBox);
+
+        setTimeout(function() {
+          form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    }
+  }
+})();
+
