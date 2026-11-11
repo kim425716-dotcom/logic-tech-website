@@ -19,6 +19,21 @@ const router = express.Router();
 
 // ── Schema migration: shop tables ──────────────────────────────────
 db.exec(`
+  CREATE TABLE IF NOT EXISTS shop_products (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    category    TEXT NOT NULL DEFAULT 'General',
+    price       INTEGER NOT NULL,
+    stock       INTEGER NOT NULL DEFAULT 0,
+    sku         TEXT UNIQUE,
+    image_url   TEXT NOT NULL DEFAULT '',
+    status      TEXT NOT NULL DEFAULT 'active'
+      CHECK(status IN ('active','archived')),
+    created_at  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TABLE IF NOT EXISTS shop_orders (
     id          INTEGER PRIMARY KEY,
     ref         TEXT NOT NULL UNIQUE,
@@ -542,4 +557,93 @@ router.delete('/admin/orders/:id', requireAdmin, (req, res, next) => {
 });
 
 module.exports = router;
+
+// ── Admin: Product / Inventory Management ─────────────────────────
+
+/**
+ * GET /api/shop/admin/products
+ */
+router.get('/admin/products', requireAdmin, (req, res, next) => {
+  try {
+    const products = db.prepare(`
+      SELECT id, name, description, category, price, stock, sku, image_url, status, created_at, updated_at
+      FROM shop_products ORDER BY created_at DESC
+    `).all();
+    const totalActive = products.filter(p => p.status === 'active').length;
+    const outOfStock  = products.filter(p => p.stock === 0 && p.status === 'active').length;
+    const lowStock    = products.filter(p => p.stock > 0 && p.stock <= 5 && p.status === 'active').length;
+    res.json({ ok: true, products, stats: { total: products.length, totalActive, outOfStock, lowStock } });
+  } catch (err) { next(err); }
+});
+
+/**
+ * POST /api/shop/admin/products — create product
+ */
+router.post('/admin/products', requireAdmin, (req, res, next) => {
+  try {
+    const name        = stringField(req.body.name, 'Name', 200);
+    const description = (req.body.description || '').slice(0, 2000);
+    const category    = (req.body.category || 'General').slice(0, 100);
+    const price       = Number(req.body.price);
+    const stock       = Number(req.body.stock ?? 0);
+    const sku         = (req.body.sku || '').slice(0, 100) || null;
+    const image_url   = (req.body.image_url || '').slice(0, 500);
+
+    if (!name || name.length < 2) throw fail(400, 'Product name must be at least 2 characters.');
+    if (!Number.isInteger(price) || price < 0) throw fail(400, 'Price must be a non-negative integer (KES).');
+    if (!Number.isInteger(stock) || stock < 0) throw fail(400, 'Stock must be a non-negative integer.');
+
+    const info = db.prepare(`
+      INSERT INTO shop_products (name, description, category, price, stock, sku, image_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(name, description, category, price, stock, sku, image_url);
+
+    const product = db.prepare('SELECT * FROM shop_products WHERE id = ?').get(info.lastInsertRowid);
+    res.status(201).json({ ok: true, product });
+  } catch (err) { next(err); }
+});
+
+/**
+ * PUT /api/shop/admin/products/:id — update product
+ */
+router.put('/admin/products/:id', requireAdmin, (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const existing = db.prepare('SELECT * FROM shop_products WHERE id = ?').get(id);
+    if (!existing) throw fail(404, 'Product not found.');
+
+    const name        = req.body.name        !== undefined ? stringField(req.body.name, 'Name', 200)   : existing.name;
+    const description = req.body.description !== undefined ? String(req.body.description).slice(0, 2000) : existing.description;
+    const category    = req.body.category    !== undefined ? String(req.body.category).slice(0, 100)    : existing.category;
+    const price       = req.body.price       !== undefined ? Number(req.body.price)                     : existing.price;
+    const stock       = req.body.stock       !== undefined ? Number(req.body.stock)                     : existing.stock;
+    const sku         = req.body.sku         !== undefined ? (String(req.body.sku).slice(0, 100) || null) : existing.sku;
+    const image_url   = req.body.image_url   !== undefined ? String(req.body.image_url).slice(0, 500)   : existing.image_url;
+    const status      = req.body.status      !== undefined ? String(req.body.status)                    : existing.status;
+
+    if (!Number.isInteger(price) || price < 0) throw fail(400, 'Price must be a non-negative integer (KES).');
+    if (!Number.isInteger(stock) || stock < 0) throw fail(400, 'Stock must be a non-negative integer.');
+    if (!['active', 'archived'].includes(status)) throw fail(400, 'Invalid status.');
+
+    db.prepare(`
+      UPDATE shop_products SET name=?, description=?, category=?, price=?, stock=?, sku=?, image_url=?, status=?, updated_at=CURRENT_TIMESTAMP
+      WHERE id=?
+    `).run(name, description, category, price, stock, sku, image_url, status, id);
+
+    const product = db.prepare('SELECT * FROM shop_products WHERE id = ?').get(id);
+    res.json({ ok: true, product });
+  } catch (err) { next(err); }
+});
+
+/**
+ * DELETE /api/shop/admin/products/:id
+ */
+router.delete('/admin/products/:id', requireAdmin, (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const info = db.prepare('DELETE FROM shop_products WHERE id = ?').run(id);
+    if (!info.changes) throw fail(404, 'Product not found.');
+    res.json({ ok: true, id });
+  } catch (err) { next(err); }
+});
 
