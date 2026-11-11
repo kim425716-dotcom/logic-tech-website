@@ -254,7 +254,7 @@ function sendSTKPush({ token, phone, amount, orderId, ref }) {
       BusinessShortCode: shortcode,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerBuyGoodsOnline',
+      TransactionType: process.env.MPESA_TRANSACTION_TYPE || 'CustomerPayBillOnline',
       Amount: Math.ceil(amount),
       PartyA: phone,
       PartyB: shortcode,
