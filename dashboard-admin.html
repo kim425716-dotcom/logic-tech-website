@@ -1975,6 +1975,49 @@
                 </form>
               </div>
             </div>
+
+            <!-- Email & SMTP Diagnostics Card -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <h3><i class="fa-solid fa-envelope-circle-check" style="color:var(--gold-primary, #C9A45C);"></i> Email &amp; SMTP Diagnostics</h3>
+                <span id="smtpStatusBadge" class="badge-pill" style="background:rgba(201,164,92,0.15); color:var(--gold-light, #E0BC74); font-weight:700;">Checking...</span>
+              </div>
+              <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
+                <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                  Configured for cPanel Webmail (<code style="color:var(--gold-light);">mail.logictech.co.ke:465</code>). Powers password resets, direct inquiry replies, and customer confirmations.
+                </div>
+
+                <div class="meta-box" style="background:rgba(255,255,255,0.03); border:1px solid var(--dash-border); border-radius:10px; padding:1rem; font-size:0.835rem; display:flex; flex-direction:column; gap:0.5rem;">
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">SMTP Host:</span>
+                    <strong style="color:var(--text-primary);" id="smtpHostVal">mail.logictech.co.ke</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Port &amp; Security:</span>
+                    <strong style="color:var(--text-primary);" id="smtpPortVal">465 (SSL Encrypted)</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Primary Sender:</span>
+                    <strong style="color:var(--text-primary);" id="smtpUserVal">info@logictech.co.ke</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Connection Status:</span>
+                    <strong id="smtpVerifyVal" style="color:#f59e0b;"><i class="fa-solid fa-spinner fa-spin"></i> Checking...</strong>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-sm btn-primary" id="testSmtpBtn" onclick="testSmtpConnection()" style="display:inline-flex; align-items:center; gap:0.5rem; font-weight:700;">
+                    <i class="fa-solid fa-paper-plane"></i> Send Test Email
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="loadEmailStatus()" style="display:inline-flex; align-items:center; gap:0.5rem;">
+                    <i class="fa-solid fa-arrows-rotate"></i> Re-check Status
+                  </button>
+                </div>
+
+                <div id="smtpTestAlert" class="hidden" style="padding:0.75rem 1rem; border-radius:8px; font-size:0.825rem;"></div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -2712,7 +2755,10 @@
       if (tabId === 'users') loadUsers();
       if (tabId === 'shop') loadShopOrders();
       if (tabId === 'overview') loadAdminStats();
-      if (tabId === 'account') loadAdminAccount();
+      if (tabId === 'account') {
+        loadAdminAccount();
+        loadEmailStatus();
+      }
     }
 
     // -- Auth Check ----------------------------------------------------
@@ -4774,7 +4820,95 @@ https://logictech.co.ke`;
       }
     }
 
+    /* ── SMTP & EMAIL DIAGNOSTICS ────────────────────────────────────── */
+    async function loadEmailStatus() {
+      const badge = document.getElementById('smtpStatusBadge');
+      const verifyVal = document.getElementById('smtpVerifyVal');
+      const hostVal = document.getElementById('smtpHostVal');
+      const portVal = document.getElementById('smtpPortVal');
+      const userVal = document.getElementById('smtpUserVal');
+      if (!badge || !verifyVal) return;
+
+      badge.textContent = 'Checking...';
+      badge.style.background = 'rgba(201,164,92,0.15)';
+      badge.style.color = 'var(--gold-light, #E0BC74)';
+      verifyVal.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking connection...';
+      verifyVal.style.color = '#f59e0b';
+
+      try {
+        const res = await apiFetch('/api/admin/email/status');
+        const data = await res.json();
+        if (hostVal && data.host) hostVal.textContent = data.host;
+        if (portVal && data.port) portVal.textContent = `${data.port} (${data.port == 465 ? 'SSL Encrypted' : 'TLS'})`;
+        if (userVal && data.user) userVal.textContent = data.user;
+
+        if (data.connected) {
+          badge.textContent = 'Operational';
+          badge.style.background = 'rgba(16, 185, 129, 0.15)';
+          badge.style.color = '#10b981';
+          verifyVal.innerHTML = '<i class="fa-solid fa-circle-check"></i> Connected & Ready';
+          verifyVal.style.color = '#10b981';
+        } else {
+          badge.textContent = data.configured ? 'Auth Pending' : 'Not Configured';
+          badge.style.background = 'rgba(239, 68, 68, 0.15)';
+          badge.style.color = '#f87171';
+          verifyVal.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${data.error || 'Password or SMTP unreachable'}`;
+          verifyVal.style.color = '#f87171';
+        }
+      } catch (err) {
+        badge.textContent = 'Offline';
+        badge.style.background = 'rgba(239, 68, 68, 0.15)';
+        badge.style.color = '#f87171';
+        verifyVal.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${err.message || 'Check failed'}`;
+        verifyVal.style.color = '#f87171';
+      }
+    }
+
+    async function testSmtpConnection() {
+      const btn = document.getElementById('testSmtpBtn');
+      const alertBox = document.getElementById('smtpTestAlert');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...';
+      }
+      if (alertBox) {
+        alertBox.className = 'hidden';
+      }
+
+      try {
+        const res = await apiFetch('/api/admin/email/test', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to dispatch test email.');
+
+        showToast('Test email dispatched successfully!', 'success', 'SMTP Verified');
+        if (alertBox) {
+          alertBox.className = '';
+          alertBox.style.background = 'rgba(16, 185, 129, 0.15)';
+          alertBox.style.color = '#10b981';
+          alertBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+          alertBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>Success!</strong> Test email dispatched to ${data.recipient || 'admin email'}. Check your inbox.`;
+        }
+        loadEmailStatus();
+      } catch (err) {
+        showToast(err.message || 'SMTP test failed', 'error', 'SMTP Error');
+        if (alertBox) {
+          alertBox.className = '';
+          alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+          alertBox.style.color = '#f87171';
+          alertBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+          alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <strong>SMTP Error:</strong> ${err.message}`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Test Email';
+        }
+      }
+    }
+
     // Expose handlers globally
+    window.loadEmailStatus = loadEmailStatus;
+    window.testSmtpConnection = testSmtpConnection;
     window.loadAdminAccount = loadAdminAccount;
     window.handleAdminUsernameUpdate = handleAdminUsernameUpdate;
     window.handleAdminPasswordChange = handleAdminPasswordChange;

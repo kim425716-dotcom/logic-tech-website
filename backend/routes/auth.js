@@ -19,7 +19,7 @@ const {
   COOKIE_NAME
 } = require('../utils/crypto');
 const { fail, stringField, validEmail, publicUser } = require('../utils/validation');
-const { mailer, smtpConfigured } = require('../utils/mailer');
+const { mailer, smtpConfigured, sendBrandedEmail } = require('../utils/mailer');
 const { requireUser } = require('../middleware/auth');
 const rateLimit = require('../middleware/rateLimit');
 
@@ -290,12 +290,24 @@ router.post(
         const resetUrl = `${appUrl}/forgot-password.html?token=${encodeURIComponent(token)}`;
 
         try {
-          await mailer.sendMail({
-            from: process.env.SMTP_FROM || process.env.SMTP_USER,
+          await sendBrandedEmail({
             to: user.email,
             subject: 'Reset your Logic Tech password',
-            text: `Use this link to reset your password within 30 minutes:\n\n${resetUrl}`,
-            html: `<p>Use this link to reset your password within 30 minutes:</p><p><a href="${resetUrl}">Reset password</a></p>`
+            headline: 'Password Reset Request',
+            contentHtml: `
+              <p>Hello <strong>${user.name || 'Valued Client'}</strong>,</p>
+              <p>We received a request to reset your password for your Logic Tech portal account.</p>
+              <p>Click the button below to choose a new password. This link is valid for <strong>30 minutes</strong>.</p>
+              <div style="text-align:center; margin:24px 0;">
+                <a href="${resetUrl}" class="btn">Reset My Password</a>
+              </div>
+              <p style="font-size:13px; color:#94a3b8;">If you did not request a password reset, you can safely ignore this email. Your account remains completely secure.</p>
+              <div class="meta-box" style="font-size:12px; color:#64748b; word-break:break-all;">
+                Or copy and paste this link in your browser:<br>
+                <a href="${resetUrl}" style="color:#c9a45c;">${resetUrl}</a>
+              </div>
+            `,
+            textFallback: `Use this link to reset your Logic Tech password within 30 minutes:\n\n${resetUrl}\n\nIf you did not request this, please ignore this email.`
           });
         } catch (emailErr) {
           db.prepare('DELETE FROM password_resets WHERE token_hash = ?').run(digest);

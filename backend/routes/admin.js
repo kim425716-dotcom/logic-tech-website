@@ -21,7 +21,7 @@ const router = express.Router();
 const { db } = require('../config/database');
 const { fail, stringField, validateFaq } = require('../utils/validation');
 const { requireAdmin } = require('../middleware/auth');
-const { mailer, smtpConfigured } = require('../utils/mailer');
+const { mailer, smtpConfigured, verifySmtp, sendBrandedEmail, defaultFrom } = require('../utils/mailer');
 
 // All admin routes require authenticated admin
 router.use(requireAdmin);
@@ -47,6 +47,49 @@ router.get('/stats', (_req, res) => {
       publishedFaqs
     }
   });
+});
+
+// ── Email / SMTP Diagnostic ─────────────────────────────────────────
+router.get('/email/status', async (_req, res) => {
+  const verification = await verifySmtp();
+  res.json({
+    configured: smtpConfigured,
+    connected: verification.ok,
+    error: verification.error || null,
+    host: process.env.SMTP_HOST || 'mail.logictech.co.ke',
+    port: Number(process.env.SMTP_PORT || 465),
+    user: process.env.SMTP_USER || null,
+    from: defaultFrom,
+    verification
+  });
+});
+
+router.post('/email/test', async (req, res, next) => {
+  try {
+    if (!mailer) throw fail(400, 'SMTP is not configured in environment variables.');
+    const targetEmail = req.body.email || req.user.email || process.env.SMTP_USER;
+    
+    await sendBrandedEmail({
+      to: targetEmail,
+      subject: 'Logic Tech SMTP Diagnostic Test — Success',
+      headline: 'SMTP Mail Delivery Confirmed',
+      contentHtml: `
+        <p>This is a test notification from your Logic Tech backend server.</p>
+        <div class="meta-box">
+          <div><strong>SMTP Host:</strong> ${process.env.SMTP_HOST || 'mail.logictech.co.ke'}</div>
+          <div><strong>Port:</strong> ${process.env.SMTP_PORT || 465} (SSL)</div>
+          <div><strong>Authenticated As:</strong> ${process.env.SMTP_USER}</div>
+          <div><strong>Timestamp:</strong> ${new Date().toISOString()}</div>
+        </div>
+        <p>Email delivery is fully functional for password resets, client inquiry alerts, and concierge updates.</p>
+      `,
+      textFallback: `Logic Tech SMTP test email to ${targetEmail}. Connected and verified.`
+    });
+
+    res.json({ message: `Test email successfully dispatched to ${targetEmail}` });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ── Inquiries ───────────────────────────────────────────────────────
@@ -82,11 +125,18 @@ router.post('/inquiries/:id/reply', async (req, res, next) => {
     const message = stringField(req.body.message, 'Message', 10000);
 
     if (mailer) {
-      await mailer.sendMail({
-        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'info@logictech.co.ke',
+      await sendBrandedEmail({
         to: inquiry.email,
         subject,
-        text: message
+        headline: subject,
+        contentHtml: `
+          <p>Dear <strong>${inquiry.name || 'Client'}</strong>,</p>
+          <div style="white-space:pre-wrap; line-height:1.65; margin:16px 0; color:#e2e8f0;">${message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+          <div class="meta-box" style="font-size:12px; color:#94a3b8;">
+            <div><strong>Regarding Your Inquiry:</strong> #${inquiry.id} &mdash; ${inquiry.subject || 'Enterprise Solutions'}</div>
+          </div>
+        `,
+        textFallback: message
       });
       return res.json({ message: 'Email sent successfully via SMTP.' });
     } else {
