@@ -868,6 +868,31 @@ router.post('/card/webhook', async (req, res) => {
 });
 
 /**
+ * GET /api/shop/orders/by-email?email=...
+ * Client portal: fetch a client's orders by email address.
+ * Rate-limited; returns safe subset of fields (no full address details).
+ */
+router.get('/orders/by-email',
+  rateLimit('shop_by_email', 20, 60_000),
+  (req, res, next) => {
+    try {
+      const email = validEmail(req.query.email || '');
+      const orders = db.prepare(`
+        SELECT ref, status, payment_status, mpesa_receipt, total, items_json,
+               customer_name, city, county, created_at
+        FROM shop_orders
+        WHERE customer_email = ?
+        ORDER BY created_at DESC
+        LIMIT 50
+      `).all(email);
+      res.json({ ok: true, orders });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
  * GET /api/shop/orders/:ref
  * Poll payment status (called by frontend every 3s after STK push).
  */
@@ -877,7 +902,8 @@ router.get('/orders/:ref',
     try {
       const ref = stringField(req.params.ref, 'Order reference', 40);
       const order = db.prepare(`
-        SELECT ref, status, payment_status, mpesa_receipt, total, customer_name, customer_email, created_at
+        SELECT ref, status, payment_status, mpesa_receipt, total, items_json,
+               customer_name, customer_email, city, county, created_at
         FROM shop_orders WHERE ref = ?
       `).get(ref);
       if (!order) throw fail(404, 'Order not found.');
