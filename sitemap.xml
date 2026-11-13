@@ -12,6 +12,14 @@
     <priority>1.00</priority>
   </url>
 
+  <!-- Shop — Computers, Phones & Accessories -->
+  <url>
+    <loc>https://logictech.co.ke/shop.html</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+
   <!-- Services & Solutions -->
   <url>
     <loc>https://logictech.co.ke/services.html</loc>
