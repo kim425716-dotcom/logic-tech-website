@@ -18,6 +18,26 @@ const { sendOrderConfirmationEmail, sendAdminOrderNotification } = require('../u
 
 const router = express.Router();
 
+// ── Ensure Daraja M-Pesa sandbox configuration fallbacks ─────────────
+if (!process.env.MPESA_CONSUMER_KEY) {
+  process.env.MPESA_CONSUMER_KEY = 'pjaDOP4JrpaRO8t1fLzGw92fPVwmJ9CiEIuKu74Zo5YsiGgw';
+}
+if (!process.env.MPESA_CONSUMER_SECRET) {
+  process.env.MPESA_CONSUMER_SECRET = 'TIzydzTGbuT3TLTDZkDOLhrqOiVNXxUPTAVjGuFrAM2RgHFjGqNmewXOw6niaRLA';
+}
+if (!process.env.MPESA_SHORTCODE) {
+  process.env.MPESA_SHORTCODE = '174379';
+}
+if (!process.env.MPESA_PASSKEY) {
+  process.env.MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
+}
+if (!process.env.MPESA_TRANSACTION_TYPE) {
+  process.env.MPESA_TRANSACTION_TYPE = 'CustomerPayBillOnline';
+}
+if (!process.env.MPESA_RECEIVER_PHONE) {
+  process.env.MPESA_RECEIVER_PHONE = '254702588886';
+}
+
 // ── Schema migration: shop tables ──────────────────────────────────
 db.exec(`
   CREATE TABLE IF NOT EXISTS shop_products (
