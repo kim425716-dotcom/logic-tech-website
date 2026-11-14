@@ -11,7 +11,7 @@ desktop.ini
 
 # Node / Dependencies (if added later)
 node_modules/
-# dist/ is committed for cPanel static serving without devDeps build step
+dist/
 build/
 .cache/
 .env

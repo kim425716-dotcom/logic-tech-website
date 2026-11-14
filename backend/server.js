@@ -148,14 +148,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get(['/dashboard-react', '/dashboard-react.html'], (_req, res) => {
-  const distHtml = path.join(frontendRoot, 'dist', 'dashboard-react.html');
-  const fallbackHtml = path.join(frontendRoot, 'dashboard-react.html');
-  res.sendFile(distHtml, (err) => {
-    if (err) res.sendFile(fallbackHtml);
-  });
-});
-
 app.use(express.static(frontendRoot, {
   extensions: ['html'],
   setHeaders: (res) => {
