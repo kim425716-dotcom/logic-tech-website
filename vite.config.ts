@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 
 export default defineConfig({
-  base: "./",
+  base: "/dist/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,7 +13,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        dashboard: path.resolve(__dirname, "dashboard-react.html"),
+        dashboard: path.resolve(__dirname, "dashboard-dev.html"),
       },
     },
   },
