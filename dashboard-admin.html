@@ -1496,32 +1496,8 @@
                   <div class="dash-card-header-subtitle">Latest prospective client submissions</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:0.5rem;">
-                  <div class="view-mode-toggle" role="group" aria-label="Recent Inquiries View Mode">
-                    <button type="button" class="view-btn active" id="btnGrid-recentInquiries" onclick="setViewMode('recentInquiries', 'grid')" title="Grid View" aria-pressed="true">
-                      <i class="fa-solid fa-table-cells-large"></i>
-                    </button>
-                    <button type="button" class="view-btn" id="btnTable-recentInquiries" onclick="setViewMode('recentInquiries', 'table')" title="Table View" aria-pressed="false">
-                      <i class="fa-solid fa-list"></i>
-                    </button>
-                  </div>
                   <button class="btn-sm btn-outline" onclick="switchTab('inquiries')">View All</button>
                 </div>
-              </div>
-              <div class="table-wrap" id="tableWrap-recentInquiries" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; display: none;">
-                <table class="dash-table" style="min-width: 520px; width: 100%;">
-                  <thead>
-                    <tr>
-                      <th>Client</th>
-                      <th>Subject</th>
-                      <th>NDA / Budget</th>
-                      <th>Date</th>
-                      <th style="text-align:right;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recentInquiriesBody">
-                    <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</td></tr>
-                  </tbody>
-                </table>
               </div>
               <div id="gridWrap-recentInquiries" class="admin-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
             </div>
@@ -1534,31 +1510,8 @@
                   <div class="dash-card-header-subtitle">In-flight client software engineering</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:0.5rem;">
-                  <div class="view-mode-toggle" role="group" aria-label="Active Deliveries View Mode">
-                    <button type="button" class="view-btn active" id="btnGrid-recentProjects" onclick="setViewMode('recentProjects', 'grid')" title="Grid View" aria-pressed="true">
-                      <i class="fa-solid fa-table-cells-large"></i>
-                    </button>
-                    <button type="button" class="view-btn" id="btnTable-recentProjects" onclick="setViewMode('recentProjects', 'table')" title="Table View" aria-pressed="false">
-                      <i class="fa-solid fa-list"></i>
-                    </button>
-                  </div>
                   <button class="btn-sm btn-outline" onclick="switchTab('projects')">Manage</button>
                 </div>
-              </div>
-              <div class="table-wrap" id="tableWrap-recentProjects" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; display: none;">
-                <table class="dash-table" style="min-width: 520px; width: 100%;">
-                  <thead>
-                    <tr>
-                      <th>Project / Client</th>
-                      <th>Status</th>
-                      <th>Progress</th>
-                      <th style="text-align:right;">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recentProjectsBody">
-                    <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</td></tr>
-                  </tbody>
-                </table>
               </div>
               <div id="gridWrap-recentProjects" class="admin-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
             </div>
@@ -1650,45 +1603,18 @@
                   <option value="250k+">KSh 250,000+ (Larger Projects)</option>
                   <option value="flexible">Flexible Budget</option>
                 </select>
-                <div class="view-mode-toggle" role="group" aria-label="Inquiries View Mode">
-                  <button type="button" class="view-btn active" id="btnGrid-inquiries" onclick="setViewMode('inquiries', 'grid')" title="Grid View" aria-pressed="true">
-                    <i class="fa-solid fa-table-cells-large"></i>
-                  </button>
-                  <button type="button" class="view-btn" id="btnTable-inquiries" onclick="setViewMode('inquiries', 'table')" title="Table View" aria-pressed="false">
-                    <i class="fa-solid fa-list"></i>
-                  </button>
-                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="toggleSelectAll('inquiries', true)" title="Select all inquiries"><i class="fa-solid fa-check-double"></i> Select All</button>
               </div>
             </div>
 
-            
             <!-- Bulk Actions Bar -->
             <div id="bulkBar-inquiries" class="bulk-actions-bar" style="display:none;">
               <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-inquiries">0</span> inquiry record(s) selected</span>
               <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="toggleSelectAll('inquiries', true)">Select All</button>
                 <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('inquiries')">Deselect All</button>
                 <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('inquiries')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
               </div>
-            </div>
-            <!-- Inquiries Table -->
-            <div class="table-wrap" id="tableWrap-inquiries" style="display: none;">
-              <table class="dash-table">
-                <thead>
-                  <tr>
-                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllInquiries" class="select-all-check" onchange="toggleSelectAll('inquiries', this.checked)" title="Select All Inquiries" /></th>
-                    <th>Client Profile</th>
-                    <th>Subject & Scope</th>
-                    <th>Organization / Phone</th>
-                    <th>Budget Tier</th>
-                    <th>NDA Status</th>
-                    <th>Submitted</th>
-                    <th style="text-align:right;">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="inquiriesTableBody">
-                  <tr><td colspan="8" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</td></tr>
-                </tbody>
-              </table>
             </div>
             <!-- Inquiries Grid View -->
             <div id="gridWrap-inquiries" class="admin-cards-grid"></div>
@@ -1728,44 +1654,18 @@
                   <option value="Completed">Completed</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
-                <div class="view-mode-toggle" role="group" aria-label="Projects View Mode">
-                  <button type="button" class="view-btn active" id="btnGrid-projects" onclick="setViewMode('projects', 'grid')" title="Grid View" aria-pressed="true">
-                    <i class="fa-solid fa-table-cells-large"></i>
-                  </button>
-                  <button type="button" class="view-btn" id="btnTable-projects" onclick="setViewMode('projects', 'table')" title="Table View" aria-pressed="false">
-                    <i class="fa-solid fa-list"></i>
-                  </button>
-                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="toggleSelectAll('projects', true)" title="Select all projects"><i class="fa-solid fa-check-double"></i> Select All</button>
               </div>
             </div>
 
-            
             <!-- Bulk Actions Bar -->
             <div id="bulkBar-projects" class="bulk-actions-bar" style="display:none;">
               <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-projects">0</span> project(s) selected</span>
               <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="toggleSelectAll('projects', true)">Select All</button>
                 <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('projects')">Deselect All</button>
                 <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('projects')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
               </div>
-            </div>
-            <!-- Projects Table -->
-            <div class="table-wrap" id="tableWrap-projects" style="display: none;">
-              <table class="dash-table">
-                <thead>
-                  <tr>
-                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllProjects" class="select-all-check" onchange="toggleSelectAll('projects', this.checked)" title="Select All Projects" /></th>
-                    <th>Project Name & Scope</th>
-                    <th>Assigned Client</th>
-                    <th>Status</th>
-                    <th>Completion</th>
-                    <th>Timeline</th>
-                    <th style="text-align:right;">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="projectsTableBody">
-                  <tr><td colspan="7" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</td></tr>
-                </tbody>
-              </table>
             </div>
             <!-- Projects Grid View -->
             <div id="gridWrap-projects" class="admin-cards-grid"></div>
@@ -1800,43 +1700,18 @@
                   <option value="pricing">Pricing</option>
                   <option value="support">Support</option>
                 </select>
-                <div class="view-mode-toggle" role="group" aria-label="FAQs View Mode">
-                  <button type="button" class="view-btn active" id="btnGrid-faqs" onclick="setViewMode('faqs', 'grid')" title="Grid View" aria-pressed="true">
-                    <i class="fa-solid fa-table-cells-large"></i>
-                  </button>
-                  <button type="button" class="view-btn" id="btnTable-faqs" onclick="setViewMode('faqs', 'table')" title="Table View" aria-pressed="false">
-                    <i class="fa-solid fa-list"></i>
-                  </button>
-                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="toggleSelectAll('faqs', true)" title="Select all FAQs"><i class="fa-solid fa-check-double"></i> Select All</button>
               </div>
             </div>
 
-            
             <!-- Bulk Actions Bar -->
             <div id="bulkBar-faqs" class="bulk-actions-bar" style="display:none;">
               <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-faqs">0</span> FAQ(s) selected</span>
               <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="toggleSelectAll('faqs', true)">Select All</button>
                 <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('faqs')">Deselect All</button>
                 <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('faqs')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
               </div>
-            </div>
-            <!-- FAQs Table -->
-            <div class="table-wrap" id="tableWrap-faqs" style="display: none;">
-              <table class="dash-table">
-                <thead>
-                  <tr>
-                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllFaqs" class="select-all-check" onchange="toggleSelectAll('faqs', this.checked)" title="Select All FAQs" /></th>
-                    <th>Category</th>
-                    <th>Question</th>
-                    <th>Answer Preview</th>
-                    <th>Visibility</th>
-                    <th style="text-align:right;">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="faqsTableBody">
-                  <tr><td colspan="6" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading FAQs...</td></tr>
-                </tbody>
-              </table>
             </div>
             <!-- FAQs Grid View -->
             <div id="gridWrap-faqs" class="admin-cards-grid"></div>
@@ -1867,44 +1742,17 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="userSearch" placeholder="Search clients by name or email address..." oninput="filterUsers()" />
               </div>
-              <div class="view-mode-toggle" role="group" aria-label="Users View Mode">
-                <button type="button" class="view-btn active" id="btnGrid-users" onclick="setViewMode('users', 'grid')" title="Grid View" aria-pressed="true">
-                  <i class="fa-solid fa-table-cells-large"></i>
-                </button>
-                <button type="button" class="view-btn" id="btnTable-users" onclick="setViewMode('users', 'table')" title="Table View" aria-pressed="false">
-                  <i class="fa-solid fa-list"></i>
-                </button>
-              </div>
+              <button type="button" class="btn btn-sm btn-outline" onclick="toggleSelectAll('users', true)" title="Select all clients"><i class="fa-solid fa-check-double"></i> Select All</button>
             </div>
 
-            
             <!-- Bulk Actions Bar -->
             <div id="bulkBar-users" class="bulk-actions-bar" style="display:none;">
               <span class="bulk-count-badge"><i class="fa-solid fa-check-double"></i> <span id="bulkCount-users">0</span> user(s) selected</span>
               <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-xs btn-outline" onclick="toggleSelectAll('users', true)">Select All</button>
                 <button type="button" class="btn btn-xs btn-outline" onclick="clearBulkSelection('users')">Deselect All</button>
                 <button type="button" class="btn btn-xs btn-danger" onclick="executeBulkDelete('users')"><i class="fa-solid fa-trash"></i> Delete Selected</button>
               </div>
-            </div>
-            <!-- Users Table -->
-            <div class="table-wrap" id="tableWrap-users" style="display: none;">
-              <table class="dash-table">
-                <thead>
-                  <tr>
-                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllUsers" class="select-all-check" onchange="toggleSelectAll('users', this.checked)" title="Select All Users" /></th>
-                    <th>Client Profile</th>
-                    <th>Email Address</th>
-                    <th>Access Role</th>
-                    <th>Active Projects</th>
-                    <th>Inquiries</th>
-                    <th>Joined Date</th>
-                    <th style="text-align:right;">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                  <tr><td colspan="8" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading directory...</td></tr>
-                </tbody>
-              </table>
             </div>
             <!-- Users Grid View -->
             <div id="gridWrap-users" class="admin-cards-grid"></div>
@@ -2005,37 +1853,9 @@
                     <option value="processing">Processing</option>
                     <option value="failed">Failed</option>
                   </select>
-                  <div class="view-mode-toggle" role="group" aria-label="Shop Orders View Mode">
-                    <button type="button" class="view-btn active" id="btnGrid-shopOrders" onclick="setViewMode('shopOrders', 'grid')" title="Grid View" aria-pressed="true">
-                      <i class="fa-solid fa-table-cells-large"></i>
-                    </button>
-                    <button type="button" class="view-btn" id="btnTable-shopOrders" onclick="setViewMode('shopOrders', 'table')" title="Table View" aria-pressed="false">
-                      <i class="fa-solid fa-list"></i>
-                    </button>
-                  </div>
                 </div>
               </div>
 
-              <!-- Orders Table -->
-              <div class="table-responsive" id="tableWrap-shopOrders" style="display: none;">
-                <table class="dash-table">
-                  <thead>
-                    <tr>
-                      <th>Order Ref</th>
-                      <th>Customer</th>
-                      <th>Destination</th>
-                      <th>Items</th>
-                      <th>Total KES</th>
-                      <th>Payment</th>
-                      <th>Fulfilment</th>
-                      <th style="text-align:right;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="shopTableBody">
-                    <tr><td colspan="8" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading shop orders...</td></tr>
-                  </tbody>
-                </table>
-              </div>
               <!-- Shop Orders Grid View -->
               <div id="gridWrap-shopOrders" class="admin-cards-grid"></div>
             </div>
@@ -2116,37 +1936,9 @@
                     <option value="low">Low Stock (≤ 5)</option>
                     <option value="out">Out of Stock</option>
                   </select>
-                  <div class="view-mode-toggle" role="group" aria-label="Inventory View Mode">
-                    <button type="button" class="view-btn active" id="btnGrid-inventory" onclick="setViewMode('inventory', 'grid')" title="Grid View" aria-pressed="true">
-                      <i class="fa-solid fa-table-cells-large"></i>
-                    </button>
-                    <button type="button" class="view-btn" id="btnTable-inventory" onclick="setViewMode('inventory', 'table')" title="Table View" aria-pressed="false">
-                      <i class="fa-solid fa-list"></i>
-                    </button>
-                  </div>
                 </div>
               </div>
 
-              <!-- Product Table -->
-              <div class="table-responsive" id="tableWrap-inventory" style="display: none;">
-                <table class="dash-table">
-                  <thead>
-                    <tr>
-                      <th style="width:48px;"></th>
-                      <th>Product</th>
-                      <th>SKU</th>
-                      <th>Category</th>
-                      <th style="text-align:right;">Price (KES)</th>
-                      <th style="text-align:center;">Stock</th>
-                      <th style="text-align:center;">Status</th>
-                      <th style="text-align:right;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="invProductGrid">
-                    <tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading catalogue…</td></tr>
-                  </tbody>
-                </table>
-              </div>
               <!-- Product Catalogue Grid View -->
               <div id="gridWrap-inventory" class="admin-cards-grid"></div>
             </div>
@@ -3087,33 +2879,10 @@
       selectedUsers: new Set()
     };
 
-    // ── View Mode Helpers ──────────────────────────────────────────────
-    function setViewMode(section, mode) {
-      state.viewModes[section] = mode;
-      try { localStorage.setItem('admin_view_modes', JSON.stringify(state.viewModes)); } catch(e) {}
-      updateViewModeUI(section, mode);
-    }
-
-    function updateViewModeUI(section, mode) {
-      var tableWrap = document.getElementById('tableWrap-' + section);
-      var gridWrap  = document.getElementById('gridWrap-' + section);
-      var btnGrid   = document.getElementById('btnGrid-' + section);
-      var btnTable  = document.getElementById('btnTable-' + section);
-      if (tableWrap) tableWrap.style.display = (mode === 'table') ? '' : 'none';
-      if (gridWrap)  gridWrap.style.display  = (mode === 'grid')  ? '' : 'none';
-      if (btnGrid)  { btnGrid.classList.toggle('active', mode === 'grid');  btnGrid.setAttribute('aria-pressed', String(mode === 'grid')); }
-      if (btnTable) { btnTable.classList.toggle('active', mode === 'table'); btnTable.setAttribute('aria-pressed', String(mode === 'table')); }
-    }
-
-    function initViewModes() {
-      try {
-        var saved = JSON.parse(localStorage.getItem('admin_view_modes') || '{}');
-        Object.assign(state.viewModes, saved);
-      } catch(e) {}
-      Object.keys(state.viewModes).forEach(function(section) {
-        updateViewModeUI(section, state.viewModes[section]);
-      });
-    }
+    // ── Grid-Only View Helpers ─────────────────────────────────────────
+    function setViewMode(section, mode) {}
+    function updateViewModeUI(section, mode) {}
+    function initViewModes() {}
     // ──────────────────────────────────────────────────────────────────
 
     /* ── DEDICATED DELETE CONFIRMATION SYSTEM ───────────────────────── */
