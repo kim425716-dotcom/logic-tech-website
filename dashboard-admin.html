@@ -1038,6 +1038,120 @@
       vertical-align: middle;
     }
 
+
+    /* ---- View Mode Toggles & Admin Card Grids ---- */
+    .view-mode-toggle {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 2px;
+      align-items: center;
+    }
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 30px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.85rem;
+    }
+    .view-btn.active {
+      background: rgba(201, 164, 92, 0.2);
+      color: var(--gold-light, #E0BC74);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .view-btn:hover:not(.active) {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .admin-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+      padding: 0.5rem 0 1.25rem;
+    }
+
+    .admin-grid-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--dash-border, rgba(255, 255, 255, 0.08));
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      position: relative;
+    }
+    .admin-grid-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      border-color: rgba(201, 164, 92, 0.3);
+    }
+
+    .admin-grid-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .admin-grid-card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+    .admin-grid-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+    }
+    .admin-grid-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* ---- Modal: Shop Order Details Overlay ---- */
+    #shopOrderModal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 1000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(0, 0, 0, 0.6) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      padding: 1.25rem !important;
+    }
+    #shopOrderModal[hidden],
+    #shopOrderModal.hidden,
+    [hidden] {
+      display: none !important;
+    }
+    #shopModalStatusSelect,
+    #shopModalStatusSelect option {
+      background: #0f172a !important;
+      background-color: #0f172a !important;
+      color: #e5e7eb !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
   </style>
 </head>
 <body class="dark">
@@ -1375,16 +1489,26 @@
           <!-- Quick Command Splits: Recent Inquiries & Active Projects -->
           <div class="admin-split-grid">
             <!-- Recent Inquiries Panel -->
-            <div class="dash-card">
+            <div class="dash-card" style="min-width: 0;">
               <div class="dash-card-header">
                 <div>
                   <h3><i class="fa-solid fa-envelope-open-text" style="color:#f59e0b;"></i> Recent Inquiries</h3>
                   <div class="dash-card-header-subtitle">Latest prospective client submissions</div>
                 </div>
-                <button class="btn-sm btn-outline" onclick="switchTab('inquiries')">View All Inquiries</button>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <div class="view-mode-toggle" role="group" aria-label="Recent Inquiries View Mode">
+                    <button type="button" class="view-btn active" id="btnGrid-recentInquiries" onclick="setViewMode('recentInquiries', 'grid')" title="Grid View" aria-pressed="true">
+                      <i class="fa-solid fa-table-cells-large"></i>
+                    </button>
+                    <button type="button" class="view-btn" id="btnTable-recentInquiries" onclick="setViewMode('recentInquiries', 'table')" title="Table View" aria-pressed="false">
+                      <i class="fa-solid fa-list"></i>
+                    </button>
+                  </div>
+                  <button class="btn-sm btn-outline" onclick="switchTab('inquiries')">View All</button>
+                </div>
               </div>
-              <div class="table-wrap">
-                <table class="dash-table">
+              <div class="table-wrap" id="tableWrap-recentInquiries" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; display: none;">
+                <table class="dash-table" style="min-width: 520px; width: 100%;">
                   <thead>
                     <tr>
                       <th>Client</th>
@@ -1395,23 +1519,34 @@
                     </tr>
                   </thead>
                   <tbody id="recentInquiriesBody">
-                    <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</td></tr>
                   </tbody>
                 </table>
               </div>
+              <div id="gridWrap-recentInquiries" class="admin-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
             </div>
 
             <!-- Active Deliveries Panel -->
-            <div class="dash-card">
+            <div class="dash-card" style="min-width: 0;">
               <div class="dash-card-header">
                 <div>
                   <h3><i class="fa-solid fa-rocket" style="color:#818cf8;"></i> Active Deliveries</h3>
                   <div class="dash-card-header-subtitle">In-flight client software engineering</div>
                 </div>
-                <button class="btn-sm btn-outline" onclick="switchTab('projects')">Manage Projects</button>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <div class="view-mode-toggle" role="group" aria-label="Active Deliveries View Mode">
+                    <button type="button" class="view-btn active" id="btnGrid-recentProjects" onclick="setViewMode('recentProjects', 'grid')" title="Grid View" aria-pressed="true">
+                      <i class="fa-solid fa-table-cells-large"></i>
+                    </button>
+                    <button type="button" class="view-btn" id="btnTable-recentProjects" onclick="setViewMode('recentProjects', 'table')" title="Table View" aria-pressed="false">
+                      <i class="fa-solid fa-list"></i>
+                    </button>
+                  </div>
+                  <button class="btn-sm btn-outline" onclick="switchTab('projects')">Manage</button>
+                </div>
               </div>
-              <div class="table-wrap">
-                <table class="dash-table">
+              <div class="table-wrap" id="tableWrap-recentProjects" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; display: none;">
+                <table class="dash-table" style="min-width: 520px; width: 100%;">
                   <thead>
                     <tr>
                       <th>Project / Client</th>
@@ -1425,6 +1560,7 @@
                   </tbody>
                 </table>
               </div>
+              <div id="gridWrap-recentProjects" class="admin-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
             </div>
           </div>
 
@@ -1509,11 +1645,19 @@
                 <select id="inquiryBudgetFilter" class="dash-select" onchange="filterInquiries()">
                   <option value="all">All Budget Tiers</option>
                   <option value="under50k">Under KSh 50,000</option>
-                  <option value="50k-150k">KSh 50,000 � 150,000</option>
-                  <option value="150k-250k">KSh 150,000 � 250,000</option>
+                  <option value="50k-150k">KSh 50,000 – 150,000</option>
+                  <option value="150k-250k">KSh 150,000 – 250,000</option>
                   <option value="250k+">KSh 250,000+ (Larger Projects)</option>
                   <option value="flexible">Flexible Budget</option>
                 </select>
+                <div class="view-mode-toggle" role="group" aria-label="Inquiries View Mode">
+                  <button type="button" class="view-btn active" id="btnGrid-inquiries" onclick="setViewMode('inquiries', 'grid')" title="Grid View" aria-pressed="true">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                  </button>
+                  <button type="button" class="view-btn" id="btnTable-inquiries" onclick="setViewMode('inquiries', 'table')" title="Table View" aria-pressed="false">
+                    <i class="fa-solid fa-list"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1527,7 +1671,7 @@
               </div>
             </div>
             <!-- Inquiries Table -->
-            <div class="table-wrap">
+            <div class="table-wrap" id="tableWrap-inquiries" style="display: none;">
               <table class="dash-table">
                 <thead>
                   <tr>
@@ -1542,10 +1686,12 @@
                   </tr>
                 </thead>
                 <tbody id="inquiriesTableBody">
-                  <tr><td colspan="7" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</td></tr>
+                  <tr><td colspan="8" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</td></tr>
                 </tbody>
               </table>
             </div>
+            <!-- Inquiries Grid View -->
+            <div id="gridWrap-inquiries" class="admin-cards-grid"></div>
           </div>
         </section>
 
@@ -1582,6 +1728,14 @@
                   <option value="Completed">Completed</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
+                <div class="view-mode-toggle" role="group" aria-label="Projects View Mode">
+                  <button type="button" class="view-btn active" id="btnGrid-projects" onclick="setViewMode('projects', 'grid')" title="Grid View" aria-pressed="true">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                  </button>
+                  <button type="button" class="view-btn" id="btnTable-projects" onclick="setViewMode('projects', 'table')" title="Table View" aria-pressed="false">
+                    <i class="fa-solid fa-list"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1595,7 +1749,7 @@
               </div>
             </div>
             <!-- Projects Table -->
-            <div class="table-wrap">
+            <div class="table-wrap" id="tableWrap-projects" style="display: none;">
               <table class="dash-table">
                 <thead>
                   <tr>
@@ -1609,10 +1763,12 @@
                   </tr>
                 </thead>
                 <tbody id="projectsTableBody">
-                  <tr><td colspan="6" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</td></tr>
+                  <tr><td colspan="7" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</td></tr>
                 </tbody>
               </table>
             </div>
+            <!-- Projects Grid View -->
+            <div id="gridWrap-projects" class="admin-cards-grid"></div>
           </div>
         </section>
 
@@ -1644,6 +1800,14 @@
                   <option value="pricing">Pricing</option>
                   <option value="support">Support</option>
                 </select>
+                <div class="view-mode-toggle" role="group" aria-label="FAQs View Mode">
+                  <button type="button" class="view-btn active" id="btnGrid-faqs" onclick="setViewMode('faqs', 'grid')" title="Grid View" aria-pressed="true">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                  </button>
+                  <button type="button" class="view-btn" id="btnTable-faqs" onclick="setViewMode('faqs', 'table')" title="Table View" aria-pressed="false">
+                    <i class="fa-solid fa-list"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1657,7 +1821,7 @@
               </div>
             </div>
             <!-- FAQs Table -->
-            <div class="table-wrap">
+            <div class="table-wrap" id="tableWrap-faqs" style="display: none;">
               <table class="dash-table">
                 <thead>
                   <tr>
@@ -1670,10 +1834,12 @@
                   </tr>
                 </thead>
                 <tbody id="faqsTableBody">
-                  <tr><td colspan="5" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading FAQs...</td></tr>
+                  <tr><td colspan="6" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading FAQs...</td></tr>
                 </tbody>
               </table>
             </div>
+            <!-- FAQs Grid View -->
+            <div id="gridWrap-faqs" class="admin-cards-grid"></div>
           </div>
         </section>
 
@@ -1696,10 +1862,18 @@
             </div>
 
             <!-- Toolbar & Filtering -->
-            <div class="dash-toolbar">
-              <div class="dash-search">
+            <div class="dash-toolbar" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+              <div class="dash-search" style="flex:1; min-width:260px;">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="userSearch" placeholder="Search clients by name or email address..." oninput="filterUsers()" />
+              </div>
+              <div class="view-mode-toggle" role="group" aria-label="Users View Mode">
+                <button type="button" class="view-btn active" id="btnGrid-users" onclick="setViewMode('users', 'grid')" title="Grid View" aria-pressed="true">
+                  <i class="fa-solid fa-table-cells-large"></i>
+                </button>
+                <button type="button" class="view-btn" id="btnTable-users" onclick="setViewMode('users', 'table')" title="Table View" aria-pressed="false">
+                  <i class="fa-solid fa-list"></i>
+                </button>
               </div>
             </div>
 
@@ -1713,12 +1887,12 @@
               </div>
             </div>
             <!-- Users Table -->
-            <div class="table-wrap">
+            <div class="table-wrap" id="tableWrap-users" style="display: none;">
               <table class="dash-table">
                 <thead>
                   <tr>
-                  <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllUsers" class="select-all-check" onchange="toggleSelectAll('users', this.checked)" title="Select All Users" /></th>
-                  <th>Client Profile</th>
+                    <th style="width:36px; text-align:center;"><input type="checkbox" id="selectAllUsers" class="select-all-check" onchange="toggleSelectAll('users', this.checked)" title="Select All Users" /></th>
+                    <th>Client Profile</th>
                     <th>Email Address</th>
                     <th>Access Role</th>
                     <th>Active Projects</th>
@@ -1728,10 +1902,12 @@
                   </tr>
                 </thead>
                 <tbody id="usersTableBody">
-                  <tr><td colspan="7" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading directory...</td></tr>
+                  <tr><td colspan="8" style="text-align:center; padding:3rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading directory...</td></tr>
                 </tbody>
               </table>
             </div>
+            <!-- Users Grid View -->
+            <div id="gridWrap-users" class="admin-cards-grid"></div>
           </div>
         </section>
 
@@ -1813,7 +1989,7 @@
                   <i class="fa-solid fa-magnifying-glass"></i>
                   <input type="text" id="shopSearchInput" placeholder="Search orders by Ref, Customer, Phone, or City..." oninput="filterShopOrders()" />
                 </div>
-                <div class="dash-filters">
+                <div class="dash-filters" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                   <select id="shopStatusFilter" onchange="filterShopOrders()" class="filter-select">
                     <option value="">All Fulfilment Statuses</option>
                     <option value="Processing">Processing</option>
@@ -1829,11 +2005,19 @@
                     <option value="processing">Processing</option>
                     <option value="failed">Failed</option>
                   </select>
+                  <div class="view-mode-toggle" role="group" aria-label="Shop Orders View Mode">
+                    <button type="button" class="view-btn active" id="btnGrid-shopOrders" onclick="setViewMode('shopOrders', 'grid')" title="Grid View" aria-pressed="true">
+                      <i class="fa-solid fa-table-cells-large"></i>
+                    </button>
+                    <button type="button" class="view-btn" id="btnTable-shopOrders" onclick="setViewMode('shopOrders', 'table')" title="Table View" aria-pressed="false">
+                      <i class="fa-solid fa-list"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
 
               <!-- Orders Table -->
-              <div class="table-responsive">
+              <div class="table-responsive" id="tableWrap-shopOrders" style="display: none;">
                 <table class="dash-table">
                   <thead>
                     <tr>
@@ -1852,6 +2036,8 @@
                   </tbody>
                 </table>
               </div>
+              <!-- Shop Orders Grid View -->
+              <div id="gridWrap-shopOrders" class="admin-cards-grid"></div>
             </div>
           </div>
 
@@ -1920,7 +2106,7 @@
                   <i class="fa-solid fa-magnifying-glass"></i>
                   <input type="text" id="invSearchInput" placeholder="Search by name, SKU, or category…" oninput="filterInventory()" />
                 </div>
-                <div class="dash-filters">
+                <div class="dash-filters" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                   <select id="invCategoryFilter" onchange="filterInventory()" class="filter-select">
                     <option value="">All Categories</option>
                   </select>
@@ -1930,11 +2116,19 @@
                     <option value="low">Low Stock (≤ 5)</option>
                     <option value="out">Out of Stock</option>
                   </select>
+                  <div class="view-mode-toggle" role="group" aria-label="Inventory View Mode">
+                    <button type="button" class="view-btn active" id="btnGrid-inventory" onclick="setViewMode('inventory', 'grid')" title="Grid View" aria-pressed="true">
+                      <i class="fa-solid fa-table-cells-large"></i>
+                    </button>
+                    <button type="button" class="view-btn" id="btnTable-inventory" onclick="setViewMode('inventory', 'table')" title="Table View" aria-pressed="false">
+                      <i class="fa-solid fa-list"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
 
               <!-- Product Table -->
-              <div class="table-responsive">
+              <div class="table-responsive" id="tableWrap-inventory" style="display: none;">
                 <table class="dash-table">
                   <thead>
                     <tr>
@@ -1953,6 +2147,8 @@
                   </tbody>
                 </table>
               </div>
+              <!-- Product Catalogue Grid View -->
+              <div id="gridWrap-inventory" class="admin-cards-grid"></div>
             </div>
           </div>
 
@@ -2779,85 +2975,6 @@
     </div>
   </div>
 
-  <!-- ---- MODAL: SHOP ORDER DETAILS ---- -->
-  <div id="shopOrderModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('shopOrderModal')">
-    <div class="modal-content" style="max-width:680px;">
-      <div class="modal-header">
-        <div>
-          <h3 id="shopModalRef" style="color:var(--gold); font-family:monospace; margin:0;"><i class="fa-solid fa-receipt"></i> Order Details</h3>
-          <span id="shopModalDate" style="font-size:0.775rem; color:var(--text-muted);">Placed on —</span>
-        </div>
-        <button class="icon-btn" onclick="closeModal('shopOrderModal')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="modal-body" style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
-        <!-- Customer & Delivery Strip -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; background:rgba(255,255,255,0.03); border:1px solid var(--dash-border); border-radius:12px;">
-          <div>
-            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.04em; margin-bottom:0.35rem;">Customer Details</div>
-            <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;" id="shopModalCustomerName">—</div>
-            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.2rem;" id="shopModalCustomerPhone">—</div>
-            <div style="font-size:0.8rem; color:var(--text-muted);" id="shopModalCustomerEmail">—</div>
-          </div>
-          <div>
-            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.04em; margin-bottom:0.35rem;">Delivery Destination</div>
-            <div style="font-weight:600; color:var(--text-primary); font-size:0.9rem;" id="shopModalLocation">—</div>
-            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.2rem;" id="shopModalAddress">—</div>
-            <div style="font-size:0.78rem; color:#10b981; font-weight:600; margin-top:0.2rem;" id="shopModalDeliveryFee">—</div>
-          </div>
-        </div>
-
-        <!-- Payment Details & Verification Banner -->
-        <div style="padding:1rem; border-radius:12px; background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
-          <div>
-            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Payment &amp; Receiver Verification</div>
-            <div style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-top:0.2rem;" id="shopModalPaymentInfo">—</div>
-            <div style="font-size:0.82rem; color:#10b981; font-family:monospace; font-weight:700; margin-top:0.2rem;" id="shopModalReceipt">—</div>
-          </div>
-          <div id="shopModalPaymentActions" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        <!-- Ordered Items list -->
-        <div>
-          <div style="font-size:0.78rem; text-transform:uppercase; font-weight:700; color:var(--text-muted); letter-spacing:0.05em; margin-bottom:0.5rem;">Ordered Items</div>
-          <div id="shopModalItemsList" style="border:1px solid var(--dash-border); border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.02);">
-            <!-- Items injected here -->
-          </div>
-        </div>
-
-        <!-- Total and Fulfilment Controls -->
-        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:0.5rem; border-top:1px solid var(--dash-border); flex-wrap:wrap; gap:1rem;">
-          <div>
-            <span style="font-size:0.8rem; color:var(--text-muted);">Total Paid / Due:</span>
-            <div style="font-size:1.6rem; font-weight:800; color:var(--gold);" id="shopModalTotal">KES 0</div>
-          </div>
-          <div style="display:flex; align-items:center; gap:0.75rem;">
-            <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:600;">Fulfilment Status:</label>
-            <select id="shopModalStatusSelect" style="padding:0.45rem 0.85rem; border-radius:8px; font-weight:700; font-size:0.82rem; background:var(--dash-card); color:var(--text-primary); border:1px solid var(--dash-border);">
-              <option value="Processing">Processing</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
-        <button type="button" class="btn btn-sm btn-outline text-rose" onclick="deleteCurrentShopOrder()">
-          <i class="fa-solid fa-trash"></i> Delete Order
-        </button>
-        <div style="display:flex; gap:0.5rem;">
-          <button type="button" class="btn btn-sm btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Slip</button>
-          <button type="button" class="btn btn-sm btn-primary" onclick="saveShopModalStatus()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- ---- MODAL: ADD / EDIT PRODUCT ---- -->
   <div id="productModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('productModal')">
     <div class="modal-content" style="max-width:580px;">
@@ -2936,67 +3053,6 @@
         </button>
       </div>
     </div>
-  </div>    <div class="modal-content" style="max-width:700px;">
-      <div class="modal-header">
-        <div>
-          <h3 id="shopModalRef">Order Details</h3>
-          <span style="font-size:0.775rem; color:var(--text-muted);" id="shopModalDate">Placed on ...</span>
-        </div>
-        <button class="icon-btn" onclick="closeModal('shopOrderModal')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body" style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
-        <!-- Customer & Delivery info -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
-          <div style="background:var(--surface); border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
-            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem;">Customer Details</div>
-            <div style="font-weight:600; color:var(--text-primary);" id="shopModalCustomerName">-</div>
-            <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:0.25rem;" id="shopModalCustomerPhone">-</div>
-            <div style="font-size:0.85rem; color:var(--text-secondary);" id="shopModalCustomerEmail">-</div>
-          </div>
-          <div style="background:var(--surface); border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
-            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem;">Delivery Destination</div>
-            <div style="font-weight:600; color:var(--text-primary);" id="shopModalLocation">-</div>
-            <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:0.25rem;" id="shopModalAddress">-</div>
-            <div style="font-size:0.85rem; color:var(--gold); margin-top:0.25rem;" id="shopModalDeliveryFee">Fee: -</div>
-          </div>
-        </div>
-
-        <!-- Payment details -->
-        <div style="background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.25); border-radius:8px; padding:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-          <div>
-            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Payment &amp; Receiving</div>
-            <div style="font-weight:600; color:var(--text-primary); margin-top:0.25rem;" id="shopModalPaymentInfo">M-Pesa (Receiving: 0702588886)</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;" id="shopModalReceipt">Receipt: None</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:0.75rem; color:var(--text-muted);">Total Amount</div>
-            <div style="font-size:1.35rem; font-weight:800; color:var(--gold);" id="shopModalTotal">KES 0</div>
-          </div>
-        </div>
-
-        <!-- Items Ordered -->
-        <div>
-          <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem;">Items in Order</div>
-          <div id="shopModalItemsList" style="border:1px solid var(--border-color); border-radius:8px; overflow:hidden;"></div>
-        </div>
-
-        <!-- Fulfilment Action -->
-        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:1rem; flex-wrap:wrap; gap:0.75rem;">
-          <div style="display:flex; align-items:center; gap:0.5rem;">
-            <label style="font-size:0.85rem; color:var(--text-secondary);">Fulfilment Status:</label>
-            <select id="shopModalStatusSelect" class="filter-select" style="min-width:140px;">
-              <option value="Processing">Processing</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-            <button class="btn btn-sm btn-primary" onclick="saveShopModalStatus()">Update Status</button>
-          </div>
-          <button class="btn btn-sm btn-outline" style="color:#f87171; border-color:rgba(239,68,68,0.3);" onclick="deleteCurrentShopOrder()"><i class="fa-solid fa-trash"></i> Delete</button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script src="js/main.js?v=2.2"></script>
@@ -3004,6 +3060,16 @@
     // State management
     const state = {
       currentUser: null,
+      viewModes: {
+        inquiries: 'grid',
+        projects: 'grid',
+        faqs: 'grid',
+        users: 'grid',
+        shopOrders: 'grid',
+        inventory: 'grid',
+        recentInquiries: 'grid',
+        recentProjects: 'grid'
+      },
       inquiries: [],
       projects: [],
       faqs: [],
@@ -3020,6 +3086,35 @@
       selectedFaqs: new Set(),
       selectedUsers: new Set()
     };
+
+    // ── View Mode Helpers ──────────────────────────────────────────────
+    function setViewMode(section, mode) {
+      state.viewModes[section] = mode;
+      try { localStorage.setItem('admin_view_modes', JSON.stringify(state.viewModes)); } catch(e) {}
+      updateViewModeUI(section, mode);
+    }
+
+    function updateViewModeUI(section, mode) {
+      var tableWrap = document.getElementById('tableWrap-' + section);
+      var gridWrap  = document.getElementById('gridWrap-' + section);
+      var btnGrid   = document.getElementById('btnGrid-' + section);
+      var btnTable  = document.getElementById('btnTable-' + section);
+      if (tableWrap) tableWrap.style.display = (mode === 'table') ? '' : 'none';
+      if (gridWrap)  gridWrap.style.display  = (mode === 'grid')  ? '' : 'none';
+      if (btnGrid)  { btnGrid.classList.toggle('active', mode === 'grid');  btnGrid.setAttribute('aria-pressed', String(mode === 'grid')); }
+      if (btnTable) { btnTable.classList.toggle('active', mode === 'table'); btnTable.setAttribute('aria-pressed', String(mode === 'table')); }
+    }
+
+    function initViewModes() {
+      try {
+        var saved = JSON.parse(localStorage.getItem('admin_view_modes') || '{}');
+        Object.assign(state.viewModes, saved);
+      } catch(e) {}
+      Object.keys(state.viewModes).forEach(function(section) {
+        updateViewModeUI(section, state.viewModes[section]);
+      });
+    }
+    // ──────────────────────────────────────────────────────────────────
 
     /* ── DEDICATED DELETE CONFIRMATION SYSTEM ───────────────────────── */
     let pendingDeleteAction = null;
@@ -3070,6 +3165,8 @@
       } else {
         state[setKey].delete(Number(id));
       }
+      const matchingChecks = document.querySelectorAll('.row-select-' + type + '[data-id="' + id + '"]');
+      matchingChecks.forEach(c => { c.checked = checked; });
       updateBulkBar(type);
     }
     window.toggleSelectRow = toggleSelectRow;
@@ -3188,10 +3285,18 @@
 
     // -- Modal Handlers ------------------------------------------------
     function openModal(id) {
-      document.getElementById(id)?.classList.remove('hidden');
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.removeAttribute('hidden');
+      }
     }
     function closeModal(id) {
-      document.getElementById(id)?.classList.add('hidden');
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.setAttribute('hidden', '');
+      }
     }
 
     // -- Tab Switching -------------------------------------------------
@@ -3270,6 +3375,8 @@
 
         document.getElementById('authGateMsg').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
+
+        initViewModes();
 
         // Initial Data Fetch
         await Promise.all([
@@ -3435,38 +3542,81 @@
 
     function renderRecentInquiries(list) {
       const tbody = document.getElementById('recentInquiriesBody');
+      const grid = document.getElementById('gridWrap-recentInquiries');
+
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No recent inquiries received.</td></tr>`;
+        const emptyHtml = `<div class="empty-state" style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-inbox fa-2x" style="opacity:0.3; margin-bottom:0.5rem; display:block;"></i>No recent inquiries received.</div>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No recent inquiries received.</td></tr>`;
+        if (grid) grid.innerHTML = emptyHtml;
         return;
       }
-      tbody.innerHTML = list.map(inq => `
-        <tr onclick="viewInquiry(${inq.id})" style="cursor:pointer;">
-          <td>
-            <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(inq.name)}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
-          </td>
-          <td>
-            <div style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500;">${escapeHtml(inq.subject)}</div>
-          </td>
-          <td>
-            ${inq.ndaRequested ? '<span class="badge-pill badge-nda" style="font-size:0.68rem;"><i class="fa-solid fa-lock"></i> NDA</span>' : ''}
-            <span class="badge-pill" style="background:rgba(255,255,255,0.05); font-size:0.68rem;">${escapeHtml(inq.budget || 'Custom')}</span>
-          </td>
-          <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(inq.createdAt)}</td>
-          <td style="text-align:right;" onclick="event.stopPropagation();">
-            <div class="actions-cell">
-              <button class="btn-sm btn-outline" onclick="event.stopPropagation(); viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
-              <button class="btn-sm btn-danger" onclick="event.stopPropagation(); deleteInquiry(${inq.id})" title="Delete Inquiry"><i class="fa-solid fa-trash"></i></button>
+
+      if (tbody) {
+        tbody.innerHTML = list.map(inq => `
+          <tr onclick="viewInquiry(${inq.id})" style="cursor:pointer;">
+            <td>
+              <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(inq.name)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+            </td>
+            <td>
+              <div style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500;">${escapeHtml(inq.subject)}</div>
+            </td>
+            <td>
+              ${inq.ndaRequested ? '<span class="badge-pill badge-nda" style="font-size:0.68rem;"><i class="fa-solid fa-lock"></i> NDA</span>' : ''}
+              <span class="badge-pill" style="background:rgba(255,255,255,0.05); font-size:0.68rem;">${escapeHtml(inq.budget || 'Custom')}</span>
+            </td>
+            <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(inq.createdAt)}</td>
+            <td style="text-align:right;" onclick="event.stopPropagation();">
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="event.stopPropagation(); viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn-sm btn-danger" onclick="event.stopPropagation(); deleteInquiry(${inq.id})" title="Delete Inquiry"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(inq => {
+          const initials = (inq.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          return `
+            <div class="admin-grid-card" onclick="viewInquiry(${inq.id})" style="cursor:pointer; padding:1rem;">
+              <div class="admin-grid-card-header" onclick="event.stopPropagation()">
+                <div class="user-cell" style="gap:0.5rem;">
+                  <div class="user-mini-avatar" style="width:28px; height:28px; font-size:0.7rem; background:rgba(245,158,11,0.12); color:#f59e0b;">${initials}</div>
+                  <div>
+                    <strong style="color:var(--text-primary); font-size:0.875rem;">${escapeHtml(inq.name)}</strong>
+                    <div style="font-size:0.72rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+                  </div>
+                </div>
+                ${inq.ndaRequested ? '<span class="badge-pill badge-nda" style="font-size:0.65rem;"><i class="fa-solid fa-lock"></i> NDA</span>' : ''}
+              </div>
+              <div class="admin-grid-card-body" style="gap:0.4rem;">
+                <div style="font-weight:600; color:var(--text-primary); font-size:0.85rem;">${escapeHtml(inq.subject)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); display:flex; gap:0.5rem; flex-wrap:wrap;">
+                  <span><i class="fa-regular fa-clock"></i> ${formatDate(inq.createdAt)}</span>
+                  ${inq.budget ? `<span class="badge-pill" style="font-size:0.68rem; padding:0.1rem 0.4rem;">${escapeHtml(inq.budget)}</span>` : ''}
+                </div>
+              </div>
+              <div class="admin-grid-card-footer" onclick="event.stopPropagation()" style="padding-top:0.5rem;">
+                <span style="font-size:0.7rem; color:var(--text-muted);">Ref #${inq.id}</span>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-outline" onclick="viewInquiry(${inq.id})" title="View"><i class="fa-solid fa-eye"></i></button>
+                  <button class="btn-sm btn-danger" onclick="deleteInquiry(${inq.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
             </div>
-          </td>
-        </tr>
-      `).join('');
+          `;
+        }).join('');
+      }
     }
 
     function renderInquiries(list) {
       const tbody = document.getElementById('inquiriesTableBody');
+      const grid = document.getElementById('gridWrap-inquiries');
+
       if (!list.length) {
-        tbody.innerHTML = `
+        const emptyTable = `
           <tr>
             <td colspan="8">
               <div class="empty-state">
@@ -3477,50 +3627,106 @@
             </td>
           </tr>
         `;
+        const emptyGrid = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3rem;">
+            <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
+            <div class="empty-title">No client inquiries found</div>
+            <div class="empty-desc">Any inquiries submitted via the website contact modal or RFPs will show up here in real time.</div>
+          </div>
+        `;
+        if (tbody) tbody.innerHTML = emptyTable;
+        if (grid) grid.innerHTML = emptyGrid;
         return;
       }
-      tbody.innerHTML = list.map(inq => {
-        const initials = (inq.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-        const isChecked = state.selectedInquiries && state.selectedInquiries.has(inq.id);
-        return `
-        <tr>
-          <td style="text-align:center;">
-            <input type="checkbox" class="row-select-check row-select-inquiries" data-id="${inq.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('inquiries', ${inq.id}, this.checked)" />
-          </td>
-          <td>
-            <div class="user-cell">
-              <div class="user-mini-avatar" style="background:rgba(245,158,11,0.12); color:#f59e0b; border-color:rgba(245,158,11,0.3);">${initials}</div>
-              <div>
-                <strong style="color:var(--text-primary);">${escapeHtml(inq.name)}</strong>
-                <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+
+      if (tbody) {
+        tbody.innerHTML = list.map(inq => {
+          const initials = (inq.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          const isChecked = state.selectedInquiries && state.selectedInquiries.has(inq.id);
+          return `
+          <tr>
+            <td style="text-align:center;">
+              <input type="checkbox" class="row-select-check row-select-inquiries" data-id="${inq.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('inquiries', ${inq.id}, this.checked)" />
+            </td>
+            <td>
+              <div class="user-cell">
+                <div class="user-mini-avatar" style="background:rgba(245,158,11,0.12); color:#f59e0b; border-color:rgba(245,158,11,0.3);">${initials}</div>
+                <div>
+                  <strong style="color:var(--text-primary);">${escapeHtml(inq.name)}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(inq.subject)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(inq.message)}</div>
+            </td>
+            <td>
+              ${inq.company ? `<div style="font-weight:500;"><i class="fa-solid fa-building" style="font-size:0.7rem; color:var(--text-muted);"></i> ${escapeHtml(inq.company)}</div>` : ''}
+              ${inq.phone ? `<div style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(inq.phone)}</div>` : '<span style="color:var(--text-muted); font-size:0.75rem;">-</span>'}
+            </td>
+            <td>
+              ${inq.budget ? `<span class="badge-pill" style="background:rgba(255,255,255,0.06); color:var(--text-primary);">${escapeHtml(inq.budget)}</span>` : '<span style="color:var(--text-muted); font-size:0.75rem;">Not stated</span>'}
+            </td>
+            <td>
+              ${inq.ndaRequested ? '<span class="badge-pill badge-nda"><i class="fa-solid fa-lock"></i> NDA Requested</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">Standard</span>'}
+            </td>
+            <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(inq.createdAt)}</td>
+            <td style="text-align:right;">
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
+                ${inq.phone ? `<button class="btn-sm btn-outline" onclick="quickWhatsappReply(${inq.id})" title="Reply via WhatsApp (${escapeHtml(inq.phone)})" style="color:#25D366; border-color:rgba(37,211,102,0.3);"><i class="fa-brands fa-whatsapp"></i></button>` : ''}
+                <button class="btn-sm btn-outline" onclick="quickEmailReply(${inq.id})" title="Reply via Email"><i class="fa-solid fa-envelope"></i></button>
+                <button class="btn-sm btn-danger" onclick="deleteInquiry(${inq.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `}).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(inq => {
+          const initials = (inq.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          const isChecked = state.selectedInquiries && state.selectedInquiries.has(inq.id);
+          return `
+            <div class="admin-grid-card" onclick="viewInquiry(${inq.id})" style="cursor:pointer;">
+              <div class="admin-grid-card-header" onclick="event.stopPropagation()">
+                <div class="user-cell">
+                  <div class="user-mini-avatar" style="background:rgba(245,158,11,0.12); color:#f59e0b; border-color:rgba(245,158,11,0.3);">${initials}</div>
+                  <div>
+                    <strong style="color:var(--text-primary); font-size:0.95rem;">${escapeHtml(inq.name)}</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(inq.email)}</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  ${inq.ndaRequested ? '<span class="badge-pill badge-nda" style="font-size:0.68rem;"><i class="fa-solid fa-lock"></i> NDA</span>' : ''}
+                  <input type="checkbox" class="row-select-check row-select-inquiries" data-id="${inq.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('inquiries', ${inq.id}, this.checked)" title="Select inquiry" />
+                </div>
+              </div>
+              <div class="admin-grid-card-body">
+                <div>
+                  <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">${escapeHtml(inq.subject)}</div>
+                  <div style="font-size:0.785rem; color:var(--text-muted); line-height:1.45; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(inq.message)}</div>
+                </div>
+                <div style="display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; margin-top:0.25rem;">
+                  ${inq.company ? `<span class="badge-pill" style="background:rgba(255,255,255,0.04); font-size:0.72rem;"><i class="fa-solid fa-building" style="font-size:0.65rem;"></i> ${escapeHtml(inq.company)}</span>` : ''}
+                  ${inq.phone ? `<span class="badge-pill" style="background:rgba(255,255,255,0.04); font-size:0.72rem;"><i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(inq.phone)}</span>` : ''}
+                  ${inq.budget ? `<span class="badge-pill" style="background:rgba(201,164,92,0.1); color:var(--gold-light); font-size:0.72rem;">${escapeHtml(inq.budget)}</span>` : ''}
+                </div>
+              </div>
+              <div class="admin-grid-card-footer" onclick="event.stopPropagation()">
+                <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-regular fa-clock"></i> ${formatDate(inq.createdAt)}</span>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-outline" onclick="viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
+                  ${inq.phone ? `<button class="btn-sm btn-outline" onclick="quickWhatsappReply(${inq.id})" title="Reply via WhatsApp" style="color:#25D366; border-color:rgba(37,211,102,0.3);"><i class="fa-brands fa-whatsapp"></i></button>` : ''}
+                  <button class="btn-sm btn-outline" onclick="quickEmailReply(${inq.id})" title="Reply via Email"><i class="fa-solid fa-envelope"></i></button>
+                  <button class="btn-sm btn-danger" onclick="deleteInquiry(${inq.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
               </div>
             </div>
-          </td>
-          <td>
-            <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(inq.subject)}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(inq.message)}</div>
-          </td>
-          <td>
-            ${inq.company ? `<div style="font-weight:500;"><i class="fa-solid fa-building" style="font-size:0.7rem; color:var(--text-muted);"></i> ${escapeHtml(inq.company)}</div>` : ''}
-            ${inq.phone ? `<div style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(inq.phone)}</div>` : '<span style="color:var(--text-muted); font-size:0.75rem;">-</span>'}
-          </td>
-          <td>
-            ${inq.budget ? `<span class="badge-pill" style="background:rgba(255,255,255,0.06); color:var(--text-primary);">${escapeHtml(inq.budget)}</span>` : '<span style="color:var(--text-muted); font-size:0.75rem;">Not stated</span>'}
-          </td>
-          <td>
-            ${inq.ndaRequested ? '<span class="badge-pill badge-nda"><i class="fa-solid fa-lock"></i> NDA Requested</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">Standard</span>'}
-          </td>
-          <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(inq.createdAt)}</td>
-          <td style="text-align:right;">
-            <div class="actions-cell">
-              <button class="btn-sm btn-outline" onclick="viewInquiry(${inq.id})" title="View Details"><i class="fa-solid fa-eye"></i></button>
-              ${inq.phone ? `<button class="btn-sm btn-outline" onclick="quickWhatsappReply(${inq.id})" title="Reply via WhatsApp (${escapeHtml(inq.phone)})" style="color:#25D366; border-color:rgba(37,211,102,0.3);"><i class="fa-brands fa-whatsapp"></i></button>` : ''}
-              <button class="btn-sm btn-outline" onclick="quickEmailReply(${inq.id})" title="Reply via Email"><i class="fa-solid fa-envelope"></i></button>
-              <button class="btn-sm btn-danger" onclick="deleteInquiry(${inq.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-      `}).join('');
+          `;
+        }).join('');
+      }
     }
 
     function filterInquiries() {
@@ -3794,35 +4000,74 @@ https://logictech.co.ke`;
 
     function renderRecentProjects(list) {
       const tbody = document.getElementById('recentProjectsBody');
+      const grid = document.getElementById('gridWrap-recentProjects');
+
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No active project deliveries.</td></tr>`;
+        const emptyHtml = `<div class="empty-state" style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-rocket fa-2x" style="opacity:0.3; margin-bottom:0.5rem; display:block;"></i>No active project deliveries.</div>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No active project deliveries.</td></tr>`;
+        if (grid) grid.innerHTML = emptyHtml;
         return;
       }
-      tbody.innerHTML = list.map(p => `
-        <tr>
-          <td>
-            <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(p.name)}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientName)}</div>
-          </td>
-          <td><span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
-          <td>
-            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
-            <div class="progress-label">${p.progress}%</div>
-          </td>
-          <td style="text-align:right;">
-            <div class="actions-cell">
-              <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Live Discussion"><i class="fa-solid fa-comments"></i></button>
-              <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete Project"><i class="fa-solid fa-trash"></i></button>
+
+      if (tbody) {
+        tbody.innerHTML = list.map(p => `
+          <tr>
+            <td>
+              <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(p.name)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientName)}</div>
+            </td>
+            <td><span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+              <div class="progress-label">${p.progress}%</div>
+            </td>
+            <td style="text-align:right;">
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Live Discussion"><i class="fa-solid fa-comments"></i></button>
+                <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete Project"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(p => `
+          <div class="admin-grid-card" style="padding:1rem;">
+            <div class="admin-grid-card-header">
+              <div>
+                <strong style="color:var(--text-primary); font-size:0.9rem; display:block;">${escapeHtml(p.name)}</strong>
+                <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientName)}</div>
+              </div>
+              <span class="status-badge ${statusClass(p.status)}" style="font-size:0.68rem;">${escapeHtml(p.status)}</span>
             </div>
-          </td>
-        </tr>
-      `).join('');
+            <div class="admin-grid-card-body" style="gap:0.4rem;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;">
+                  <span style="color:var(--text-muted);">Progress</span>
+                  <span style="font-weight:700; color:var(--text-primary);">${p.progress}%</span>
+                </div>
+                <div class="progress-bar" style="margin:0;"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+              </div>
+            </div>
+            <div class="admin-grid-card-footer" style="padding-top:0.5rem;">
+              <span style="font-size:0.7rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${p.dueDate || 'Ongoing'}</span>
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Chat"><i class="fa-solid fa-comments"></i></button>
+                <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
     }
 
     function renderProjects(list) {
       const tbody = document.getElementById('projectsTableBody');
+      const grid = document.getElementById('gridWrap-projects');
+
       if (!list.length) {
-        tbody.innerHTML = `
+        const emptyTable = `
           <tr>
             <td colspan="7">
               <div class="empty-state">
@@ -3834,50 +4079,114 @@ https://logictech.co.ke`;
             </td>
           </tr>
         `;
+        const emptyGrid = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3rem;">
+            <div class="empty-icon"><i class="fa-solid fa-cubes"></i></div>
+            <div class="empty-title">No projects currently listed</div>
+            <div class="empty-desc">Create your first client engagement to track milestones, tasks, and discussions.</div>
+            <button class="btn btn-sm btn-primary" onclick="openNewProjectModal()" style="margin-top:1rem;"><i class="fa-solid fa-plus"></i> Create Project</button>
+          </div>
+        `;
+        if (tbody) tbody.innerHTML = emptyTable;
+        if (grid) grid.innerHTML = emptyGrid;
         return;
       }
-      tbody.innerHTML = list.map(p => {
-        const initials = (p.clientName || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-        const isChecked = state.selectedProjects && state.selectedProjects.has(p.id);
-        return `
-        <tr>
-          <td style="text-align:center;">
-            <input type="checkbox" class="row-select-check row-select-projects" data-id="${p.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('projects', ${p.id}, this.checked)" />
-          </td>
-          <td>
-            <div class="proj-name">
-              <i class="fa-solid fa-folder" style="color:#818cf8; font-size:0.9rem;"></i>
-              <strong>${escapeHtml(p.name)}</strong>
-            </div>
-            <div class="proj-sub" style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.description)}</div>
-          </td>
-          <td>
-            <div class="user-cell">
-              <div class="user-mini-avatar">${initials}</div>
-              <div>
-                <strong style="color:var(--text-primary);">${escapeHtml(p.clientName)}</strong>
-                <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientEmail)}</div>
+
+      if (tbody) {
+        tbody.innerHTML = list.map(p => {
+          const initials = (p.clientName || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          const isChecked = state.selectedProjects && state.selectedProjects.has(p.id);
+          return `
+          <tr>
+            <td style="text-align:center;">
+              <input type="checkbox" class="row-select-check row-select-projects" data-id="${p.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('projects', ${p.id}, this.checked)" />
+            </td>
+            <td>
+              <div class="proj-name">
+                <i class="fa-solid fa-folder" style="color:#818cf8; font-size:0.9rem;"></i>
+                <strong>${escapeHtml(p.name)}</strong>
+              </div>
+              <div class="proj-sub" style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.description)}</div>
+            </td>
+            <td>
+              <div class="user-cell">
+                <div class="user-mini-avatar">${initials}</div>
+                <div>
+                  <strong style="color:var(--text-primary);">${escapeHtml(p.clientName)}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(p.clientEmail)}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+              <div class="progress-label">${p.progress}% Complete</div>
+            </td>
+            <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
+              ${p.startDate ? `<div style="margin-bottom:0.2rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${p.startDate}</div>` : ''}
+              <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Due:</span> ${p.dueDate ? p.dueDate : '<span style="color:var(--text-muted);">Ongoing</span>'}</div>
+            </td>
+            <td style="text-align:right;">
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Project Thread"><i class="fa-solid fa-comments"></i> Chat</button>
+                <button class="btn-sm btn-outline" onclick="editProject(${p.id})" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `}).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(p => {
+          const initials = (p.clientName || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          const isChecked = state.selectedProjects && state.selectedProjects.has(p.id);
+          return `
+            <div class="admin-grid-card">
+              <div class="admin-grid-card-header">
+                <div style="display:flex; align-items:flex-start; gap:0.6rem;">
+                  <i class="fa-solid fa-folder" style="color:#818cf8; font-size:1.1rem; margin-top:0.2rem;"></i>
+                  <div>
+                    <div class="admin-grid-card-title">${escapeHtml(p.name)}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.15rem;">Client: <strong style="color:var(--text-secondary);">${escapeHtml(p.clientName)}</strong></div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span class="status-badge ${statusClass(p.status)}" style="font-size:0.72rem;">${escapeHtml(p.status)}</span>
+                  <input type="checkbox" class="row-select-check row-select-projects" data-id="${p.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('projects', ${p.id}, this.checked)" title="Select project" />
+                </div>
+              </div>
+              <div class="admin-grid-card-body">
+                <div style="font-size:0.785rem; color:var(--text-muted); line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                  ${escapeHtml(p.description || 'No detailed scope description recorded.')}
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.35rem;">
+                    <span style="color:var(--text-muted);">Progress</span>
+                    <span style="font-weight:700; color:var(--text-primary);">${p.progress}%</span>
+                  </div>
+                  <div class="progress-bar" style="margin:0;"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">
+                  <span><i class="fa-regular fa-calendar-check" style="color:var(--dash-accent);"></i> ${p.startDate || '—'}</span>
+                  <span><i class="fa-regular fa-calendar"></i> Due: ${p.dueDate || 'Ongoing'}</span>
+                </div>
+              </div>
+              <div class="admin-grid-card-footer">
+                <div class="user-cell" style="gap:0.4rem;">
+                  <div class="user-mini-avatar" style="width:24px; height:24px; font-size:0.65rem;">${initials}</div>
+                  <span style="font-size:0.75rem; color:var(--text-secondary);">${escapeHtml(p.clientEmail || '')}</span>
+                </div>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Project Thread"><i class="fa-solid fa-comments"></i> Chat</button>
+                  <button class="btn-sm btn-outline" onclick="editProject(${p.id})" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                  <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
               </div>
             </div>
-          </td>
-          <td><span class="status-badge ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
-          <td>
-            <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${statusColor(p.status)};"></div></div>
-            <div class="progress-label">${p.progress}% Complete</div>
-          </td>
-          <td style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap;">
-            ${p.startDate ? `<div style="margin-bottom:0.2rem;"><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar-check" style="font-size:0.7rem; color:var(--dash-accent);"></i> Started:</span> ${p.startDate}</div>` : ''}
-            <div><span style="color:var(--text-secondary); font-weight:600;"><i class="fa-regular fa-calendar" style="font-size:0.7rem;"></i> Due:</span> ${p.dueDate ? p.dueDate : '<span style="color:var(--text-muted);">Ongoing</span>'}</div>
-          </td>
-          <td style="text-align:right;">
-            <div class="actions-cell">
-              <button class="btn-sm btn-outline" onclick="openAdminChat(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${escapeHtml(p.clientName).replace(/'/g, "\\'")}')" title="Project Thread"><i class="fa-solid fa-comments"></i> Chat</button>
-              <button class="btn-sm btn-outline" onclick="editProject(${p.id})" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-              <button class="btn-sm btn-danger" onclick="deleteProject(${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-      `}).join('');
+          `;
+        }).join('');
+      }
     }
 
     function filterProjects() {
@@ -4045,8 +4354,10 @@ https://logictech.co.ke`;
 
     function renderFaqs(list) {
       const tbody = document.getElementById('faqsTableBody');
+      const grid = document.getElementById('gridWrap-faqs');
+
       if (!list.length) {
-        tbody.innerHTML = `
+        const emptyTable = `
           <tr>
             <td colspan="6">
               <div class="empty-state">
@@ -4058,28 +4369,71 @@ https://logictech.co.ke`;
             </td>
           </tr>
         `;
+        const emptyGrid = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3rem;">
+            <div class="empty-icon"><i class="fa-solid fa-circle-question"></i></div>
+            <div class="empty-title">No knowledge FAQs found</div>
+            <div class="empty-desc">Publish questions and answers to inform prospective clients about Logic Tech engineering.</div>
+            <button class="btn btn-sm btn-primary" onclick="openFaqModal()" style="margin-top:1rem;"><i class="fa-solid fa-plus"></i> Add FAQ</button>
+          </div>
+        `;
+        if (tbody) tbody.innerHTML = emptyTable;
+        if (grid) grid.innerHTML = emptyGrid;
         return;
       }
-      tbody.innerHTML = list.map(f => {
-        const isChecked = state.selectedFaqs && state.selectedFaqs.has(f.id);
-        return `
-        <tr>
-          <td style="text-align:center;">
-            <input type="checkbox" class="row-select-check row-select-faqs" data-id="${f.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('faqs', ${f.id}, this.checked)" />
-          </td>
-          <td><span class="badge-pill badge-category">${escapeHtml(f.category)}</span></td>
-          <td><strong style="color:var(--text-primary);">${escapeHtml(f.q)}</strong></td>
-          <td style="max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-muted); font-size:0.825rem;">${escapeHtml(f.a)}</td>
-          <td>${f.published ? '<span class="status-badge completed">Published</span>' : '<span class="status-badge pending">Draft</span>'}</td>
-          <td style="text-align:right;">
-            <div class="actions-cell">
-              <button class="btn-sm btn-outline" onclick="editFaq(${f.id})" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-              <button class="btn-sm btn-danger" onclick="deleteFaq(${f.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+
+      if (tbody) {
+        tbody.innerHTML = list.map(f => {
+          const isChecked = state.selectedFaqs && state.selectedFaqs.has(f.id);
+          return `
+          <tr>
+            <td style="text-align:center;">
+              <input type="checkbox" class="row-select-check row-select-faqs" data-id="${f.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('faqs', ${f.id}, this.checked)" />
+            </td>
+            <td><span class="badge-pill badge-category">${escapeHtml(f.category)}</span></td>
+            <td><strong style="color:var(--text-primary);">${escapeHtml(f.q)}</strong></td>
+            <td style="max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-muted); font-size:0.825rem;">${escapeHtml(f.a)}</td>
+            <td>${f.published ? '<span class="status-badge completed">Published</span>' : '<span class="status-badge pending">Draft</span>'}</td>
+            <td style="text-align:right;">
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="editFaq(${f.id})" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btn-sm btn-danger" onclick="deleteFaq(${f.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+        }).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(f => {
+          const isChecked = state.selectedFaqs && state.selectedFaqs.has(f.id);
+          return `
+            <div class="admin-grid-card">
+              <div class="admin-grid-card-header">
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span class="badge-pill badge-category">${escapeHtml(f.category)}</span>
+                  ${f.published ? '<span class="status-badge completed" style="font-size:0.7rem;">Published</span>' : '<span class="status-badge pending" style="font-size:0.7rem;">Draft</span>'}
+                </div>
+                <input type="checkbox" class="row-select-check row-select-faqs" data-id="${f.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('faqs', ${f.id}, this.checked)" title="Select FAQ" />
+              </div>
+              <div class="admin-grid-card-body">
+                <h4 style="margin:0; font-size:0.95rem; font-weight:700; color:var(--text-primary); line-height:1.4;">${escapeHtml(f.q)}</h4>
+                <div style="font-size:0.825rem; color:var(--text-muted); line-height:1.5; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;">
+                  ${escapeHtml(f.a)}
+                </div>
+              </div>
+              <div class="admin-grid-card-footer">
+                <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">FAQ #${f.id}</span>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-outline" onclick="editFaq(${f.id})" title="Edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                  <button class="btn-sm btn-danger" onclick="deleteFaq(${f.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
             </div>
-          </td>
-        </tr>
-      `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
 
     function filterFaqs() {
@@ -4250,8 +4604,10 @@ https://logictech.co.ke`;
 
     function renderUsers(list) {
       const tbody = document.getElementById('usersTableBody');
+      const grid = document.getElementById('gridWrap-users');
+
       if (!list.length) {
-        tbody.innerHTML = `
+        const emptyTable = `
           <tr>
             <td colspan="8">
               <div class="empty-state">
@@ -4262,45 +4618,101 @@ https://logictech.co.ke`;
             </td>
           </tr>
         `;
+        const emptyGrid = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3rem;">
+            <div class="empty-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="empty-title">No client accounts registered</div>
+            <div class="empty-desc">Registered users who created accounts via the portal will appear here.</div>
+          </div>
+        `;
+        if (tbody) tbody.innerHTML = emptyTable;
+        if (grid) grid.innerHTML = emptyGrid;
         return;
       }
-      tbody.innerHTML = list.map(u => {
-        const initials = (u.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-        const isCurrentAdmin = state.currentUser && state.currentUser.id === u.id;
-        const isChecked = state.selectedUsers && state.selectedUsers.has(u.id);
-        return `
-        <tr>
-          <td style="text-align:center;">
-            ${!isCurrentAdmin ? `<input type="checkbox" class="row-select-check row-select-users" data-id="${u.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('users', ${u.id}, this.checked)" />` : ''}
-          </td>
-          <td>
-            <div class="user-cell">
-              <div class="user-mini-avatar" style="${u.role === 'admin' ? 'background:rgba(168,85,247,0.2); color:#c084fc; border-color:rgba(168,85,247,0.3);' : ''}">${initials}</div>
-              <div>
-                <strong style="color:var(--text-primary);">${escapeHtml(u.name)}</strong>
-                <div style="font-size:0.75rem; color:var(--text-muted);">Account #${u.id} ${isCurrentAdmin ? '<span style="color:var(--gold-light); font-weight:700;">(You)</span>' : ''}</div>
+
+      if (tbody) {
+        tbody.innerHTML = list.map(u => {
+          const initials = (u.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          const isCurrentAdmin = state.currentUser && state.currentUser.id === u.id;
+          const isChecked = state.selectedUsers && state.selectedUsers.has(u.id);
+          return `
+          <tr>
+            <td style="text-align:center;">
+              ${!isCurrentAdmin ? `<input type="checkbox" class="row-select-check row-select-users" data-id="${u.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('users', ${u.id}, this.checked)" />` : ''}
+            </td>
+            <td>
+              <div class="user-cell">
+                <div class="user-mini-avatar" style="${u.role === 'admin' ? 'background:rgba(168,85,247,0.2); color:#c084fc; border-color:rgba(168,85,247,0.3);' : ''}">${initials}</div>
+                <div>
+                  <strong style="color:var(--text-primary);">${escapeHtml(u.name)}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">Account #${u.id} ${isCurrentAdmin ? '<span style="color:var(--gold-light); font-weight:700;">(You)</span>' : ''}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge-pill badge-copyable" onclick="copyEmail('${escapeHtml(u.email)}')" title="Click to copy email">
+                <i class="fa-regular fa-envelope"></i> ${escapeHtml(u.email)}
+              </span>
+            </td>
+            <td><span class="badge-pill ${u.role === 'admin' ? 'badge-admin' : 'badge-client'}">${u.role.toUpperCase()}</span></td>
+            <td><span class="badge-pill" style="background:rgba(99,102,241,0.1); color:#a5b4fc;">${u.projectCount || 0} Projects</span></td>
+            <td><span class="badge-pill" style="background:rgba(245,158,11,0.1); color:#fde047;">${u.inquiryCount || 0} Inquiries</span></td>
+            <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(u.createdAt)}</td>
+            <td style="text-align:right;">
+              <div class="actions-cell">
+                <button class="btn-sm btn-outline" onclick="openClientDossier(${u.id})" title="Inspect Dossier"><i class="fa-solid fa-address-card"></i> Dossier</button>
+                <button class="btn-sm btn-primary" onclick="openNewProjectModal(${u.id})" title="Assign Project"><i class="fa-solid fa-plus"></i></button>
+                ${!isCurrentAdmin ? `<button class="btn-sm btn-danger" onclick="deleteUser(${u.id}, '${escapeHtml(u.name).replace(/'/g, "\\'")}', '${u.role}')" title="Delete Client Account"><i class="fa-solid fa-trash"></i></button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+        }).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(u => {
+          const initials = (u.name || 'CL').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          const isCurrentAdmin = state.currentUser && state.currentUser.id === u.id;
+          const isChecked = state.selectedUsers && state.selectedUsers.has(u.id);
+          return `
+            <div class="admin-grid-card">
+              <div class="admin-grid-card-header">
+                <div class="user-cell">
+                  <div class="user-mini-avatar" style="${u.role === 'admin' ? 'background:rgba(168,85,247,0.2); color:#c084fc; border-color:rgba(168,85,247,0.3);' : ''}">${initials}</div>
+                  <div>
+                    <strong style="color:var(--text-primary); font-size:0.95rem;">${escapeHtml(u.name)}</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Account #${u.id} ${isCurrentAdmin ? '<span style="color:var(--gold-light); font-weight:700;">(You)</span>' : ''}</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span class="badge-pill ${u.role === 'admin' ? 'badge-admin' : 'badge-client'}">${u.role.toUpperCase()}</span>
+                  ${!isCurrentAdmin ? `<input type="checkbox" class="row-select-check row-select-users" data-id="${u.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('users', ${u.id}, this.checked)" title="Select client" />` : ''}
+                </div>
+              </div>
+              <div class="admin-grid-card-body">
+                <div>
+                  <span class="badge-pill badge-copyable" onclick="copyEmail('${escapeHtml(u.email)}')" title="Click to copy email" style="display:inline-flex; width:100%; box-sizing:border-box; overflow:hidden; text-overflow:ellipsis;">
+                    <i class="fa-regular fa-envelope"></i> ${escapeHtml(u.email)}
+                  </span>
+                </div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;">
+                  <span class="badge-pill" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.75rem;"><i class="fa-solid fa-cubes"></i> ${u.projectCount || 0} Projects</span>
+                  <span class="badge-pill" style="background:rgba(245,158,11,0.1); color:#fde047; font-size:0.75rem;"><i class="fa-solid fa-inbox"></i> ${u.inquiryCount || 0} Inquiries</span>
+                </div>
+              </div>
+              <div class="admin-grid-card-footer">
+                <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> Joined ${formatDate(u.createdAt)}</span>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-outline" onclick="openClientDossier(${u.id})" title="Inspect Dossier"><i class="fa-solid fa-address-card"></i> Dossier</button>
+                  <button class="btn-sm btn-primary" onclick="openNewProjectModal(${u.id})" title="Assign Project"><i class="fa-solid fa-plus"></i></button>
+                  ${!isCurrentAdmin ? `<button class="btn-sm btn-danger" onclick="deleteUser(${u.id}, '${escapeHtml(u.name).replace(/'/g, "\\'")}', '${u.role}')" title="Delete Client Account"><i class="fa-solid fa-trash"></i></button>` : ''}
+                </div>
               </div>
             </div>
-          </td>
-          <td>
-            <span class="badge-pill badge-copyable" onclick="copyEmail('${escapeHtml(u.email)}')" title="Click to copy email">
-              <i class="fa-regular fa-envelope"></i> ${escapeHtml(u.email)}
-            </span>
-          </td>
-          <td><span class="badge-pill ${u.role === 'admin' ? 'badge-admin' : 'badge-client'}">${u.role.toUpperCase()}</span></td>
-          <td><span class="badge-pill" style="background:rgba(99,102,241,0.1); color:#a5b4fc;">${u.projectCount || 0} Projects</span></td>
-          <td><span class="badge-pill" style="background:rgba(245,158,11,0.1); color:#fde047;">${u.inquiryCount || 0} Inquiries</span></td>
-          <td style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">${formatDate(u.createdAt)}</td>
-          <td style="text-align:right;">
-            <div class="actions-cell">
-              <button class="btn-sm btn-outline" onclick="openClientDossier(${u.id})" title="Inspect Dossier"><i class="fa-solid fa-address-card"></i> Dossier</button>
-              <button class="btn-sm btn-primary" onclick="openNewProjectModal(${u.id})" title="Assign Project"><i class="fa-solid fa-plus"></i></button>
-              ${!isCurrentAdmin ? `<button class="btn-sm btn-danger" onclick="deleteUser(${u.id}, '${escapeHtml(u.name).replace(/'/g, "\\'")}', '${u.role}')" title="Delete Client Account"><i class="fa-solid fa-trash"></i></button>` : ''}
-            </div>
-          </td>
-        </tr>
-      `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
 
     function filterUsers() {
@@ -4596,7 +5008,7 @@ https://logictech.co.ke`;
       }
       if (e.key === 'Escape') {
         closeCmdPalette();
-        ['inquiryModal', 'emailReplyModal', 'projectModal', 'faqModal', 'clientDossierModal', 'adminChatModal'].forEach(id => closeModal(id));
+        ['inquiryModal', 'emailReplyModal', 'projectModal', 'faqModal', 'clientDossierModal', 'adminChatModal', 'productModal', 'shopOrderModal'].forEach(id => closeModal(id));
       }
     });
 
@@ -4846,116 +5258,207 @@ https://logictech.co.ke`;
 
     function renderShopOrders(list) {
       const tbody = document.getElementById('shopTableBody');
-      if (!tbody) return;
+      const grid = document.getElementById('gridWrap-shopOrders');
+      if (!tbody && !grid) return;
 
       if (!list || !list.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8">
-              <div class="empty-state">
-                <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
-                <div class="empty-title">No shop orders yet</div>
-                <div class="empty-sub">Customer orders from the store will appear here with real-time M-Pesa receipt verification and fulfillment dispatch.</div>
-              </div>
-            </td>
-          </tr>
+        const emptyHtml = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3rem;">
+            <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <div class="empty-title">No shop orders yet</div>
+            <div class="empty-sub">Customer orders from the store will appear here with real-time M-Pesa receipt verification and fulfillment dispatch.</div>
+          </div>
         `;
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8">
+                <div class="empty-state">
+                  <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                  <div class="empty-title">No shop orders yet</div>
+                  <div class="empty-sub">Customer orders from the store will appear here with real-time M-Pesa receipt verification and fulfillment dispatch.</div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+        if (grid) grid.innerHTML = emptyHtml;
         return;
       }
 
-      tbody.innerHTML = list.map(order => {
-        let itemsCount = 0;
-        let itemsSummary = '';
-        try {
-          const items = JSON.parse(order.items_json || '[]');
-          itemsCount = items.reduce((s, it) => s + (it.qty || 1), 0);
-          itemsSummary = items.map(it => `${it.name || 'Item'} (x${it.qty || 1})`).join(', ');
-        } catch (_e) {
-          itemsCount = 1;
-        }
+      const statusColors = {
+        'Processing': 'color:#f59e0b; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3);',
+        'Confirmed': 'color:#10b981; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3);',
+        'Shipped': 'color:#818cf8; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3);',
+        'Delivered': 'color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4);',
+        'Cancelled': 'color:#f87171; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);'
+      };
 
-        const payBadgeClass = order.payment_status === 'paid' ? 'badge-emerald' :
-                              order.payment_status === 'processing' ? 'badge-amber' :
-                              order.payment_status === 'failed' ? 'badge-rose' : 'badge-slate';
+      if (tbody) {
+        tbody.innerHTML = list.map(order => {
+          let itemsCount = 0;
+          let itemsSummary = '';
+          try {
+            const items = JSON.parse(order.items_json || '[]');
+            itemsCount = items.reduce((s, it) => s + (it.qty || 1), 0);
+            itemsSummary = items.map(it => `${it.name || 'Item'} (x${it.qty || 1})`).join(', ');
+          } catch (_e) {
+            itemsCount = 1;
+          }
 
-        const payIcon = order.payment_status === 'paid' ? 'fa-check' :
-                        order.payment_status === 'processing' ? 'fa-spinner fa-spin' :
-                        order.payment_status === 'failed' ? 'fa-xmark' : 'fa-clock';
+          const payBadgeClass = order.payment_status === 'paid' ? 'badge-emerald' :
+                                order.payment_status === 'processing' ? 'badge-amber' :
+                                order.payment_status === 'failed' ? 'badge-rose' : 'badge-slate';
 
-        const statusColors = {
-          'Processing': 'color:#f59e0b; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3);',
-          'Confirmed': 'color:#10b981; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3);',
-          'Shipped': 'color:#818cf8; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3);',
-          'Delivered': 'color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4);',
-          'Cancelled': 'color:#f87171; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);'
-        };
+          const payIcon = order.payment_status === 'paid' ? 'fa-check' :
+                          order.payment_status === 'processing' ? 'fa-spinner fa-spin' :
+                          order.payment_status === 'failed' ? 'fa-xmark' : 'fa-clock';
 
-        return `
-          <tr>
-            <td>
-              <button class="table-link-btn" onclick="openShopOrderModal(${order.id})" style="font-weight:700; color:var(--gold); font-family:monospace;">
-                ${escapeHtml(order.ref)}
-              </button>
-              <div style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml(order.created_at || '')}</div>
-            </td>
-            <td>
-              <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(order.customer_name)}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:0.3rem;">
-                <i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(order.customer_phone)}
-              </div>
-            </td>
-            <td>
-              <div style="font-weight:500; color:var(--text-secondary);">${escapeHtml(order.county)}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(order.city)}</div>
-            </td>
-            <td>
-              <div style="font-weight:600; color:var(--text-primary);">${itemsCount} item${itemsCount !== 1 ? 's' : ''}</div>
-              <div style="font-size:0.72rem; color:var(--text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(itemsSummary)}">
-                ${escapeHtml(itemsSummary)}
-              </div>
-            </td>
-            <td>
-              <div style="font-weight:700; color:var(--gold);">KES ${Number(order.total).toLocaleString()}</div>
-            </td>
-            <td>
-              <span class="badge ${payBadgeClass}" style="display:inline-flex; align-items:center; gap:0.3rem;">
-                <i class="fa-solid ${payIcon}"></i> ${order.payment_status.toUpperCase()}
-              </span>
-              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.2rem; font-family:monospace;">
-                ${order.mpesa_receipt ? escapeHtml(order.mpesa_receipt) : (order.payment_method || 'mpesa').toUpperCase()}
-              </div>
-            </td>
-            <td>
-              <select onchange="updateShopOrderStatus(${order.id}, this.value)" style="padding:0.3rem 0.5rem; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; ${statusColors[order.status] || ''}">
-                <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-                <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-              </select>
-            </td>
-            <td style="text-align:right;">
-              <div style="display:inline-flex; gap:0.4rem;">
-                ${order.payment_status !== 'paid' ? `
-                  <button class="action-btn" style="color:#10b981;" title="Confirm Payment" onclick="adminConfirmOrderPayment(${order.id}, '${escapeHtml(order.ref)}')">
-                    <i class="fa-solid fa-circle-check"></i>
-                  </button>
-                ` : `
-                  <button class="action-btn" title="Resend Receipt Email" onclick="adminResendOrderReceipt(${order.id})">
-                    <i class="fa-solid fa-paper-plane"></i>
-                  </button>
-                `}
-                <button class="action-btn" title="View Order Details" onclick="openShopOrderModal(${order.id})">
-                  <i class="fa-solid fa-eye"></i>
+          return `
+            <tr onclick="openShopOrderModal(${order.id})" style="cursor:pointer;" title="Click to view order details">
+              <td>
+                <button class="table-link-btn" onclick="event.stopPropagation(); openShopOrderModal(${order.id})" style="font-weight:700; color:var(--gold); font-family:monospace; background:none; border:none; padding:0; cursor:pointer;">
+                  #${escapeHtml(order.ref)}
                 </button>
-                <button class="action-btn text-rose" title="Delete Order" onclick="deleteShopOrder(${order.id}, '${escapeHtml(order.ref)}')">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <div style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml(order.created_at || '')}</div>
+              </td>
+              <td>
+                <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(order.customer_name)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:0.3rem;">
+                  <i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(order.customer_phone)}
+                </div>
+              </td>
+              <td>
+                <div style="font-weight:500; color:var(--text-secondary);">${escapeHtml(order.county)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(order.city)}</div>
+              </td>
+              <td>
+                <div style="font-weight:600; color:var(--text-primary);">${itemsCount} item${itemsCount !== 1 ? 's' : ''}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(itemsSummary)}">
+                  ${escapeHtml(itemsSummary)}
+                </div>
+              </td>
+              <td>
+                <div style="font-weight:700; color:var(--gold);">KES ${Number(order.total).toLocaleString()}</div>
+              </td>
+              <td>
+                <span class="badge ${payBadgeClass}" style="display:inline-flex; align-items:center; gap:0.3rem;">
+                  <i class="fa-solid ${payIcon}"></i> ${order.payment_status.toUpperCase()}
+                </span>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.2rem; font-family:monospace;">
+                  ${order.mpesa_receipt ? escapeHtml(order.mpesa_receipt) : (order.payment_method || 'mpesa').toUpperCase()}
+                </div>
+              </td>
+              <td onclick="event.stopPropagation();">
+                <select onchange="updateShopOrderStatus(${order.id}, this.value)" style="padding:0.35rem 0.65rem; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; background:#0f172a; color:#e5e7eb; border:1px solid rgba(255,255,255,0.15); ${statusColors[order.status] || ''}">
+                  <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                  <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                  <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                  <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                  <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+              </td>
+              <td style="text-align:right;" onclick="event.stopPropagation();">
+                <div style="display:inline-flex; gap:0.4rem;">
+                  ${order.payment_status !== 'paid' ? `
+                    <button class="action-btn" style="color:#10b981;" title="Confirm Payment" onclick="adminConfirmOrderPayment(${order.id}, '${escapeHtml(order.ref)}')">
+                      <i class="fa-solid fa-circle-check"></i>
+                    </button>
+                  ` : `
+                    <button class="action-btn" title="Resend Receipt Email" onclick="adminResendOrderReceipt(${order.id})">
+                      <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                  `}
+                  <button class="action-btn" title="View Order" onclick="openShopOrderModal(${order.id})">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                  <button class="action-btn text-rose" title="Delete Order" onclick="deleteShopOrder(${order.id})">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      if (grid) {
+        grid.innerHTML = list.map(order => {
+          let itemsCount = 0;
+          let itemsSummary = '';
+          try {
+            const items = JSON.parse(order.items_json || '[]');
+            itemsCount = items.reduce((s, it) => s + (it.qty || 1), 0);
+            itemsSummary = items.map(it => `${it.name || 'Item'} (x${it.qty || 1})`).join(', ');
+          } catch (_e) {
+            itemsCount = 1;
+          }
+
+          const payBadgeClass = order.payment_status === 'paid' ? 'badge-emerald' :
+                                order.payment_status === 'processing' ? 'badge-amber' :
+                                order.payment_status === 'failed' ? 'badge-rose' : 'badge-slate';
+
+          const payIcon = order.payment_status === 'paid' ? 'fa-check' :
+                          order.payment_status === 'processing' ? 'fa-spinner fa-spin' :
+                          order.payment_status === 'failed' ? 'fa-xmark' : 'fa-clock';
+
+          return `
+            <div class="admin-grid-card" onclick="openShopOrderModal(${order.id})" style="cursor:pointer;">
+              <div class="admin-grid-card-header" onclick="event.stopPropagation()">
+                <div>
+                  <button class="table-link-btn" onclick="openShopOrderModal(${order.id})" style="font-weight:700; color:var(--gold); font-family:monospace; font-size:1rem; padding:0; background:none; border:none; cursor:pointer;">
+                    #${escapeHtml(order.ref)}
+                  </button>
+                  <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.15rem;"><i class="fa-regular fa-clock"></i> ${escapeHtml(order.created_at || '')}</div>
+                </div>
+                <div style="text-align:right;">
+                  <span class="badge ${payBadgeClass}" style="display:inline-flex; align-items:center; gap:0.3rem; font-size:0.72rem;">
+                    <i class="fa-solid ${payIcon}"></i> ${order.payment_status.toUpperCase()}
+                  </span>
+                  ${order.mpesa_receipt ? `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.2rem; font-family:monospace;">${escapeHtml(order.mpesa_receipt)}</div>` : ''}
+                </div>
               </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
+              <div class="admin-grid-card-body" onclick="event.stopPropagation()">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem;">
+                  <div>
+                    <strong style="color:var(--text-primary); font-size:0.9rem;">${escapeHtml(order.customer_name)}</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.15rem;"><i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${escapeHtml(order.customer_phone)}</div>
+                  </div>
+                  <div style="text-align:right; font-size:0.75rem; color:var(--text-secondary);">
+                    <div><i class="fa-solid fa-location-dot" style="color:var(--gold-primary);"></i> ${escapeHtml(order.city || '')}</div>
+                    <div style="color:var(--text-muted); font-size:0.7rem;">${escapeHtml(order.county || '')}</div>
+                  </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:0.65rem 0.85rem; font-size:0.785rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.2rem;">
+                    <span style="font-weight:600; color:var(--text-primary);">${itemsCount} item${itemsCount !== 1 ? 's' : ''}</span>
+                    <span style="font-weight:800; color:var(--gold); font-size:0.95rem;">KES ${Number(order.total).toLocaleString()}</span>
+                  </div>
+                  <div style="font-size:0.72rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(itemsSummary)}">${escapeHtml(itemsSummary)}</div>
+                </div>
+              </div>
+              <div class="admin-grid-card-footer" onclick="event.stopPropagation()">
+                <select onchange="updateShopOrderStatus(${order.id}, this.value)" style="padding:0.35rem 0.65rem; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; background:#0f172a; color:#e5e7eb; border:1px solid rgba(255,255,255,0.15); ${statusColors[order.status] || ''}">
+                  <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                  <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                  <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                  <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                  <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+                <div style="display:inline-flex; gap:0.35rem;">
+                  ${order.payment_status !== 'paid' ? `
+                    <button class="action-btn" style="color:#10b981;" title="Confirm Payment" onclick="adminConfirmOrderPayment(${order.id}, '${escapeHtml(order.ref)}')"><i class="fa-solid fa-circle-check"></i></button>
+                  ` : `
+                    <button class="action-btn" title="Resend Receipt Email" onclick="adminResendOrderReceipt(${order.id})"><i class="fa-solid fa-paper-plane"></i></button>
+                  `}
+                  <button class="action-btn" title="View Order" onclick="openShopOrderModal(${order.id})"><i class="fa-solid fa-eye"></i></button>
+                  <button class="action-btn text-rose" title="Delete Order" onclick="deleteShopOrder(${order.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     function filterShopOrders() {
@@ -5555,51 +6058,119 @@ https://logictech.co.ke`;
     }
 
     function renderInventory(products) {
-      const grid = document.getElementById('invProductGrid');
-      if (!grid) return;
+      const tableBody = document.getElementById('invProductGrid');
+      const cardsGrid = document.getElementById('gridWrap-inventory');
+      if (!tableBody && !cardsGrid) return;
+
       if (!products.length) {
-        grid.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:4rem;color:var(--text-muted);">
+        const emptyTable = `<tr><td colspan="8" style="text-align:center;padding:4rem;color:var(--text-muted);">
           <i class="fa-solid fa-box-open fa-2x" style="display:block;margin-bottom:1rem;opacity:0.3;"></i>
           <div style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;">No products found</div>
           <div style="font-size:0.82rem;">Try adjusting your filters or add your first product.</div>
           <button onclick="openProductModal()" class="btn btn-sm btn-primary" style="margin-top:1.25rem;display:inline-flex;align-items:center;gap:0.5rem;font-weight:700;"><i class="fa-solid fa-plus"></i> New Product</button>
         </td></tr>`;
+        const emptyGrid = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3rem;">
+            <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+            <div class="empty-title">No products found</div>
+            <div class="empty-desc">Try adjusting your filters or add your first product to the store catalogue.</div>
+            <button onclick="openProductModal()" class="btn btn-sm btn-primary" style="margin-top:1rem;"><i class="fa-solid fa-plus"></i> New Product</button>
+          </div>
+        `;
+        if (tableBody) tableBody.innerHTML = emptyTable;
+        if (cardsGrid) cardsGrid.innerHTML = emptyGrid;
         return;
       }
-      grid.innerHTML = products.map(p => {
-        const thumb = p.image_url
-          ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--dash-border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span style="display:none;width:36px;height:36px;border-radius:4px;border:1px solid var(--dash-border);align-items:center;justify-content:center;background:rgba(255,255,255,0.03);"><i class="fa-solid fa-image" style="font-size:0.75rem;color:var(--text-muted);"></i></span>`
-          : `<span style="display:inline-flex;width:36px;height:36px;border-radius:4px;border:1px solid var(--dash-border);align-items:center;justify-content:center;background:rgba(255,255,255,0.03);"><i class="fa-solid fa-image" style="font-size:0.75rem;color:var(--text-muted);"></i></span>`;
-        const statusPill = p.status === 'archived'
-          ? `<span style="padding:0.15rem 0.55rem;border-radius:20px;font-size:0.68rem;font-weight:700;background:rgba(100,116,139,0.15);color:#94a3b8;letter-spacing:0.04em;">Archived</span>`
-          : `<span style="padding:0.15rem 0.55rem;border-radius:20px;font-size:0.68rem;font-weight:700;background:rgba(16,185,129,0.1);color:#10b981;letter-spacing:0.04em;">Active</span>`;
-        const pName = escapeHtml(p.name).replace(/'/g, "\\'");
-        return `<tr style="border-bottom:1px solid var(--dash-border);">
-          <td style="padding:0.75rem 1rem;">${thumb}</td>
-          <td style="padding:0.75rem 0.5rem;">
-            <div style="font-weight:600;color:var(--text-primary);font-size:0.875rem;">${escapeHtml(p.name)}</div>
-            ${p.description ? `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${escapeHtml(p.description)}</div>` : ''}
-          </td>
-          <td style="padding:0.75rem 0.5rem;"><span style="font-family:monospace;font-size:0.775rem;color:var(--text-muted);">${p.sku ? escapeHtml(p.sku) : '—'}</span></td>
-          <td style="padding:0.75rem 0.5rem;font-size:0.82rem;color:var(--text-secondary);">${escapeHtml(p.category || 'General')}</td>
-          <td style="padding:0.75rem 0.5rem;text-align:right;font-weight:700;color:#C9A45C;font-size:0.875rem;white-space:nowrap;">${Number(p.price).toLocaleString()}</td>
-          <td style="padding:0.75rem 0.5rem;text-align:center;">
-            <div style="display:flex;align-items:center;justify-content:center;gap:0.4rem;">
-              <button onclick="quickAdjustStock(${p.id},-1)" title="Remove 1" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--dash-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='#f87171';this.style.color='#f87171'" onmouseout="this.style.borderColor='var(--dash-border)';this.style.color='var(--text-muted)'"><i class="fa-solid fa-minus"></i></button>
-              <span style="min-width:28px;text-align:center;font-size:0.82rem;font-weight:700;color:var(--text-primary);">${p.stock}</span>
-              <button onclick="quickAdjustStock(${p.id},1)" title="Add 1" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--dash-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981'" onmouseout="this.style.borderColor='var(--dash-border)';this.style.color='var(--text-muted)'"><i class="fa-solid fa-plus"></i></button>
+
+      if (tableBody) {
+        tableBody.innerHTML = products.map(p => {
+          const thumb = p.image_url
+            ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--dash-border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span style="display:none;width:36px;height:36px;border-radius:4px;border:1px solid var(--dash-border);align-items:center;justify-content:center;background:rgba(255,255,255,0.03);"><i class="fa-solid fa-image" style="font-size:0.75rem;color:var(--text-muted);"></i></span>`
+            : `<span style="display:inline-flex;width:36px;height:36px;border-radius:4px;border:1px solid var(--dash-border);align-items:center;justify-content:center;background:rgba(255,255,255,0.03);"><i class="fa-solid fa-image" style="font-size:0.75rem;color:var(--text-muted);"></i></span>`;
+          const statusPill = p.status === 'archived'
+            ? `<span style="padding:0.15rem 0.55rem;border-radius:20px;font-size:0.68rem;font-weight:700;background:rgba(100,116,139,0.15);color:#94a3b8;letter-spacing:0.04em;">Archived</span>`
+            : `<span style="padding:0.15rem 0.55rem;border-radius:20px;font-size:0.68rem;font-weight:700;background:rgba(16,185,129,0.1);color:#10b981;letter-spacing:0.04em;">Active</span>`;
+          const pName = escapeHtml(p.name).replace(/'/g, "\\'");
+          return `<tr style="border-bottom:1px solid var(--dash-border);">
+            <td style="padding:0.75rem 1rem;">${thumb}</td>
+            <td style="padding:0.75rem 0.5rem;">
+              <div style="font-weight:600;color:var(--text-primary);font-size:0.875rem;">${escapeHtml(p.name)}</div>
+              ${p.description ? `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${escapeHtml(p.description)}</div>` : ''}
+            </td>
+            <td style="padding:0.75rem 0.5rem;"><span style="font-family:monospace;font-size:0.775rem;color:var(--text-muted);">${p.sku ? escapeHtml(p.sku) : '—'}</span></td>
+            <td style="padding:0.75rem 0.5rem;font-size:0.82rem;color:var(--text-secondary);">${escapeHtml(p.category || 'General')}</td>
+            <td style="padding:0.75rem 0.5rem;text-align:right;font-weight:700;color:#C9A45C;font-size:0.875rem;white-space:nowrap;">${Number(p.price).toLocaleString()}</td>
+            <td style="padding:0.75rem 0.5rem;text-align:center;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+                <button onclick="quickAdjustStock(${p.id},-1)" title="Remove 1" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--dash-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='#f87171';this.style.color='#f87171'" onmouseout="this.style.borderColor='var(--dash-border)';this.style.color='var(--text-muted)'"><i class="fa-solid fa-minus"></i></button>
+                <span style="min-width:28px;text-align:center;font-size:0.82rem;font-weight:700;color:var(--text-primary);">${p.stock}</span>
+                <button onclick="quickAdjustStock(${p.id},1)" title="Add 1" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--dash-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981'" onmouseout="this.style.borderColor='var(--dash-border)';this.style.color='var(--text-muted)'"><i class="fa-solid fa-plus"></i></button>
+              </div>
+              <div style="margin-top:0.3rem;">${stockBadge(p.stock)}</div>
+            </td>
+            <td style="padding:0.75rem 0.5rem;text-align:center;">${statusPill}</td>
+            <td style="padding:0.75rem 1rem;text-align:right;">
+              <div style="display:inline-flex;gap:0.35rem;">
+                <button onclick="openProductModal(${p.id})" title="Edit product" class="action-btn"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="deleteProduct(${p.id},'${pName}')" title="Delete product" class="action-btn text-rose"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      if (cardsGrid) {
+        cardsGrid.innerHTML = products.map(p => {
+          const thumb = p.image_url
+            ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--dash-border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span style="display:none;width:48px;height:48px;border-radius:8px;border:1px solid var(--dash-border);align-items:center;justify-content:center;background:rgba(255,255,255,0.03);"><i class="fa-solid fa-image" style="font-size:0.9rem;color:var(--text-muted);"></i></span>`
+            : `<span style="display:inline-flex;width:48px;height:48px;border-radius:8px;border:1px solid var(--dash-border);align-items:center;justify-content:center;background:rgba(255,255,255,0.03);"><i class="fa-solid fa-image" style="font-size:0.9rem;color:var(--text-muted);"></i></span>`;
+          const statusPill = p.status === 'archived'
+            ? `<span style="padding:0.15rem 0.55rem;border-radius:20px;font-size:0.68rem;font-weight:700;background:rgba(100,116,139,0.15);color:#94a3b8;letter-spacing:0.04em;">Archived</span>`
+            : `<span style="padding:0.15rem 0.55rem;border-radius:20px;font-size:0.68rem;font-weight:700;background:rgba(16,185,129,0.1);color:#10b981;letter-spacing:0.04em;">Active</span>`;
+          const pName = escapeHtml(p.name).replace(/'/g, "\\'");
+          return `
+            <div class="admin-grid-card">
+              <div class="admin-grid-card-header">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                  ${thumb}
+                  <div>
+                    <strong style="color:var(--text-primary); font-size:0.95rem; display:block;">${escapeHtml(p.name)}</strong>
+                    <span style="font-family:monospace; font-size:0.72rem; color:var(--text-muted);">${p.sku ? escapeHtml(p.sku) : 'No SKU'}</span>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  ${statusPill}
+                  <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">${escapeHtml(p.category || 'General')}</div>
+                </div>
+              </div>
+              <div class="admin-grid-card-body">
+                ${p.description ? `<div style="font-size:0.785rem; color:var(--text-muted); line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(p.description)}</div>` : ''}
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem; background:rgba(255,255,255,0.02); padding:0.65rem 0.85rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                  <div>
+                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Price</div>
+                    <div style="font-size:1.15rem; font-weight:800; color:var(--gold);">KES ${Number(p.price).toLocaleString()}</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.4rem;">
+                      <button onclick="quickAdjustStock(${p.id},-1)" title="Remove 1" style="width:24px;height:24px;border-radius:4px;border:1px solid var(--dash-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;"><i class="fa-solid fa-minus"></i></button>
+                      <span style="min-width:28px;text-align:center;font-size:0.85rem;font-weight:700;color:var(--text-primary);">${p.stock}</span>
+                      <button onclick="quickAdjustStock(${p.id},1)" title="Add 1" style="width:24px;height:24px;border-radius:4px;border:1px solid var(--dash-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div style="margin-top:0.25rem;">${stockBadge(p.stock)}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="admin-grid-card-footer">
+                <span style="font-size:0.72rem; color:var(--text-muted);">Stock: <strong>${p.stock} units</strong></span>
+                <div class="actions-cell">
+                  <button onclick="openProductModal(${p.id})" title="Edit product" class="action-btn"><i class="fa-solid fa-pen"></i> Edit</button>
+                  <button onclick="deleteProduct(${p.id},'${pName}')" title="Delete product" class="action-btn text-rose"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
             </div>
-            <div style="margin-top:0.3rem;">${stockBadge(p.stock)}</div>
-          </td>
-          <td style="padding:0.75rem 0.5rem;text-align:center;">${statusPill}</td>
-          <td style="padding:0.75rem 1rem;text-align:right;">
-            <div style="display:inline-flex;gap:0.35rem;">
-              <button onclick="openProductModal(${p.id})" title="Edit product" class="action-btn"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="deleteProduct(${p.id},'${pName}')" title="Delete product" class="action-btn text-rose"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </td>
-        </tr>`;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
 
     function openProductModal(id) {
@@ -5959,5 +6530,83 @@ https://logictech.co.ke`;
     // Initialize
     document.addEventListener('DOMContentLoaded', checkAdminAuth);
   </script>
+  <!-- ---- MODAL: SHOP ORDER DETAILS (Overlay placed before </body>) ---- -->
+  <div id="shopOrderModal" class="modal-overlay hidden" hidden onclick="if(event.target===this)closeModal('shopOrderModal')">
+    <div class="modal-content" style="max-width:680px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="shopModalRef" style="color:var(--gold); font-family:monospace; margin:0;"><i class="fa-solid fa-receipt"></i> Order Details</h3>
+          <span id="shopModalDate" style="font-size:0.775rem; color:var(--text-muted);">Placed on —</span>
+        </div>
+        <button type="button" class="icon-btn" onclick="closeModal('shopOrderModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body" style="padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
+        <!-- Customer & Delivery Strip -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; background:rgba(255,255,255,0.03); border:1px solid var(--dash-border); border-radius:12px;">
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.04em; margin-bottom:0.35rem;">Customer Details</div>
+            <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;" id="shopModalCustomerName">—</div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.2rem;" id="shopModalCustomerPhone">—</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);" id="shopModalCustomerEmail">—</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.04em; margin-bottom:0.35rem;">Delivery Destination</div>
+            <div style="font-weight:600; color:var(--text-primary); font-size:0.9rem;" id="shopModalLocation">—</div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.2rem;" id="shopModalAddress">—</div>
+            <div style="font-size:0.78rem; color:#10b981; font-weight:600; margin-top:0.2rem;" id="shopModalDeliveryFee">—</div>
+          </div>
+        </div>
+
+        <!-- Payment Details & Verification Banner -->
+        <div style="padding:1rem; border-radius:12px; background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Payment &amp; Receiver Verification</div>
+            <div style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-top:0.2rem;" id="shopModalPaymentInfo">—</div>
+            <div style="font-size:0.82rem; color:#10b981; font-family:monospace; font-weight:700; margin-top:0.2rem;" id="shopModalReceipt">—</div>
+          </div>
+          <div id="shopModalPaymentActions" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Ordered Items list -->
+        <div>
+          <div style="font-size:0.78rem; text-transform:uppercase; font-weight:700; color:var(--text-muted); letter-spacing:0.05em; margin-bottom:0.5rem;">Ordered Items</div>
+          <div id="shopModalItemsList" style="border:1px solid var(--dash-border); border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.02);">
+            <!-- Items injected here -->
+          </div>
+        </div>
+
+        <!-- Total and Fulfilment Controls -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:0.5rem; border-top:1px solid var(--dash-border); flex-wrap:wrap; gap:1rem;">
+          <div>
+            <span style="font-size:0.8rem; color:var(--text-muted);">Total Paid / Due:</span>
+            <div style="font-size:1.6rem; font-weight:800; color:var(--gold);" id="shopModalTotal">KES 0</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:600;">Fulfilment Status:</label>
+            <select id="shopModalStatusSelect" style="padding:0.45rem 0.85rem; border-radius:8px; font-weight:700; font-size:0.82rem; background:#0f172a; color:#e5e7eb; border:1px solid rgba(255,255,255,0.15); cursor:pointer;">
+              <option value="Processing" style="background:#0f172a; color:#e5e7eb;">Processing</option>
+              <option value="Confirmed" style="background:#0f172a; color:#e5e7eb;">Confirmed</option>
+              <option value="Shipped" style="background:#0f172a; color:#e5e7eb;">Shipped</option>
+              <option value="Delivered" style="background:#0f172a; color:#e5e7eb;">Delivered</option>
+              <option value="Cancelled" style="background:#0f172a; color:#e5e7eb;">Cancelled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-sm btn-outline text-rose" onclick="deleteCurrentShopOrder()">
+          <i class="fa-solid fa-trash"></i> Delete Order
+        </button>
+        <div style="display:flex; gap:0.5rem;">
+          <button type="button" class="btn btn-sm btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Slip</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="saveShopModalStatus()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
