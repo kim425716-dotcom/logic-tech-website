@@ -6546,6 +6546,7 @@ https://logictech.co.ke`;
               <span style="font-size:0.72rem; color:var(--text-muted);" title="${o.created_at || ''}"><i class="fa-solid fa-calendar-days" style="margin-right:0.3rem;"></i>${formatDate(o.created_at)}</span>
               <div class="actions-cell" style="display:flex; gap:0.4rem; align-items:center;">
                 ${actionBtns}
+                <button type="button" class="btn btn-xs btn-outline" onclick="event.stopPropagation(); printReceiptForOrderById(${o.id})" title="Print official branded receipt" style="color:var(--gold);"><i class="fa-solid fa-receipt"></i> Receipt</button>
                 <button type="button" class="btn btn-xs btn-outline" onclick="event.stopPropagation(); openShopOrderModal(${o.id})" title="View full order details"><i class="fa-solid fa-eye"></i> Details</button>
               </div>
             </div>
@@ -6582,6 +6583,17 @@ https://logictech.co.ke`;
       link.click();
       document.body.removeChild(link);
       showToast('Payment ledger exported to CSV', 'success');
+    }
+
+    function printReceiptForOrder(order) {
+      if (!order) return;
+      sessionStorage.setItem('logictech_receipt_data', JSON.stringify(order));
+      window.open('receipt.html?ref=' + encodeURIComponent(order.ref), '_blank');
+    }
+
+    function printReceiptForOrderById(id) {
+      const order = (state.shopOrders || []).find(o => o.id === id);
+      if (order) printReceiptForOrder(order);
     }
 
     function copyToClipboard(text) {
@@ -6669,7 +6681,7 @@ https://logictech.co.ke`;
           <i class="fa-solid fa-trash"></i> Delete Order
         </button>
         <div style="display:flex; gap:0.5rem;">
-          <button type="button" class="btn btn-sm btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Slip</button>
+          <button type="button" class="btn btn-sm btn-outline" onclick="printReceiptForOrder(state.currentShopOrder)" style="display:inline-flex; align-items:center; gap:0.4rem; color:var(--gold); border-color:rgba(201,164,92,0.4);"><i class="fa-solid fa-receipt"></i> Print Official Receipt</button>
           <button type="button" class="btn btn-sm btn-primary" onclick="saveShopModalStatus()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
         </div>
       </div>

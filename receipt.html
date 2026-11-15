@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Official Payment Receipt — Logic Tech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    :root {
+      --gold: #C9A45C;
+      --gold-dark: #A88438;
+      --gold-light: #DFBF7A;
+      --gold-subtle: rgba(201, 164, 92, 0.12);
+      --dark-navy: #0B1120;
+      --navy-card: #0F172A;
+      --border-color: #E2E8F0;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --emerald: #10B981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0B1120;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1rem;
+    }
+
+    /* Actions Toolbar */
+    .receipt-actions-bar {
+      width: 100%;
+      max-width: 820px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+    }
+    .back-btn {
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: #F8FAFC; }
+    .btn-group { display: flex; gap: 0.75rem; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: #0F172A;
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      box-shadow: 0 4px 14px rgba(201, 164, 92, 0.35);
+    }
+    .btn-dark {
+      background: rgba(255, 255, 255, 0.08);
+      color: #F8FAFC;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .btn-dark:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* ══════ THE OFFICIAL RECEIPT SHEET ══════ */
+    .receipt-sheet {
+      width: 100%;
+      max-width: 820px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      padding: 3.5rem 3.5rem 2.5rem;
+      border-top: 6px solid var(--gold);
+    }
+
+    /* Subtle security watermark */
+    .receipt-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-family: 'Cinzel', serif;
+      font-size: 5.5rem;
+      font-weight: 800;
+      color: rgba(201, 164, 92, 0.04);
+      letter-spacing: 0.2em;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    .sheet-inner { position: relative; z-index: 2; }
+
+    /* Header Section */
+    .receipt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      border-bottom: 2px solid #F1F5F9;
+      padding-bottom: 2rem;
+      margin-bottom: 2rem;
+    }
+    .company-brand {
+      display: flex;
+      align-items: center;
+      gap: 1.15rem;
+    }
+    .company-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #0B1120;
+      padding: 6px;
+    }
+    .company-title {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+    }
+    .company-subtitle {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+    .company-meta {
+      font-size: 0.775rem;
+      color: #64748B;
+      margin-top: 0.35rem;
+      line-height: 1.4;
+    }
+
+    .doc-badge-col {
+      text-align: right;
+    }
+    .doc-type-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      background: #0F172A;
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+    .receipt-number {
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-dark);
+      letter-spacing: 0.02em;
+    }
+    .receipt-date-top {
+      font-size: 0.8rem;
+      color: #64748B;
+      margin-top: 0.25rem;
+    }
+
+    /* Meta Cards Grid */
+    .receipt-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .meta-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1.25rem 1.35rem;
+    }
+    .meta-box-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold-dark);
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .customer-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 0.25rem;
+    }
+    .meta-text-line {
+      font-size: 0.825rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .meta-kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.825rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px dashed #E2E8F0;
+    }
+    .meta-kv-row:last-child { border-bottom: none; }
+    .meta-kv-row .kv-key { color: #64748B; }
+    .meta-kv-row .kv-val { font-weight: 700; color: #0F172A; }
+
+    .paid-pill {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      font-weight: 800;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Products Table */
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.75rem;
+    }
+    .receipt-table th {
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      border-bottom: 2px solid #CBD5E1;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #475569;
+    }
+    .receipt-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 0.875rem;
+      color: #1E293B;
+      vertical-align: middle;
+    }
+    .receipt-table tr:hover td { background: #FAFAFA; }
+    .col-idx { text-align: center; color: #94A3B8; font-weight: 700; width: 45px; }
+    .col-qty { text-align: center; font-weight: 700; width: 70px; }
+    .col-price { text-align: right; width: 130px; font-weight: 600; color: #475569; }
+    .col-total { text-align: right; width: 140px; font-weight: 700; color: #0F172A; }
+    .product-name { font-weight: 700; color: #0F172A; }
+    .product-sku { font-size: 0.72rem; color: #94A3B8; font-family: monospace; margin-top: 0.15rem; }
+
+    /* Totals Breakdown */
+    .totals-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 2.25rem;
+    }
+    .totals-box {
+      width: 320px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+    .totals-row.grand-total {
+      border-top: 2px solid var(--gold);
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0F172A;
+    }
+    .totals-row.grand-total .amt { color: var(--gold-dark); }
+
+    /* ══════ SIGNATURE & VERIFICATION SECTION ══════ */
+    .receipt-bottom-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #F1F5F9;
+      align-items: flex-end;
+    }
+    .terms-box {
+      font-size: 0.76rem;
+      color: #64748B;
+      line-height: 1.55;
+    }
+    .terms-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #0F172A;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+    .security-hash-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #F1F5F9;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #475569;
+      margin-top: 0.75rem;
+    }
+
+    /* Signature & Stamp Column */
+    .signature-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      position: relative;
+    }
+
+    /* Official Circular Corporate Stamp */
+    .official-stamp-seal {
+      position: absolute;
+      top: -30px;
+      right: 120px;
+      width: 110px;
+      height: 110px;
+      pointer-events: none;
+      transform: rotate(-12deg);
+      opacity: 0.88;
+    }
+
+    .signature-svg-box {
+      width: 180px;
+      height: 52px;
+      margin-bottom: 0.25rem;
+    }
+    .signature-line {
+      width: 210px;
+      height: 1.5px;
+      background: #0F172A;
+      margin-bottom: 0.4rem;
+    }
+    .signatory-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: 0.02em;
+    }
+    .signatory-role {
+      font-size: 0.75rem;
+      color: var(--gold-dark);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .signatory-date {
+      font-size: 0.72rem;
+      color: #64748B;
+      margin-top: 0.15rem;
+    }
+
+    /* Footer Note */
+    .receipt-footer-note {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px dashed #E2E8F0;
+      font-size: 0.75rem;
+      color: #94A3B8;
+      letter-spacing: 0.02em;
+    }
+
+    /* ══════ PRINT STYLES ══════ */
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+      .receipt-actions-bar {
+        display: none !important;
+      }
+      .receipt-sheet {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 1.5cm 1.5cm !important;
+      }
+      @page {
+        margin: 1cm;
+        size: A4 portrait;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .receipt-sheet { padding: 2rem 1.25rem; }
+      .receipt-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .doc-badge-col { text-align: left; }
+      .receipt-meta-grid { grid-template-columns: 1fr; }
+      .receipt-bottom-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .signature-container { align-items: flex-start; }
+      .official-stamp-seal { right: 20px; }
+      .totals-box { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Actions Toolbar -->
+  <div class="receipt-actions-bar">
+    <a href="shop.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
+    <div class="btn-group">
+      <button class="action-btn btn-dark" onclick="window.close()" id="closeBtn" style="display:none;"><i class="fa-solid fa-xmark"></i> Close</button>
+      <button class="action-btn btn-gold" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <!-- The Official Receipt Paper -->
+  <div class="receipt-sheet" id="receiptSheet">
+    <!-- Watermark -->
+    <div class="receipt-watermark">LOGIC TECH</div>
+
+    <div class="sheet-inner">
+      <!-- Header -->
+      <div class="receipt-header">
+        <div class="company-brand">
+          <img src="assets/logo.png" alt="Logic Tech Logo" class="company-logo" onerror="this.style.display='none'" />
+          <div>
+            <div class="company-title">LOGIC TECH</div>
+            <div class="company-subtitle">Software Engineering &amp; Solutions</div>
+            <div class="company-meta">
+              Nairobi, Kenya • +254 702 588 886<br />
+              contact@logictech.co.ke • logictech.co.ke
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-badge-col">
+          <div class="doc-type-badge">Official Receipt</div>
+          <div class="receipt-number" id="receiptNum">LT-SHOP-2026-9821</div>
+          <div class="receipt-date-top" id="receiptDateTop">Issued: 16 Nov 2026, 14:35</div>
+        </div>
+      </div>
+
+      <!-- Customer & Payment Meta Grid -->
+      <div class="receipt-meta-grid">
+        <!-- Customer Box -->
+        <div class="meta-box">
+          <div class="meta-box-title"><i class="fa-solid fa-user"></i> Customer &amp; Delivery Destination</div>
+          <div class="customer-name" id="custName">Brian Kimani</div>
+          <div class="meta-text-line" id="custPhone"><i class="fa-solid fa-phone" style="font-size:0.75rem; color:var(--gold-dark); width:14px;"></i> +254 702 588 886</div>
+          <div class="meta-text-line" id="custEmail"><i class="fa-solid fa-envelope" style="font-size:0.75rem; color:#94A3B8; width:14px;"></i> brian@logictech.co.ke</div>
+          <div class="meta-text-line" id="custAddress" style="margin-top:0.25rem;"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:#EF4444; width:14px;"></i> Nairobi, Westlands, Delta Corner Annex</div>
+        </div>
+
+        <!-- Payment Details Box -->
+        <div class="meta-box">
+          <div class="meta-box-title"><i class="fa-solid fa-shield-check"></i> Payment Information</div>
+          <div class="meta-kv-row">
+            <span class="kv-key">Payment Method:</span>
+            <span class="kv-val" id="payMethod"><i class="fa-solid fa-mobile-screen-button" style="color:#10B981;"></i> Lipa na M-Pesa</span>
+          </div>
+          <div class="meta-kv-row">
+            <span class="kv-key">Transaction / Receipt:</span>
+            <span class="kv-val" id="payReceiptCode" style="font-family:monospace; color:#059669; font-weight:800;">QK84ND92KL</span>
+          </div>
+          <div class="meta-kv-row">
+            <span class="kv-key">Payment Status:</span>
+            <span class="kv-val"><span class="paid-pill" id="payStatusPill"><i class="fa-solid fa-circle-check"></i> PAID &amp; VERIFIED</span></span>
+          </div>
+          <div class="meta-kv-row">
+            <span class="kv-key">Fulfilment Status:</span>
+            <span class="kv-val" id="fulfilmentStatus">Confirmed &amp; Dispatched</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Table -->
+      <table class="receipt-table">
+        <thead>
+          <tr>
+            <th class="col-idx">#</th>
+            <th>Item &amp; Description</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-price">Unit Price (KES)</th>
+            <th class="col-total">Total (KES)</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <tr>
+            <td class="col-idx">1</td>
+            <td>
+              <div class="product-name">Enterprise Cloud Hosting &amp; Dedicated Deployment</div>
+              <div class="product-sku">SKU: LT-PROD-SRV01</div>
+            </td>
+            <td class="col-qty">1</td>
+            <td class="col-price">18,500</td>
+            <td class="col-total">18,500</td>
+          </tr>
+          <tr>
+            <td class="col-idx">2</td>
+            <td>
+              <div class="product-name">High-Performance Managed SSL &amp; Security Shield</div>
+              <div class="product-sku">SKU: LT-PROD-SEC03</div>
+            </td>
+            <td class="col-qty">2</td>
+            <td class="col-price">4,500</td>
+            <td class="col-total">9,000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Totals Summary -->
+      <div class="totals-wrapper">
+        <div class="totals-box">
+          <div class="totals-row">
+            <span>Subtotal:</span>
+            <span id="subtotalVal">KES 27,500</span>
+          </div>
+          <div class="totals-row">
+            <span>Delivery / Shipping Fee:</span>
+            <span id="deliveryVal">KES 500</span>
+          </div>
+          <div class="totals-row grand-total">
+            <span>Total Paid:</span>
+            <span class="amt" id="totalVal">KES 28,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Sign-off, Stamp, & Verification -->
+      <div class="receipt-bottom-grid">
+        <!-- Terms & Security Note -->
+        <div class="terms-box">
+          <div class="terms-title">Authentication &amp; Guarantee</div>
+          <p>
+            This official receipt is issued by Logic Tech upon verified receipt of payment. All items and services are backed by our enterprise warranty and support guarantee.
+          </p>
+          <div class="security-hash-pill">
+            <i class="fa-solid fa-lock" style="color:var(--gold-dark);"></i>
+            AUTHENTICATED DIGITAL RECEIPT • <span id="secHash">LT-SEC-87291-KE</span>
+          </div>
+        </div>
+
+        <!-- Signature & Stamp Column -->
+        <div class="signature-container">
+          <!-- Corporate Stamp SVG -->
+          <svg class="official-stamp-seal" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="74" fill="none" stroke="#C9A45C" stroke-width="2.5" stroke-dasharray="6 3"/>
+            <circle cx="80" cy="80" r="66" fill="none" stroke="#C9A45C" stroke-width="1.2"/>
+            <path id="stampPathTop" d="M 22 80 A 58 58 0 0 1 138 80" fill="none"/>
+            <text font-size="8.5" fill="#A88438" font-weight="800" letter-spacing="2.2" font-family="'Plus Jakarta Sans', sans-serif">
+              <textPath href="#stampPathTop" startOffset="50%" text-anchor="middle">LOGIC TECH • OFFICIAL</textPath>
+            </text>
+            <path id="stampPathBottom" d="M 138 80 A 58 58 0 0 1 22 80" fill="none"/>
+            <text font-size="8" fill="#A88438" font-weight="800" letter-spacing="1.8" font-family="'Plus Jakarta Sans', sans-serif">
+              <textPath href="#stampPathBottom" startOffset="50%" text-anchor="middle">★ VERIFIED RECEIPT ★</textPath>
+            </text>
+            <text x="80" y="74" text-anchor="middle" font-size="12" font-weight="900" fill="#059669" font-family="'Plus Jakarta Sans', sans-serif">CONFIRMED</text>
+            <text x="80" y="90" text-anchor="middle" font-size="8.5" font-weight="700" fill="#A88438" font-family="'Plus Jakarta Sans', sans-serif">NAIROBI, KENYA</text>
+          </svg>
+
+          <!-- Signature Ink Script -->
+          <div class="signature-svg-box">
+            <svg viewBox="0 0 200 60" width="180" height="52">
+              <path d="M 18 42 C 38 12, 48 8, 62 22 C 78 38, 84 48, 98 28 C 112 8, 118 12, 128 32 C 138 48, 148 38, 158 24 C 168 12, 178 32, 188 38 M 48 40 Q 112 36 182 34" 
+                    fill="none" stroke="#A88438" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="signature-line"></div>
+          <div class="signatory-name">Brian Kimani</div>
+          <div class="signatory-role">Founder &amp; Managing Director</div>
+          <div class="signatory-date" id="signDate">Signed: 16 Nov 2026</div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="receipt-footer-note">
+        Thank you for choosing Logic Tech • Excellence in Software Engineering &amp; Modern Technology • logictech.co.ke
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Populate dynamic data if query string or localStorage exists
+    (function initReceipt() {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+
+      // Check if opened from window.open with custom payload
+      const payloadStr = sessionStorage.getItem('logictech_receipt_data');
+      let order = null;
+      if (payloadStr) {
+        try { order = JSON.parse(payloadStr); } catch(e){}
+      }
+
+      if (order) {
+        renderOrderData(order);
+      } else if (ref) {
+        // Fetch order from public orders endpoint
+        fetch('/api/shop/orders/' + encodeURIComponent(ref))
+          .then(r => r.json())
+          .then(d => {
+            if (d.order) renderOrderData(d.order);
+          })
+          .catch(() => {});
+      }
+    })();
+
+    function renderOrderData(o) {
+      if (!o) return;
+      document.getElementById('receiptNum').textContent = o.ref || 'LT-ORDER';
+      const dt = o.created_at ? new Date(o.created_at) : new Date();
+      const dateStr = dt.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) + ', ' +
+                      dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+      document.getElementById('receiptDateTop').textContent = 'Issued: ' + dateStr;
+      document.getElementById('signDate').textContent = 'Signed: ' + dt.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+
+      document.getElementById('custName').textContent = o.customer_name || 'Customer';
+      document.getElementById('custPhone').innerHTML = `<i class="fa-solid fa-phone" style="font-size:0.75rem; color:var(--gold-dark); width:14px;"></i> ${escapeHtml(o.customer_phone || '—')}`;
+      document.getElementById('custEmail').innerHTML = `<i class="fa-solid fa-envelope" style="font-size:0.75rem; color:#94A3B8; width:14px;"></i> ${escapeHtml(o.customer_email || '—')}`;
+      document.getElementById('custAddress').innerHTML = `<i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:#EF4444; width:14px;"></i> ${escapeHtml(o.address ? `${o.city}, ${o.county}, ${o.address}` : (o.county || 'Nairobi, Kenya'))}`;
+
+      // Payment Method
+      const method = (o.payment_method || 'mpesa').toLowerCase();
+      let methodHtml = '';
+      if (method === 'mpesa') {
+        methodHtml = '<i class="fa-solid fa-mobile-screen-button" style="color:#10B981;"></i> Lipa na M-Pesa';
+      } else if (method === 'cash') {
+        methodHtml = '<i class="fa-solid fa-hand-holding-dollar" style="color:var(--gold-dark);"></i> Cash on Delivery';
+      } else {
+        methodHtml = '<i class="fa-solid fa-credit-card" style="color:#3B82F6;"></i> Card / Flutterwave';
+      }
+      document.getElementById('payMethod').innerHTML = methodHtml;
+
+      document.getElementById('payReceiptCode').textContent = o.mpesa_receipt || (method === 'cash' ? 'CASH-ON-DELIVERY' : 'PENDING');
+      document.getElementById('fulfilmentStatus').textContent = o.status || 'Confirmed';
+
+      // Items
+      let items = [];
+      try {
+        items = typeof o.items_json === 'string' ? JSON.parse(o.items_json) : (o.items || []);
+      } catch(e) { items = []; }
+
+      if (items.length) {
+        document.getElementById('itemsBody').innerHTML = items.map((it, idx) => `
+          <tr>
+            <td class="col-idx">${idx + 1}</td>
+            <td>
+              <div class="product-name">${escapeHtml(it.name || 'Product Item')}</div>
+              <div class="product-sku">SKU: ${escapeHtml(it.sku || ('LT-ITM-' + (it.id || idx+1)))}</div>
+            </td>
+            <td class="col-qty">${it.qty || 1}</td>
+            <td class="col-price">${Number(it.price || 0).toLocaleString()}</td>
+            <td class="col-total">${(Number(it.price || 0) * (it.qty || 1)).toLocaleString()}</td>
+          </tr>
+        `).join('');
+      }
+
+      document.getElementById('subtotalVal').textContent = 'KES ' + Number(o.subtotal || o.total || 0).toLocaleString();
+      document.getElementById('deliveryVal').textContent = o.delivery === 0 ? 'FREE' : 'KES ' + Number(o.delivery || 0).toLocaleString();
+      document.getElementById('totalVal').textContent = 'KES ' + Number(o.total || 0).toLocaleString();
+      document.getElementById('secHash').textContent = 'LT-AUTH-' + String(o.id || o.ref).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+</body>
+</html>
