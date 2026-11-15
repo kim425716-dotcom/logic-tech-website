@@ -458,7 +458,7 @@ function validateOrderBody(body) {
   const total = validAmount(body.total);
   if (total !== subtotal + delivery) throw fail(400, 'Order total mismatch.');
 
-  const paymentMethod = body.payment_method === 'card' ? 'card' : 'mpesa';
+  const paymentMethod = ['card', 'cash'].includes(body.payment_method) ? body.payment_method : 'mpesa';
 
   return { name, email, phone, county, city, address, items, subtotal, delivery, total, paymentMethod };
 }
@@ -994,7 +994,7 @@ router.post('/admin/orders/:id/confirm-payment', requireAdmin, async (req, res, 
     const order = db.prepare('SELECT * FROM shop_orders WHERE id = ?').get(id);
     if (!order) throw fail(404, 'Order not found.');
 
-    const updated = await fulfillOrderPayment(order, receipt, 'admin_manual');
+    const updated = await fulfillOrderPayment(order, receipt, order.payment_method || 'admin_manual');
     res.json({ ok: true, message: 'Order payment confirmed & stock updated.', order: updated });
   } catch (err) {
     next(err);

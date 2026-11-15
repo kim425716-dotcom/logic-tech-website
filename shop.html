@@ -1076,6 +1076,13 @@
                 <div class="pay-opt-sub">Visa / Mastercard via Flutterwave</div>
               </div>
             </div>
+            <div class="pay-opt" id="payOptCash" onclick="selectPayment('cash')">
+              <i class="fa-solid fa-hand-holding-dollar" style="color:var(--gold);"></i>
+              <div>
+                <div class="pay-opt-label">Pay with Cash</div>
+                <div class="pay-opt-sub">Cash on Delivery upon arrival</div>
+              </div>
+            </div>
           </div>
 
       <!-- M-Pesa -->
@@ -1142,6 +1149,26 @@
               <div class="form-grp">
                 <label>CVV</label>
                 <input type="text" placeholder="123" maxlength="4" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Cash on Delivery Wrap -->
+          <div class="cash-wrap" id="cashWrap" style="display:none; padding:1.15rem; border-radius:12px; background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.3); margin-bottom:1rem;">
+            <div style="display:flex; align-items:flex-start; gap:0.85rem;">
+              <div style="width:40px; height:40px; border-radius:50%; background:rgba(201,164,92,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+              <div>
+                <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem; margin-bottom:0.25rem;">Cash on Delivery</div>
+                <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5; margin:0 0 0.65rem 0;">
+                  Pay in cash (KES) directly to our courier agent when your package is delivered to your doorstep.
+                </p>
+                <div style="display:flex; flex-direction:column; gap:0.35rem; font-size:0.785rem; color:var(--text-secondary);">
+                  <div><i class="fa-solid fa-circle-check" style="color:#10b981; margin-right:0.4rem;"></i> Inspect your package before completing payment.</div>
+                  <div><i class="fa-solid fa-phone" style="color:var(--gold); margin-right:0.4rem;"></i> Our dispatch team will call you to confirm delivery.</div>
+                  <div><i class="fa-solid fa-receipt" style="color:#60a5fa; margin-right:0.4rem;"></i> Official digital receipt and invoice issued upon delivery.</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1786,6 +1813,9 @@
       if (selectedPayment === 'mpesa') {
         next.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
         next.onclick = () => sendSTKPush();
+      } else if (selectedPayment === 'cash') {
+        next.innerHTML = 'Confirm Order (Pay Cash) <i class="fa-solid fa-arrow-right"></i>';
+        next.onclick = () => handleCashCheckout();
       } else {
         next.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
         next.onclick = () => coStep(1);
@@ -1887,6 +1917,10 @@
         mpesaInp.value = delPhone;
       }
     }
+    // For step 2 → 3 on CASH: submit order and advance
+    if (coCurrentStep === 2 && dir > 0 && selectedPayment === 'cash') {
+      handleCashCheckout(); return;
+    }
     // For step 2 → 3 on CARD: create order & advance
     if (coCurrentStep === 2 && dir > 0 && selectedPayment === 'card') {
       handleCardCheckout(); return;
@@ -1938,21 +1972,77 @@
     }
   }
 
+  async function handleCashCheckout() {
+    const btn = document.getElementById('coBtnNext');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting Order…';
+    }
+    try {
+      if (!currentOrderRef) {
+        const ref = await createOrder();
+        if (!ref) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Confirm Order (Pay Cash) <i class="fa-solid fa-arrow-right"></i>';
+          }
+          return;
+        }
+        currentOrderRef = ref;
+      }
+      lastConfirmedReceipt = 'CASH ON DELIVERY';
+      toast('Order confirmed! Pay cash upon package delivery. ✓', 'success');
+      setTimeout(() => {
+        coCurrentStep = 3;
+        renderCoStep();
+        if (btn) btn.disabled = false;
+      }, 600);
+    } catch (err) {
+      toast(err.message || 'Could not complete cash order', 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Confirm Order (Pay Cash) <i class="fa-solid fa-arrow-right"></i>';
+      }
+    }
+  }
+
   function selectPayment(type) {
     selectedPayment = type;
-    document.getElementById('payOptMpesa').classList.toggle('selected', type === 'mpesa');
-    document.getElementById('payOptCard').classList.toggle('selected', type === 'card');
-    document.getElementById('mpesaWrap').classList.toggle('show', type === 'mpesa');
-    document.getElementById('cardWrap').classList.toggle('show', type === 'card');
+    document.getElementById('payOptMpesa')?.classList.toggle('selected', type === 'mpesa');
+    document.getElementById('payOptCard')?.classList.toggle('selected', type === 'card');
+    document.getElementById('payOptCash')?.classList.toggle('selected', type === 'cash');
+
+    const mpesaWrap = document.getElementById('mpesaWrap');
+    if (mpesaWrap) {
+      mpesaWrap.classList.toggle('show', type === 'mpesa');
+      mpesaWrap.style.display = (type === 'mpesa') ? '' : 'none';
+    }
+
+    const cardWrap = document.getElementById('cardWrap');
+    if (cardWrap) {
+      cardWrap.classList.toggle('show', type === 'card');
+      cardWrap.style.display = (type === 'card') ? '' : 'none';
+    }
+
+    const cashWrap = document.getElementById('cashWrap');
+    if (cashWrap) {
+      cashWrap.style.display = (type === 'cash') ? 'block' : 'none';
+    }
+
     // Re-render the Next button label to match selected payment
     if (coCurrentStep === 2) {
       const next = document.getElementById('coBtnNext');
-      if (type === 'mpesa') {
-        next.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
-        next.onclick = () => sendSTKPush();
-      } else {
-        next.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
-        next.onclick = () => coStep(1);
+      if (next) {
+        if (type === 'mpesa') {
+          next.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Send STK Push';
+          next.onclick = () => sendSTKPush();
+        } else if (type === 'cash') {
+          next.innerHTML = 'Confirm Order (Pay Cash) <i class="fa-solid fa-arrow-right"></i>';
+          next.onclick = () => handleCashCheckout();
+        } else {
+          next.innerHTML = 'Pay with Card <i class="fa-solid fa-credit-card"></i>';
+          next.onclick = () => coStep(1);
+        }
       }
     }
   }

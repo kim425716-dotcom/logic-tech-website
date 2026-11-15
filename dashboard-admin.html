@@ -5357,7 +5357,9 @@ https://logictech.co.ke`;
       document.getElementById('shopModalLocation').textContent = `${order.county}, ${order.city}`;
       document.getElementById('shopModalAddress').textContent = order.address;
       document.getElementById('shopModalDeliveryFee').textContent = `Delivery: ${order.delivery === 0 ? 'FREE' : 'KES ' + Number(order.delivery).toLocaleString()}`;
-      document.getElementById('shopModalPaymentInfo').textContent = `${(order.payment_method || 'mpesa').toUpperCase()} (${order.payment_status.toUpperCase()}) — Receiving: 0702588886`;
+      const pMethod = (order.payment_method || 'mpesa').toUpperCase();
+      const pReceiver = (order.payment_method === 'cash') ? 'Cash on Delivery upon arrival' : 'Receiving: 0702588886';
+      document.getElementById('shopModalPaymentInfo').textContent = `${pMethod} (${order.payment_status.toUpperCase()}) — ${pReceiver}`;
       document.getElementById('shopModalReceipt').textContent = order.mpesa_receipt ? `M-Pesa Receipt: ${order.mpesa_receipt}` : 'Receipt: Pending verification';
       document.getElementById('shopModalTotal').textContent = `KES ${Number(order.total).toLocaleString()}`;
       document.getElementById('shopModalStatusSelect').value = order.status;
@@ -5488,7 +5490,13 @@ https://logictech.co.ke`;
     }
 
     async function adminConfirmOrderPayment(id, ref) {
-      const receipt = prompt(`Enter M-Pesa transaction code or payment note for order ${ref}:`, `QK${Math.floor(10000000 + Math.random() * 90000000)}`);
+      const orderObj = state.shopOrders.find(o => o.id === id);
+      const isCash = orderObj && orderObj.payment_method === 'cash';
+      const defaultCode = isCash ? 'CASH-COLLECTED' : `QK${Math.floor(10000000 + Math.random() * 90000000)}`;
+      const promptMsg = isCash
+        ? `Confirm cash payment collected for order ${ref} (enter receipt note):`
+        : `Enter M-Pesa transaction code or payment note for order ${ref}:`;
+      const receipt = prompt(promptMsg, defaultCode);
       if (!receipt) return;
       try {
         const res = await apiFetch(`/api/shop/admin/orders/${id}/confirm-payment`, {
@@ -6481,10 +6489,15 @@ https://logictech.co.ke`;
       }
 
       grid.innerHTML = list.map(o => {
-        const isMpesa = (o.payment_method || 'mpesa').toLowerCase() === 'mpesa';
-        const methodBadge = isMpesa
-          ? `<span class="badge-pill" style="background:rgba(0,178,100,0.12); color:#00b264; font-weight:700;"><i class="fa-solid fa-mobile-screen-button"></i> M-PESA</span>`
-          : `<span class="badge-pill" style="background:rgba(96,165,250,0.12); color:#60a5fa; font-weight:700;"><i class="fa-solid fa-credit-card"></i> CARD</span>`;
+        const methodStr = (o.payment_method || 'mpesa').toLowerCase();
+        let methodBadge = '';
+        if (methodStr === 'mpesa') {
+          methodBadge = `<span class="badge-pill" style="background:rgba(0,178,100,0.12); color:#00b264; font-weight:700;"><i class="fa-solid fa-mobile-screen-button"></i> M-PESA</span>`;
+        } else if (methodStr === 'cash') {
+          methodBadge = `<span class="badge-pill" style="background:rgba(201,164,92,0.15); color:var(--gold); font-weight:700;"><i class="fa-solid fa-hand-holding-dollar"></i> CASH</span>`;
+        } else {
+          methodBadge = `<span class="badge-pill" style="background:rgba(96,165,250,0.12); color:#60a5fa; font-weight:700;"><i class="fa-solid fa-credit-card"></i> CARD</span>`;
+        }
 
         let statusBadge = '';
         if (o.payment_status === 'paid') {
