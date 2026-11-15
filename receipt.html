@@ -3,635 +3,848 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Official Payment Receipt — Logic Tech</title>
+  <title>Receipt PDF — Logic Tech</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- html2pdf for direct client-side PDF downloads -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
       --gold: #C9A45C;
-      --gold-dark: #A88438;
-      --gold-light: #DFBF7A;
-      --gold-subtle: rgba(201, 164, 92, 0.12);
-      --dark-navy: #0B1120;
-      --navy-card: #0F172A;
-      --border-color: #E2E8F0;
+      --gold-dark: #9A7730;
+      --gold-light: #E8CF96;
+      --gold-subtle: rgba(201, 164, 92, 0.1);
+      --pdf-viewer-bg: #323639;
+      --pdf-toolbar-bg: #212426;
+      --pdf-toolbar-border: #424649;
       --text-main: #0F172A;
+      --text-secondary: #334155;
       --text-muted: #64748B;
-      --emerald: #10B981;
+      --emerald: #059669;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ══════ PDF READER VIEWPORT ══════ */
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0B1120;
-      color: var(--text-main);
+      background: var(--pdf-viewer-bg);
+      color: #E2E8F0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 2.5rem 1rem;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
-    /* Actions Toolbar */
-    .receipt-actions-bar {
-      width: 100%;
-      max-width: 820px;
+    /* Top Floating Acrobat / PDF Toolbar */
+    .pdf-toolbar {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: var(--pdf-toolbar-bg);
+      border-bottom: 1px solid var(--pdf-toolbar-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      gap: 1rem;
+      padding: 0 1.25rem;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     }
-    .back-btn {
-      color: #94A3B8;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: inline-flex;
+    .pdf-meta-left {
+      display: flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: color 0.2s;
+      gap: 0.85rem;
+      font-size: 0.85rem;
+      color: #E2E8F0;
     }
-    .back-btn:hover { color: #F8FAFC; }
-    .btn-group { display: flex; gap: 0.75rem; }
-    .action-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
+    .pdf-icon-badge {
+      color: #EF4444;
+      font-size: 1.25rem;
+    }
+    .pdf-doc-title {
       font-weight: 700;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
     }
-    .btn-gold {
+
+    .pdf-controls-center {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pdf-btn-icon {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #CBD5E1;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .pdf-btn-icon:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+    .pdf-page-indicator {
+      font-size: 0.8rem;
+      color: #94A3B8;
+      padding: 0 0.5rem;
+      white-space: nowrap;
+    }
+    .pdf-zoom-level {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      min-width: 45px;
+      text-align: center;
+    }
+
+    .pdf-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-action-download {
       background: var(--gold);
       color: #0F172A;
+      border: none;
+      padding: 0.4rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s;
     }
-    .btn-gold:hover {
+    .btn-action-download:hover {
       background: var(--gold-light);
-      box-shadow: 0 4px 14px rgba(201, 164, 92, 0.35);
+      box-shadow: 0 2px 10px rgba(201, 164, 92, 0.4);
     }
-    .btn-dark {
-      background: rgba(255, 255, 255, 0.08);
-      color: #F8FAFC;
-      border-color: rgba(255, 255, 255, 0.15);
+    .btn-action-print {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
     }
-    .btn-dark:hover {
-      background: rgba(255, 255, 255, 0.15);
+    .btn-action-print:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .btn-action-close {
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: color 0.2s;
+    }
+    .btn-action-close:hover { color: #FFFFFF; }
+
+    /* ══════ THE PDF CANVAS & A4 SHEET ══════ */
+    .pdf-canvas-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem 3rem;
+      overflow-x: auto;
     }
 
-    /* ══════ THE OFFICIAL RECEIPT SHEET ══════ */
-    .receipt-sheet {
-      width: 100%;
-      max-width: 820px;
+    .pdf-zoom-container {
+      transform-origin: top center;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Exact A4 Standard Proportions (210mm x 297mm) */
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
       background: #FFFFFF;
-      border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.1);
+      color: var(--text-main);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      padding: 16mm 18mm 16mm;
       position: relative;
-      overflow: hidden;
-      padding: 3.5rem 3.5rem 2.5rem;
-      border-top: 6px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    /* Subtle security watermark */
-    .receipt-watermark {
+    /* Subtle authentic PDF security background tint */
+    .a4-page::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #9A7730 0%, #C9A45C 50%, #DFBF7A 100%);
+    }
+
+    /* Watermark */
+    .pdf-watermark {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) rotate(-30deg);
+      transform: translate(-50%, -50%) rotate(-35deg);
       font-family: 'Cinzel', serif;
-      font-size: 5.5rem;
+      font-size: 4.8rem;
       font-weight: 800;
-      color: rgba(201, 164, 92, 0.04);
-      letter-spacing: 0.2em;
+      color: rgba(201, 164, 92, 0.038);
+      letter-spacing: 0.25em;
       pointer-events: none;
       user-select: none;
       white-space: nowrap;
       z-index: 1;
     }
 
-    .sheet-inner { position: relative; z-index: 2; }
+    .pdf-content-layer {
+      position: relative;
+      z-index: 2;
+    }
 
-    /* Header Section */
-    .receipt-header {
+    /* ── Header ─────────────────────────────────────────── */
+    .pdf-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 2rem;
-      border-bottom: 2px solid #F1F5F9;
-      padding-bottom: 2rem;
-      margin-bottom: 2rem;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
     }
-    .company-brand {
+    .pdf-brand-box {
       display: flex;
       align-items: center;
-      gap: 1.15rem;
+      gap: 12px;
     }
-    .company-logo {
-      width: 58px;
-      height: 58px;
+    .pdf-brand-logo {
+      width: 52px;
+      height: 52px;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 8px;
       background: #0B1120;
-      padding: 6px;
+      padding: 5px;
     }
-    .company-title {
+    .pdf-brand-title {
       font-family: 'Cinzel', Georgia, serif;
-      font-size: 1.65rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: #0F172A;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       line-height: 1.1;
     }
-    .company-subtitle {
-      font-size: 0.8rem;
-      font-weight: 600;
+    .pdf-brand-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
       color: var(--gold-dark);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-top: 0.2rem;
+      margin-top: 2px;
     }
-    .company-meta {
-      font-size: 0.775rem;
-      color: #64748B;
-      margin-top: 0.35rem;
+    .pdf-brand-contact {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 3px;
       line-height: 1.4;
     }
 
-    .doc-badge-col {
+    .pdf-doc-badge-col {
       text-align: right;
     }
-    .doc-type-badge {
+    .pdf-doc-type-pill {
       display: inline-block;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #FFFFFF;
       background: #0F172A;
-      padding: 0.35rem 0.85rem;
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-bottom: 4px;
     }
-    .receipt-number {
-      font-family: monospace;
-      font-size: 1.25rem;
-      font-weight: 800;
+    .pdf-receipt-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
       color: var(--gold-dark);
       letter-spacing: 0.02em;
     }
-    .receipt-date-top {
-      font-size: 0.8rem;
-      color: #64748B;
-      margin-top: 0.25rem;
+    .pdf-issue-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    /* Meta Cards Grid */
-    .receipt-meta-grid {
+    /* ── Metadata Grid ──────────────────────────────────── */
+    .pdf-meta-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 14px;
+      margin-bottom: 16px;
     }
-    .meta-box {
+    .pdf-meta-card {
       background: #F8FAFC;
       border: 1px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 1.25rem 1.35rem;
+      border-radius: 8px;
+      padding: 10px 14px;
     }
-    .meta-box-title {
-      font-size: 0.72rem;
+    .pdf-meta-label {
+      font-size: 0.65rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       color: var(--gold-dark);
-      margin-bottom: 0.65rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      margin-bottom: 4px;
     }
-    .customer-name {
-      font-size: 1.05rem;
-      font-weight: 700;
+    .pdf-customer-name {
+      font-size: 0.95rem;
+      font-weight: 800;
       color: #0F172A;
-      margin-bottom: 0.25rem;
+      margin-bottom: 2px;
     }
-    .meta-text-line {
-      font-size: 0.825rem;
-      color: #475569;
-      line-height: 1.5;
+    .pdf-meta-line {
+      font-size: 0.78rem;
+      color: #334155;
+      line-height: 1.45;
     }
 
-    .meta-kv-row {
+    .pdf-kv-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.825rem;
-      padding: 0.35rem 0;
+      font-size: 0.78rem;
+      padding: 3px 0;
       border-bottom: 1px dashed #E2E8F0;
     }
-    .meta-kv-row:last-child { border-bottom: none; }
-    .meta-kv-row .kv-key { color: #64748B; }
-    .meta-kv-row .kv-val { font-weight: 700; color: #0F172A; }
+    .pdf-kv-row:last-child { border-bottom: none; }
+    .pdf-kv-key { color: var(--text-muted); font-size: 0.75rem; }
+    .pdf-kv-val { font-weight: 700; color: #0F172A; }
 
-    .paid-pill {
+    .pdf-status-paid {
       background: rgba(16, 185, 129, 0.12);
-      color: #059669;
+      color: var(--emerald);
       font-weight: 800;
-      font-size: 0.72rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
+      font-size: 0.68rem;
+      padding: 2px 7px;
+      border-radius: 10px;
       letter-spacing: 0.04em;
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 3px;
     }
 
-    /* Products Table */
-    .receipt-table {
+    /* ── Products Table ─────────────────────────────────── */
+    .pdf-table-wrap {
+      margin-bottom: 14px;
+    }
+    .pdf-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 1.75rem;
     }
-    .receipt-table th {
-      background: #F8FAFC;
-      border-top: 1px solid #E2E8F0;
-      border-bottom: 2px solid #CBD5E1;
-      padding: 0.75rem 1rem;
-      font-size: 0.75rem;
+    .pdf-table th {
+      background: #F1F5F9;
+      border-top: 1px solid #CBD5E1;
+      border-bottom: 2px solid #94A3B8;
+      padding: 7px 10px;
+      font-size: 0.7rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #475569;
+      letter-spacing: 0.07em;
+      color: #334155;
     }
-    .receipt-table td {
-      padding: 1rem;
-      border-bottom: 1px solid #F1F5F9;
-      font-size: 0.875rem;
+    .pdf-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #E2E8F0;
+      font-size: 0.8rem;
       color: #1E293B;
       vertical-align: middle;
     }
-    .receipt-table tr:hover td { background: #FAFAFA; }
-    .col-idx { text-align: center; color: #94A3B8; font-weight: 700; width: 45px; }
-    .col-qty { text-align: center; font-weight: 700; width: 70px; }
-    .col-price { text-align: right; width: 130px; font-weight: 600; color: #475569; }
-    .col-total { text-align: right; width: 140px; font-weight: 700; color: #0F172A; }
-    .product-name { font-weight: 700; color: #0F172A; }
-    .product-sku { font-size: 0.72rem; color: #94A3B8; font-family: monospace; margin-top: 0.15rem; }
+    .col-idx { text-align: center; color: #94A3B8; font-weight: 700; width: 32px; }
+    .col-qty { text-align: center; font-weight: 700; width: 55px; }
+    .col-price { text-align: right; width: 110px; font-weight: 600; color: #475569; }
+    .col-total { text-align: right; width: 120px; font-weight: 800; color: #0F172A; }
+    .item-title { font-weight: 700; color: #0F172A; font-size: 0.82rem; }
+    .item-sku { font-size: 0.68rem; color: #94A3B8; font-family: monospace; margin-top: 1px; }
 
-    /* Totals Breakdown */
-    .totals-wrapper {
+    /* ── Totals Box ─────────────────────────────────────── */
+    .pdf-totals-section {
       display: flex;
       justify-content: flex-end;
-      margin-bottom: 2.25rem;
+      margin-bottom: 18px;
     }
-    .totals-box {
-      width: 320px;
+    .pdf-totals-card {
+      width: 270px;
       background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 8px 14px;
     }
-    .totals-row {
+    .pdf-totals-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.35rem 0;
-      font-size: 0.85rem;
+      padding: 3px 0;
+      font-size: 0.78rem;
       color: #475569;
     }
-    .totals-row.grand-total {
+    .pdf-totals-row.grand-total {
       border-top: 2px solid var(--gold);
-      margin-top: 0.5rem;
-      padding-top: 0.75rem;
-      font-size: 1.15rem;
+      margin-top: 4px;
+      padding-top: 6px;
+      font-size: 1.05rem;
       font-weight: 800;
       color: #0F172A;
     }
-    .totals-row.grand-total .amt { color: var(--gold-dark); }
+    .pdf-totals-row.grand-total .amt { color: var(--gold-dark); }
 
-    /* ══════ SIGNATURE & VERIFICATION SECTION ══════ */
-    .receipt-bottom-grid {
+    /* ── Signature, Stamp & Official Verification Block ─── */
+    .pdf-sign-off-block {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 2rem;
-      padding-top: 1.5rem;
-      border-top: 2px solid #F1F5F9;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 16px;
+      padding-top: 14px;
+      border-top: 2px solid #E2E8F0;
       align-items: flex-end;
     }
-    .terms-box {
-      font-size: 0.76rem;
+    .pdf-terms-box {
+      font-size: 0.7rem;
       color: #64748B;
-      line-height: 1.55;
+      line-height: 1.45;
     }
-    .terms-title {
-      font-size: 0.78rem;
+    .pdf-terms-title {
+      font-size: 0.72rem;
       font-weight: 800;
       color: #0F172A;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.35rem;
+      margin-bottom: 3px;
     }
-    .security-hash-pill {
-      display: inline-flex;
+    .pdf-qr-strip {
+      display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 6px 8px;
       background: #F1F5F9;
-      padding: 0.3rem 0.65rem;
       border-radius: 6px;
+      width: fit-content;
+    }
+    .pdf-qr-img {
+      width: 38px;
+      height: 38px;
+      background: #FFFFFF;
+      padding: 2px;
+      border-radius: 4px;
+    }
+    .pdf-qr-text {
       font-family: monospace;
-      font-size: 0.72rem;
+      font-size: 0.65rem;
       font-weight: 700;
-      color: #475569;
-      margin-top: 0.75rem;
+      color: #334155;
+      line-height: 1.3;
     }
 
-    /* Signature & Stamp Column */
-    .signature-container {
+    /* Signature & Seal */
+    .pdf-signature-col {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       position: relative;
     }
-
-    /* Official Circular Corporate Stamp */
-    .official-stamp-seal {
+    .pdf-official-stamp {
       position: absolute;
-      top: -30px;
-      right: 120px;
-      width: 110px;
-      height: 110px;
+      top: -24px;
+      right: 90px;
+      width: 95px;
+      height: 95px;
       pointer-events: none;
-      transform: rotate(-12deg);
-      opacity: 0.88;
+      transform: rotate(-10deg);
+      opacity: 0.9;
     }
-
-    .signature-svg-box {
+    .pdf-sig-svg {
+      width: 150px;
+      height: 42px;
+      margin-bottom: 2px;
+    }
+    .pdf-sig-line {
       width: 180px;
-      height: 52px;
-      margin-bottom: 0.25rem;
-    }
-    .signature-line {
-      width: 210px;
       height: 1.5px;
       background: #0F172A;
-      margin-bottom: 0.4rem;
+      margin-bottom: 3px;
     }
-    .signatory-name {
-      font-size: 0.95rem;
+    .pdf-signatory-name {
+      font-size: 0.88rem;
       font-weight: 800;
       color: #0F172A;
-      letter-spacing: 0.02em;
     }
-    .signatory-role {
-      font-size: 0.75rem;
-      color: var(--gold-dark);
+    .pdf-signatory-title {
+      font-size: 0.68rem;
       font-weight: 700;
+      color: var(--gold-dark);
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .signatory-date {
-      font-size: 0.72rem;
+    .pdf-signatory-date {
+      font-size: 0.68rem;
       color: #64748B;
-      margin-top: 0.15rem;
+      margin-top: 1px;
     }
 
-    /* Footer Note */
-    .receipt-footer-note {
-      text-align: center;
-      margin-top: 2rem;
-      padding-top: 1.25rem;
-      border-top: 1px dashed #E2E8F0;
-      font-size: 0.75rem;
+    /* ── PDF Footer / Page Numbering ────────────────────── */
+    .pdf-page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px dashed #CBD5E1;
+      font-size: 0.65rem;
       color: #94A3B8;
       letter-spacing: 0.02em;
     }
 
-    /* ══════ PRINT STYLES ══════ */
+    /* ══════ NATIVE PRINT PREPARATION ══════ */
     @media print {
       body {
         background: #FFFFFF !important;
         color: #000000 !important;
         padding: 0 !important;
       }
-      .receipt-actions-bar {
+      .pdf-toolbar {
         display: none !important;
       }
-      .receipt-sheet {
-        max-width: 100% !important;
+      .pdf-canvas-wrapper {
+        padding: 0 !important;
+      }
+      .pdf-zoom-container {
+        transform: none !important;
+      }
+      .a4-page {
+        width: 100% !important;
+        min-height: 100vh !important;
         box-shadow: none !important;
-        border: none !important;
         border-radius: 0 !important;
-        padding: 1.5cm 1.5cm !important;
+        padding: 12mm 14mm !important;
       }
       @page {
-        margin: 1cm;
+        margin: 0;
         size: A4 portrait;
       }
-    }
-
-    @media (max-width: 640px) {
-      .receipt-sheet { padding: 2rem 1.25rem; }
-      .receipt-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-      .doc-badge-col { text-align: left; }
-      .receipt-meta-grid { grid-template-columns: 1fr; }
-      .receipt-bottom-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .signature-container { align-items: flex-start; }
-      .official-stamp-seal { right: 20px; }
-      .totals-box { width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Actions Toolbar -->
-  <div class="receipt-actions-bar">
-    <a href="shop.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
-    <div class="btn-group">
-      <button class="action-btn btn-dark" onclick="window.close()" id="closeBtn" style="display:none;"><i class="fa-solid fa-xmark"></i> Close</button>
-      <button class="action-btn btn-gold" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+  <!-- ══════ TOP PDF VIEWER TOOLBAR ══════ -->
+  <div class="pdf-toolbar">
+    <!-- Left: PDF File Icon & Name -->
+    <div class="pdf-meta-left">
+      <i class="fa-solid fa-file-pdf pdf-icon-badge"></i>
+      <span class="pdf-doc-title" id="pdfDocTitle">LogicTech-Receipt-LT-9821.pdf</span>
+    </div>
+
+    <!-- Center: Page & Zoom Controls -->
+    <div class="pdf-controls-center">
+      <span class="pdf-page-indicator">Page 1 / 1</span>
+      <button class="pdf-btn-icon" onclick="adjustZoom(-0.1)" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+      <span class="pdf-zoom-level" id="zoomLevel">100%</span>
+      <button class="pdf-btn-icon" onclick="adjustZoom(0.1)" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+      <button class="pdf-btn-icon" onclick="resetZoom()" title="Fit to Width"><i class="fa-solid fa-arrows-left-right"></i></button>
+    </div>
+
+    <!-- Right: Download PDF, Print, Close -->
+    <div class="pdf-actions-right">
+      <button class="btn-action-download" onclick="downloadPdfFile()" id="downloadBtn">
+        <i class="fa-solid fa-download"></i> Download PDF
+      </button>
+      <button class="btn-action-print" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> Print
+      </button>
+      <a href="shop.html" class="btn-action-close" title="Exit viewer">
+        <i class="fa-solid fa-xmark"></i> Close
+      </a>
     </div>
   </div>
 
-  <!-- The Official Receipt Paper -->
-  <div class="receipt-sheet" id="receiptSheet">
-    <!-- Watermark -->
-    <div class="receipt-watermark">LOGIC TECH</div>
+  <!-- ══════ THE A4 PDF DOCUMENT CANVAS ══════ -->
+  <div class="pdf-canvas-wrapper">
+    <div class="pdf-zoom-container" id="zoomContainer">
+      <!-- Standard A4 Sheet -->
+      <div class="a4-page" id="pdfSheet">
+        <!-- Background Security Watermark -->
+        <div class="pdf-watermark">LOGIC TECH</div>
 
-    <div class="sheet-inner">
-      <!-- Header -->
-      <div class="receipt-header">
-        <div class="company-brand">
-          <img src="assets/logo.png" alt="Logic Tech Logo" class="company-logo" onerror="this.style.display='none'" />
-          <div>
-            <div class="company-title">LOGIC TECH</div>
-            <div class="company-subtitle">Software Engineering &amp; Solutions</div>
-            <div class="company-meta">
-              Nairobi, Kenya • +254 702 588 886<br />
-              contact@logictech.co.ke • logictech.co.ke
+        <div class="pdf-content-layer">
+          <!-- 1. Header with Logo & Corporate Info -->
+          <div class="pdf-header">
+            <div class="pdf-brand-box">
+              <img src="assets/logo.png" alt="Logic Tech Logo" class="pdf-brand-logo" onerror="this.style.display='none'" />
+              <div>
+                <div class="pdf-brand-title">LOGIC TECH</div>
+                <div class="pdf-brand-sub">Enterprise Engineering &amp; Technology</div>
+                <div class="pdf-brand-contact">
+                  Nairobi, Kenya • +254 702 588 886<br />
+                  contact@logictech.co.ke • logictech.co.ke
+                </div>
+              </div>
+            </div>
+
+            <div class="pdf-doc-badge-col">
+              <div class="pdf-doc-type-pill">Tax Invoice &amp; Official Receipt</div>
+              <div class="pdf-receipt-num" id="rcptNum">LT-SHOP-2026-9821</div>
+              <div class="pdf-issue-date" id="rcptDate">Issued: 16 Nov 2026, 14:35</div>
+            </div>
+          </div>
+
+          <!-- 2. Customer & Payment Meta Grid -->
+          <div class="pdf-meta-grid">
+            <!-- Customer Destination Card -->
+            <div class="pdf-meta-card">
+              <div class="pdf-meta-label"><i class="fa-solid fa-user"></i> Billed To / Delivery Destination</div>
+              <div class="pdf-customer-name" id="custName">Brian Kimani</div>
+              <div class="pdf-meta-line" id="custPhone">Tel: +254 702 588 886</div>
+              <div class="pdf-meta-line" id="custEmail">Email: brian@logictech.co.ke</div>
+              <div class="pdf-meta-line" id="custAddress">Destination: Nairobi, Westlands, Kenya</div>
+            </div>
+
+            <!-- Payment Information Card -->
+            <div class="pdf-meta-card">
+              <div class="pdf-meta-label"><i class="fa-solid fa-shield-check"></i> Verified Payment Details</div>
+              <div class="pdf-kv-row">
+                <span class="pdf-kv-key">Payment Method:</span>
+                <span class="pdf-kv-val" id="payMethod"><i class="fa-solid fa-mobile-screen-button" style="color:#059669;"></i> Lipa na M-Pesa</span>
+              </div>
+              <div class="pdf-kv-row">
+                <span class="pdf-kv-key">M-Pesa / Transaction Code:</span>
+                <span class="pdf-kv-val" id="payCode" style="font-family:monospace; color:#059669; font-weight:800;">QK84ND92KL</span>
+              </div>
+              <div class="pdf-kv-row">
+                <span class="pdf-kv-key">Payment Status:</span>
+                <span class="pdf-kv-val"><span class="pdf-status-paid" id="payStatus"><i class="fa-solid fa-circle-check"></i> PAID &amp; CONFIRMED</span></span>
+              </div>
+              <div class="pdf-kv-row">
+                <span class="pdf-kv-key">Order Status:</span>
+                <span class="pdf-kv-val" id="orderStatus">Confirmed &amp; Dispatched</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Line Items Product Table -->
+          <div class="pdf-table-wrap">
+            <table class="pdf-table">
+              <thead>
+                <tr>
+                  <th class="col-idx">#</th>
+                  <th>Item Details &amp; Description</th>
+                  <th class="col-qty">Qty</th>
+                  <th class="col-price">Unit Price (KES)</th>
+                  <th class="col-total">Amount (KES)</th>
+                </tr>
+              </thead>
+              <tbody id="productsBody">
+                <tr>
+                  <td class="col-idx">1</td>
+                  <td>
+                    <div class="item-title">Enterprise Cloud Hosting &amp; Dedicated Deployment</div>
+                    <div class="item-sku">SKU: LT-PROD-SRV01</div>
+                  </td>
+                  <td class="col-qty">1</td>
+                  <td class="col-price">18,500</td>
+                  <td class="col-total">18,500</td>
+                </tr>
+                <tr>
+                  <td class="col-idx">2</td>
+                  <td>
+                    <div class="item-title">High-Performance Managed SSL &amp; Security Shield</div>
+                    <div class="item-sku">SKU: LT-PROD-SEC03</div>
+                  </td>
+                  <td class="col-qty">2</td>
+                  <td class="col-price">4,500</td>
+                  <td class="col-total">9,000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 4. Totals Breakdown Card -->
+          <div class="pdf-totals-section">
+            <div class="pdf-totals-card">
+              <div class="pdf-totals-row">
+                <span>Subtotal:</span>
+                <span id="subtotalVal">KES 27,500</span>
+              </div>
+              <div class="pdf-totals-row">
+                <span>Delivery &amp; Logistics:</span>
+                <span id="deliveryVal">KES 500</span>
+              </div>
+              <div class="pdf-totals-row grand-total">
+                <span>Total Paid:</span>
+                <span class="amt" id="totalVal">KES 28,000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Sign-Off, Corporate Stamp & Authentication -->
+          <div class="pdf-sign-off-block">
+            <div class="pdf-terms-box">
+              <div class="pdf-terms-title">Authentication &amp; Warranty Guarantee</div>
+              <p>
+                This document serves as an authentic electronic tax receipt and proof of purchase issued by Logic Tech. All products and services are backed by our enterprise service level agreement.
+              </p>
+              <div class="pdf-qr-strip">
+                <!-- SVG QR Code Icon Simulation -->
+                <svg viewBox="0 0 40 40" class="pdf-qr-img">
+                  <rect width="40" height="40" fill="#ffffff"/>
+                  <rect x="3" y="3" width="12" height="12" fill="#0F172A"/>
+                  <rect x="5" y="5" width="8" height="8" fill="#ffffff"/>
+                  <rect x="7" y="7" width="4" height="4" fill="#0F172A"/>
+                  <rect x="25" y="3" width="12" height="12" fill="#0F172A"/>
+                  <rect x="27" y="5" width="8" height="8" fill="#ffffff"/>
+                  <rect x="29" y="7" width="4" height="4" fill="#0F172A"/>
+                  <rect x="3" y="25" width="12" height="12" fill="#0F172A"/>
+                  <rect x="5" y="27" width="8" height="8" fill="#ffffff"/>
+                  <rect x="7" y="29" width="4" height="4" fill="#0F172A"/>
+                  <rect x="18" y="5" width="4" height="6" fill="#0F172A"/>
+                  <rect x="18" y="18" width="8" height="8" fill="#0F172A"/>
+                  <rect x="28" y="28" width="6" height="6" fill="#0F172A"/>
+                </svg>
+                <div class="pdf-qr-text">
+                  SECURE DIGITAL SEAL<br />
+                  <span id="secAuthId">LT-AUTH-87291-KE</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Signature & Stamp Container -->
+            <div class="pdf-signature-col">
+              <!-- Official Corporate Circular Stamp -->
+              <svg class="pdf-official-stamp" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="74" fill="none" stroke="#C9A45C" stroke-width="2.5" stroke-dasharray="5 2.5"/>
+                <circle cx="80" cy="80" r="66" fill="none" stroke="#C9A45C" stroke-width="1.2"/>
+                <path id="stampArcTop" d="M 22 80 A 58 58 0 0 1 138 80" fill="none"/>
+                <text font-size="8.5" fill="#9A7730" font-weight="800" letter-spacing="2.2" font-family="'Plus Jakarta Sans', sans-serif">
+                  <textPath href="#stampArcTop" startOffset="50%" text-anchor="middle">LOGIC TECH • OFFICIAL</textPath>
+                </text>
+                <path id="stampArcBtm" d="M 138 80 A 58 58 0 0 1 22 80" fill="none"/>
+                <text font-size="8" fill="#9A7730" font-weight="800" letter-spacing="1.8" font-family="'Plus Jakarta Sans', sans-serif">
+                  <textPath href="#stampArcBtm" startOffset="50%" text-anchor="middle">★ VERIFIED RECEIPT ★</textPath>
+                </text>
+                <text x="80" y="74" text-anchor="middle" font-size="12" font-weight="900" fill="#059669" font-family="'Plus Jakarta Sans', sans-serif">CONFIRMED</text>
+                <text x="80" y="89" text-anchor="middle" font-size="8" font-weight="700" fill="#9A7730" font-family="'Plus Jakarta Sans', sans-serif">NAIROBI, KE</text>
+              </svg>
+
+              <!-- Hand-drawn SVG Ink Signature -->
+              <div class="pdf-sig-svg">
+                <svg viewBox="0 0 200 60" width="150" height="42">
+                  <path d="M 16 42 C 36 12, 46 8, 60 22 C 76 38, 82 48, 96 28 C 110 8, 116 12, 126 32 C 136 48, 146 38, 156 24 C 166 12, 176 32, 186 38 M 46 40 Q 110 36 180 34" 
+                        fill="none" stroke="#9A7730" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="pdf-sig-line"></div>
+              <div class="pdf-signatory-name">Brian Kimani</div>
+              <div class="pdf-signatory-title">Founder &amp; Managing Director</div>
+              <div class="pdf-signatory-date" id="sigDate">Signed: 16 Nov 2026</div>
             </div>
           </div>
         </div>
 
-        <div class="doc-badge-col">
-          <div class="doc-type-badge">Official Receipt</div>
-          <div class="receipt-number" id="receiptNum">LT-SHOP-2026-9821</div>
-          <div class="receipt-date-top" id="receiptDateTop">Issued: 16 Nov 2026, 14:35</div>
+        <!-- 6. Bottom PDF Page Numbering Bar -->
+        <div class="pdf-page-footer">
+          <span>Logic Tech Engineering &amp; Solutions Ltd • Registered in Kenya</span>
+          <span>Official Tax Receipt • Page 1 of 1</span>
         </div>
-      </div>
-
-      <!-- Customer & Payment Meta Grid -->
-      <div class="receipt-meta-grid">
-        <!-- Customer Box -->
-        <div class="meta-box">
-          <div class="meta-box-title"><i class="fa-solid fa-user"></i> Customer &amp; Delivery Destination</div>
-          <div class="customer-name" id="custName">Brian Kimani</div>
-          <div class="meta-text-line" id="custPhone"><i class="fa-solid fa-phone" style="font-size:0.75rem; color:var(--gold-dark); width:14px;"></i> +254 702 588 886</div>
-          <div class="meta-text-line" id="custEmail"><i class="fa-solid fa-envelope" style="font-size:0.75rem; color:#94A3B8; width:14px;"></i> brian@logictech.co.ke</div>
-          <div class="meta-text-line" id="custAddress" style="margin-top:0.25rem;"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:#EF4444; width:14px;"></i> Nairobi, Westlands, Delta Corner Annex</div>
-        </div>
-
-        <!-- Payment Details Box -->
-        <div class="meta-box">
-          <div class="meta-box-title"><i class="fa-solid fa-shield-check"></i> Payment Information</div>
-          <div class="meta-kv-row">
-            <span class="kv-key">Payment Method:</span>
-            <span class="kv-val" id="payMethod"><i class="fa-solid fa-mobile-screen-button" style="color:#10B981;"></i> Lipa na M-Pesa</span>
-          </div>
-          <div class="meta-kv-row">
-            <span class="kv-key">Transaction / Receipt:</span>
-            <span class="kv-val" id="payReceiptCode" style="font-family:monospace; color:#059669; font-weight:800;">QK84ND92KL</span>
-          </div>
-          <div class="meta-kv-row">
-            <span class="kv-key">Payment Status:</span>
-            <span class="kv-val"><span class="paid-pill" id="payStatusPill"><i class="fa-solid fa-circle-check"></i> PAID &amp; VERIFIED</span></span>
-          </div>
-          <div class="meta-kv-row">
-            <span class="kv-key">Fulfilment Status:</span>
-            <span class="kv-val" id="fulfilmentStatus">Confirmed &amp; Dispatched</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Products Table -->
-      <table class="receipt-table">
-        <thead>
-          <tr>
-            <th class="col-idx">#</th>
-            <th>Item &amp; Description</th>
-            <th class="col-qty">Qty</th>
-            <th class="col-price">Unit Price (KES)</th>
-            <th class="col-total">Total (KES)</th>
-          </tr>
-        </thead>
-        <tbody id="itemsBody">
-          <tr>
-            <td class="col-idx">1</td>
-            <td>
-              <div class="product-name">Enterprise Cloud Hosting &amp; Dedicated Deployment</div>
-              <div class="product-sku">SKU: LT-PROD-SRV01</div>
-            </td>
-            <td class="col-qty">1</td>
-            <td class="col-price">18,500</td>
-            <td class="col-total">18,500</td>
-          </tr>
-          <tr>
-            <td class="col-idx">2</td>
-            <td>
-              <div class="product-name">High-Performance Managed SSL &amp; Security Shield</div>
-              <div class="product-sku">SKU: LT-PROD-SEC03</div>
-            </td>
-            <td class="col-qty">2</td>
-            <td class="col-price">4,500</td>
-            <td class="col-total">9,000</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Totals Summary -->
-      <div class="totals-wrapper">
-        <div class="totals-box">
-          <div class="totals-row">
-            <span>Subtotal:</span>
-            <span id="subtotalVal">KES 27,500</span>
-          </div>
-          <div class="totals-row">
-            <span>Delivery / Shipping Fee:</span>
-            <span id="deliveryVal">KES 500</span>
-          </div>
-          <div class="totals-row grand-total">
-            <span>Total Paid:</span>
-            <span class="amt" id="totalVal">KES 28,000</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Sign-off, Stamp, & Verification -->
-      <div class="receipt-bottom-grid">
-        <!-- Terms & Security Note -->
-        <div class="terms-box">
-          <div class="terms-title">Authentication &amp; Guarantee</div>
-          <p>
-            This official receipt is issued by Logic Tech upon verified receipt of payment. All items and services are backed by our enterprise warranty and support guarantee.
-          </p>
-          <div class="security-hash-pill">
-            <i class="fa-solid fa-lock" style="color:var(--gold-dark);"></i>
-            AUTHENTICATED DIGITAL RECEIPT • <span id="secHash">LT-SEC-87291-KE</span>
-          </div>
-        </div>
-
-        <!-- Signature & Stamp Column -->
-        <div class="signature-container">
-          <!-- Corporate Stamp SVG -->
-          <svg class="official-stamp-seal" viewBox="0 0 160 160">
-            <circle cx="80" cy="80" r="74" fill="none" stroke="#C9A45C" stroke-width="2.5" stroke-dasharray="6 3"/>
-            <circle cx="80" cy="80" r="66" fill="none" stroke="#C9A45C" stroke-width="1.2"/>
-            <path id="stampPathTop" d="M 22 80 A 58 58 0 0 1 138 80" fill="none"/>
-            <text font-size="8.5" fill="#A88438" font-weight="800" letter-spacing="2.2" font-family="'Plus Jakarta Sans', sans-serif">
-              <textPath href="#stampPathTop" startOffset="50%" text-anchor="middle">LOGIC TECH • OFFICIAL</textPath>
-            </text>
-            <path id="stampPathBottom" d="M 138 80 A 58 58 0 0 1 22 80" fill="none"/>
-            <text font-size="8" fill="#A88438" font-weight="800" letter-spacing="1.8" font-family="'Plus Jakarta Sans', sans-serif">
-              <textPath href="#stampPathBottom" startOffset="50%" text-anchor="middle">★ VERIFIED RECEIPT ★</textPath>
-            </text>
-            <text x="80" y="74" text-anchor="middle" font-size="12" font-weight="900" fill="#059669" font-family="'Plus Jakarta Sans', sans-serif">CONFIRMED</text>
-            <text x="80" y="90" text-anchor="middle" font-size="8.5" font-weight="700" fill="#A88438" font-family="'Plus Jakarta Sans', sans-serif">NAIROBI, KENYA</text>
-          </svg>
-
-          <!-- Signature Ink Script -->
-          <div class="signature-svg-box">
-            <svg viewBox="0 0 200 60" width="180" height="52">
-              <path d="M 18 42 C 38 12, 48 8, 62 22 C 78 38, 84 48, 98 28 C 112 8, 118 12, 128 32 C 138 48, 148 38, 158 24 C 168 12, 178 32, 188 38 M 48 40 Q 112 36 182 34" 
-                    fill="none" stroke="#A88438" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <div class="signature-line"></div>
-          <div class="signatory-name">Brian Kimani</div>
-          <div class="signatory-role">Founder &amp; Managing Director</div>
-          <div class="signatory-date" id="signDate">Signed: 16 Nov 2026</div>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="receipt-footer-note">
-        Thank you for choosing Logic Tech • Excellence in Software Engineering &amp; Modern Technology • logictech.co.ke
       </div>
     </div>
   </div>
 
   <script>
-    // Populate dynamic data if query string or localStorage exists
+    let currentZoom = 1.0;
+
+    function adjustZoom(delta) {
+      currentZoom = Math.min(1.5, Math.max(0.6, currentZoom + delta));
+      document.getElementById('zoomContainer').style.transform = `scale(${currentZoom})`;
+      document.getElementById('zoomLevel').textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+
+    function resetZoom() {
+      currentZoom = 1.0;
+      document.getElementById('zoomContainer').style.transform = 'scale(1.0)';
+      document.getElementById('zoomLevel').textContent = '100%';
+    }
+
+    // Direct PDF File Download using html2pdf
+    function downloadPdfFile() {
+      const btn = document.getElementById('downloadBtn');
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating PDF…';
+
+      const element = document.getElementById('pdfSheet');
+      const ref = document.getElementById('rcptNum').textContent || 'Receipt';
+      const filename = `LogicTech-Receipt-${ref}.pdf`;
+
+      // Save previous zoom and reset temporarily for clean canvas capture
+      const prevTransform = document.getElementById('zoomContainer').style.transform;
+      document.getElementById('zoomContainer').style.transform = 'scale(1.0)';
+
+      const opt = {
+        margin: 0,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      if (window.html2pdf) {
+        window.html2pdf().set(opt).from(element).save().then(() => {
+          document.getElementById('zoomContainer').style.transform = prevTransform;
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }).catch((err) => {
+          console.error('html2pdf error:', err);
+          document.getElementById('zoomContainer').style.transform = prevTransform;
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+          window.print();
+        });
+      } else {
+        document.getElementById('zoomContainer').style.transform = prevTransform;
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        window.print();
+      }
+    }
+
+    // Initialize Dynamic Data from sessionStorage or query param
     (function initReceipt() {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get('ref');
 
-      // Check if opened from window.open with custom payload
       const payloadStr = sessionStorage.getItem('logictech_receipt_data');
       let order = null;
       if (payloadStr) {
@@ -641,7 +854,6 @@
       if (order) {
         renderOrderData(order);
       } else if (ref) {
-        // Fetch order from public orders endpoint
         fetch('/api/shop/orders/' + encodeURIComponent(ref))
           .then(r => r.json())
           .then(d => {
@@ -649,50 +861,63 @@
           })
           .catch(() => {});
       }
+
+      // Responsive zoom fit for smaller screens
+      if (window.innerWidth < 860) {
+        const ratio = (window.innerWidth - 32) / 800;
+        adjustZoom(Math.max(0.4, ratio) - 1.0);
+      }
     })();
 
     function renderOrderData(o) {
       if (!o) return;
-      document.getElementById('receiptNum').textContent = o.ref || 'LT-ORDER';
+      const refStr = o.ref || 'LT-ORDER';
+      document.getElementById('rcptNum').textContent = refStr;
+      document.getElementById('pdfDocTitle').textContent = `LogicTech-Receipt-${refStr}.pdf`;
+
       const dt = o.created_at ? new Date(o.created_at) : new Date();
       const dateStr = dt.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) + ', ' +
                       dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-      document.getElementById('receiptDateTop').textContent = 'Issued: ' + dateStr;
-      document.getElementById('signDate').textContent = 'Signed: ' + dt.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      document.getElementById('rcptDate').textContent = 'Issued: ' + dateStr;
+      document.getElementById('sigDate').textContent = 'Signed: ' + dt.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
 
-      document.getElementById('custName').textContent = o.customer_name || 'Customer';
-      document.getElementById('custPhone').innerHTML = `<i class="fa-solid fa-phone" style="font-size:0.75rem; color:var(--gold-dark); width:14px;"></i> ${escapeHtml(o.customer_phone || '—')}`;
-      document.getElementById('custEmail').innerHTML = `<i class="fa-solid fa-envelope" style="font-size:0.75rem; color:#94A3B8; width:14px;"></i> ${escapeHtml(o.customer_email || '—')}`;
-      document.getElementById('custAddress').innerHTML = `<i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:#EF4444; width:14px;"></i> ${escapeHtml(o.address ? `${o.city}, ${o.county}, ${o.address}` : (o.county || 'Nairobi, Kenya'))}`;
+      document.getElementById('custName').textContent = o.customer_name || 'Valued Customer';
+      document.getElementById('custPhone').textContent = 'Tel: ' + (o.customer_phone || '—');
+      document.getElementById('custEmail').textContent = 'Email: ' + (o.customer_email || '—');
+      document.getElementById('custAddress').textContent = 'Destination: ' + (o.address ? `${o.city}, ${o.county}, ${o.address}` : (o.county || 'Nairobi, Kenya'));
 
-      // Payment Method
       const method = (o.payment_method || 'mpesa').toLowerCase();
       let methodHtml = '';
       if (method === 'mpesa') {
-        methodHtml = '<i class="fa-solid fa-mobile-screen-button" style="color:#10B981;"></i> Lipa na M-Pesa';
+        methodHtml = '<i class="fa-solid fa-mobile-screen-button" style="color:#059669;"></i> Lipa na M-Pesa';
       } else if (method === 'cash') {
         methodHtml = '<i class="fa-solid fa-hand-holding-dollar" style="color:var(--gold-dark);"></i> Cash on Delivery';
       } else {
-        methodHtml = '<i class="fa-solid fa-credit-card" style="color:#3B82F6;"></i> Card / Flutterwave';
+        methodHtml = '<i class="fa-solid fa-credit-card" style="color:#2563EB;"></i> Card / Flutterwave';
       }
       document.getElementById('payMethod').innerHTML = methodHtml;
 
-      document.getElementById('payReceiptCode').textContent = o.mpesa_receipt || (method === 'cash' ? 'CASH-ON-DELIVERY' : 'PENDING');
-      document.getElementById('fulfilmentStatus').textContent = o.status || 'Confirmed';
+      document.getElementById('payCode').textContent = o.mpesa_receipt || (method === 'cash' ? 'CASH-ON-DELIVERY' : 'PENDING');
+      document.getElementById('orderStatus').textContent = o.status || 'Confirmed';
 
-      // Items
+      if (o.payment_status === 'paid') {
+        document.getElementById('payStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> PAID &amp; CONFIRMED';
+      } else {
+        document.getElementById('payStatus').innerHTML = '<i class="fa-solid fa-clock"></i> ' + (method === 'cash' ? 'PAY CASH ON ARRIVAL' : (o.payment_status || 'PENDING').toUpperCase());
+      }
+
       let items = [];
       try {
         items = typeof o.items_json === 'string' ? JSON.parse(o.items_json) : (o.items || []);
       } catch(e) { items = []; }
 
       if (items.length) {
-        document.getElementById('itemsBody').innerHTML = items.map((it, idx) => `
+        document.getElementById('productsBody').innerHTML = items.map((it, idx) => `
           <tr>
             <td class="col-idx">${idx + 1}</td>
             <td>
-              <div class="product-name">${escapeHtml(it.name || 'Product Item')}</div>
-              <div class="product-sku">SKU: ${escapeHtml(it.sku || ('LT-ITM-' + (it.id || idx+1)))}</div>
+              <div class="item-title">${escapeHtml(it.name || 'Product Item')}</div>
+              <div class="item-sku">SKU: ${escapeHtml(it.sku || ('LT-ITM-' + (it.id || idx+1)))}</div>
             </td>
             <td class="col-qty">${it.qty || 1}</td>
             <td class="col-price">${Number(it.price || 0).toLocaleString()}</td>
@@ -704,7 +929,7 @@
       document.getElementById('subtotalVal').textContent = 'KES ' + Number(o.subtotal || o.total || 0).toLocaleString();
       document.getElementById('deliveryVal').textContent = o.delivery === 0 ? 'FREE' : 'KES ' + Number(o.delivery || 0).toLocaleString();
       document.getElementById('totalVal').textContent = 'KES ' + Number(o.total || 0).toLocaleString();
-      document.getElementById('secHash').textContent = 'LT-AUTH-' + String(o.id || o.ref).toUpperCase().replace(/[^A-Z0-9]/g, '');
+      document.getElementById('secAuthId').textContent = 'LT-AUTH-' + String(o.id || o.ref).toUpperCase().replace(/[^A-Z0-9]/g, '');
     }
 
     function escapeHtml(s) {
