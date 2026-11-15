@@ -1189,6 +1189,10 @@
         <i class="fa-solid fa-shop"></i> Shop Manager
         <span id="shopOrderBadge" class="sidebar-badge hidden" style="background:rgba(201,164,92,0.15);color:#C9A45C;">0</span>
       </button>
+      <button class="sidebar-link" onclick="switchTab('payments')">
+        <i class="fa-solid fa-money-bill-transfer"></i> Payment Tracking
+        <span id="paymentCountBadge" class="sidebar-badge hidden" style="background:rgba(245,158,11,0.18); color:#f59e0b; font-weight:700;">0</span>
+      </button>
       <button class="sidebar-link" onclick="switchTab('account')">
         <i class="fa-solid fa-user-gear"></i> Account &amp; Security
         <span class="sidebar-badge" style="background:rgba(201,164,92,0.15); color:var(--gold-primary, #C9A45C); display:inline-flex; font-size:0.65rem; padding:0.15rem 0.45rem;">Admin</span>
@@ -2150,6 +2154,90 @@
         </section>
 
         <!-- ==========================================
+             TAB: PAYMENT & M-PESA TRACKING
+             ========================================== -->
+        <section id="tab-payments" class="hidden">
+          <!-- KPI Metrics Overview -->
+          <div class="dash-grid-4" style="margin-bottom:1.5rem;">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(16,185,129,0.15); color:#10b981;"><i class="fa-solid fa-circle-dollar-to-slot"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Total Revenue Collected</div>
+                <div class="stat-value" id="payKpiTotalRevenue">KES 0</div>
+                <div class="stat-sub">From confirmed orders</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;"><i class="fa-solid fa-hourglass-half"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Pending Verification</div>
+                <div class="stat-value" id="payKpiPending">0</div>
+                <div class="stat-sub" id="payKpiPendingAmount">KES 0 awaiting confirmation</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(0,178,100,0.15); color:#00b264;"><i class="fa-solid fa-mobile-screen-button"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">M-Pesa Transactions</div>
+                <div class="stat-value" id="payKpiMpesaCount">0</div>
+                <div class="stat-sub">Direct STK / Till / Send Money</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:rgba(99,102,241,0.15); color:#818cf8;"><i class="fa-solid fa-credit-card"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Card &amp; Other</div>
+                <div class="stat-value" id="payKpiCardCount">0</div>
+                <div class="stat-sub">Visa / Mastercard / Flutterwave</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Card: Payments Explorer -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div>
+                <h3><i class="fa-solid fa-money-bill-transfer" style="color:var(--dash-accent);"></i> Payment &amp; Transaction Ledger</h3>
+                <div class="dash-card-header-subtitle">Real-time tracking of M-Pesa receipts, payment verifications, and customer transaction history</div>
+              </div>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                <button class="btn btn-sm btn-outline" onclick="loadPayments()" title="Refresh payments list">
+                  <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh</span>
+                </button>
+                <button class="btn btn-sm btn-export" onclick="exportPaymentsCsv()" title="Export transaction ledger to CSV">
+                  <i class="fa-solid fa-download"></i> <span>Export CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Toolbar & Filtering -->
+            <div class="dash-toolbar">
+              <div class="dash-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="paySearchInput" placeholder="Search receipt code, customer name, phone, order ref..." oninput="filterPayments()" />
+              </div>
+              <div class="dash-toolbar-actions">
+                <select id="payStatusFilter" class="dash-select" onchange="filterPayments()">
+                  <option value="all">All Payment Statuses</option>
+                  <option value="paid">Paid &amp; Verified</option>
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="failed">Failed / Cancelled</option>
+                </select>
+                <select id="payMethodFilter" class="dash-select" onchange="filterPayments()">
+                  <option value="all">All Payment Methods</option>
+                  <option value="mpesa">M-Pesa</option>
+                  <option value="card">Card / Flutterwave</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Payments Cards Grid -->
+            <div id="gridWrap-payments" class="admin-cards-grid"></div>
+          </div>
+        </section>
+
+        <!-- ==========================================
              TAB 7: ACCOUNT & SECURITY SETTINGS
              ========================================== -->
         <section id="tab-account" class="hidden">
@@ -3086,6 +3174,7 @@
         faqs: 'FAQ Knowledge Manager',
         users: 'Client Directory',
         shop: 'Store Orders & Fulfilment',
+        payments: 'Payment & M-Pesa Tracking',
         account: 'Account & Security Settings'
       };
 
@@ -3094,7 +3183,7 @@
       if (mobTitle) mobTitle.textContent = titles[tabId] || 'Executive Deck';
       if (window.innerWidth < 1024) closeSidebarMobile();
 
-      ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'account'].forEach(t => {
+      ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'payments', 'account'].forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
         if (sec) sec.classList.toggle('hidden', t !== tabId);
       });
@@ -3104,6 +3193,7 @@
       if (tabId === 'faqs') loadFaqs();
       if (tabId === 'users') loadUsers();
       if (tabId === 'shop') loadShopOrders();
+      if (tabId === 'payments') loadPayments();
       if (tabId === 'overview') loadAdminStats();
       if (tabId === 'account') {
         loadAdminAccount();
@@ -3138,7 +3228,7 @@
         // Check initial hash/query for direct tab navigation (e.g. #account or ?tab=account)
         const urlParams = new URLSearchParams(window.location.search);
         const tabTarget = urlParams.get('tab') || window.location.hash.replace('#', '');
-        if (tabTarget && ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'account'].includes(tabTarget)) {
+        if (tabTarget && ['overview', 'inquiries', 'projects', 'faqs', 'users', 'shop', 'payments', 'account'].includes(tabTarget)) {
           switchTab(tabTarget);
         }
 
@@ -5020,6 +5110,7 @@ https://logictech.co.ke`;
         }
 
         renderShopOrders(state.shopOrders);
+        updatePaymentsMetrics();
       } catch (err) {
         console.error('Failed to load shop orders:', err);
       }
@@ -6298,7 +6389,201 @@ https://logictech.co.ke`;
 
     // Initialize
     document.addEventListener('DOMContentLoaded', checkAdminAuth);
-  </script>
+  
+    // ══════════════════════════════════════════════════════════════════════
+    // PAYMENT & M-PESA TRACKING SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+
+    async function loadPayments() {
+      if (!state.shopOrders || !state.shopOrders.length) {
+        await loadShopOrders();
+      } else {
+        // Background refresh
+        loadShopOrders();
+      }
+      updatePaymentsMetrics();
+      filterPayments();
+    }
+
+    function updatePaymentsMetrics() {
+      const orders = state.shopOrders || [];
+      const totalRev = orders.reduce((sum, o) => sum + (o.payment_status === 'paid' ? Number(o.total || 0) : 0), 0);
+      const pendingList = orders.filter(o => o.payment_status === 'pending' || o.payment_status === 'processing');
+      const pendingCount = pendingList.length;
+      const pendingAmt = pendingList.reduce((sum, o) => sum + Number(o.total || 0), 0);
+      const mpesaCount = orders.filter(o => (o.payment_method || '').toLowerCase() === 'mpesa').length;
+      const cardCount = orders.filter(o => (o.payment_method || '').toLowerCase() === 'card').length;
+
+      const totalRevEl   = document.getElementById('payKpiTotalRevenue');
+      const pendCountEl  = document.getElementById('payKpiPending');
+      const pendAmtEl    = document.getElementById('payKpiPendingAmount');
+      const mpesaCountEl = document.getElementById('payKpiMpesaCount');
+      const cardCountEl  = document.getElementById('payKpiCardCount');
+      const badgeEl      = document.getElementById('paymentCountBadge');
+
+      if (totalRevEl)   totalRevEl.textContent = 'KES ' + totalRev.toLocaleString();
+      if (pendCountEl)  pendCountEl.textContent = pendingCount;
+      if (pendAmtEl)    pendAmtEl.textContent = `KES ${pendingAmt.toLocaleString()} awaiting confirmation`;
+      if (mpesaCountEl) mpesaCountEl.textContent = mpesaCount;
+      if (cardCountEl)  cardCountEl.textContent = cardCount;
+
+      if (badgeEl) {
+        if (pendingCount > 0) {
+          badgeEl.textContent = pendingCount;
+          badgeEl.classList.remove('hidden');
+        } else {
+          badgeEl.classList.add('hidden');
+        }
+      }
+    }
+
+    function filterPayments() {
+      const q = (document.getElementById('paySearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('payStatusFilter')?.value || 'all';
+      const methodFilter = document.getElementById('payMethodFilter')?.value || 'all';
+
+      let list = state.shopOrders || [];
+
+      if (q) {
+        list = list.filter(o =>
+          (o.ref || '').toLowerCase().includes(q) ||
+          (o.customer_name || '').toLowerCase().includes(q) ||
+          (o.customer_phone || '').toLowerCase().includes(q) ||
+          (o.customer_email || '').toLowerCase().includes(q) ||
+          (o.mpesa_receipt || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (statusFilter !== 'all') {
+        list = list.filter(o => (o.payment_status || '').toLowerCase() === statusFilter.toLowerCase());
+      }
+
+      if (methodFilter !== 'all') {
+        list = list.filter(o => (o.payment_method || '').toLowerCase() === methodFilter.toLowerCase());
+      }
+
+      renderPayments(list);
+    }
+
+    function renderPayments(list) {
+      const grid = document.getElementById('gridWrap-payments');
+      if (!grid) return;
+
+      if (!list.length) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1; padding: 3.5rem 1rem; text-align: center; color: var(--text-muted);">
+            <div class="empty-icon" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 0.75rem;"><i class="fa-solid fa-money-bill-transfer"></i></div>
+            <div class="empty-title" style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">No payment records found</div>
+            <div class="empty-desc" style="font-size: 0.85rem;">Try adjusting your search criteria or filter options.</div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map(o => {
+        const isMpesa = (o.payment_method || 'mpesa').toLowerCase() === 'mpesa';
+        const methodBadge = isMpesa
+          ? `<span class="badge-pill" style="background:rgba(0,178,100,0.12); color:#00b264; font-weight:700;"><i class="fa-solid fa-mobile-screen-button"></i> M-PESA</span>`
+          : `<span class="badge-pill" style="background:rgba(96,165,250,0.12); color:#60a5fa; font-weight:700;"><i class="fa-solid fa-credit-card"></i> CARD</span>`;
+
+        let statusBadge = '';
+        if (o.payment_status === 'paid') {
+          statusBadge = `<span class="badge-pill badge-completed"><i class="fa-solid fa-circle-check"></i> Paid</span>`;
+        } else if (o.payment_status === 'pending' || o.payment_status === 'processing') {
+          statusBadge = `<span class="badge-pill badge-pending"><i class="fa-solid fa-clock"></i> ${(o.payment_status || 'Pending').toUpperCase()}</span>`;
+        } else {
+          statusBadge = `<span class="badge-pill badge-urgent"><i class="fa-solid fa-circle-xmark"></i> ${(o.payment_status || 'Failed').toUpperCase()}</span>`;
+        }
+
+        const receiptPill = o.mpesa_receipt
+          ? `<div style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.25rem 0.6rem; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:6px; font-family:monospace; font-weight:700; color:#10b981; font-size:0.85rem;">
+               <i class="fa-solid fa-receipt"></i> ${escapeHtml(o.mpesa_receipt)}
+               <button type="button" onclick="event.stopPropagation(); copyToClipboard('${escapeHtml(o.mpesa_receipt)}')" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.75rem; padding:0 0.15rem;" title="Copy receipt code"><i class="fa-solid fa-copy"></i></button>
+             </div>`
+          : `<span style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">No receipt recorded</span>`;
+
+        const actionBtns = o.payment_status !== 'paid'
+          ? `<button type="button" class="btn btn-xs btn-primary" onclick="event.stopPropagation(); adminConfirmOrderPayment(${o.id}, '${escapeHtml(o.ref)}')"><i class="fa-solid fa-circle-check"></i> Verify Payment</button>`
+          : `<button type="button" class="btn btn-xs btn-outline" onclick="event.stopPropagation(); adminResendOrderReceipt(${o.id})"><i class="fa-solid fa-paper-plane"></i> Receipt</button>`;
+
+        return `
+          <div class="admin-grid-card" onclick="openShopOrderModal(${o.id})" style="cursor:pointer;">
+            <div class="admin-grid-card-header">
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                ${methodBadge}
+                ${statusBadge}
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.15rem; font-weight:800; color:var(--gold);">KES ${Number(o.total || 0).toLocaleString()}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(o.ref)}</div>
+              </div>
+            </div>
+            <div class="admin-grid-card-body">
+              <div style="margin-bottom:0.75rem;">
+                <div style="font-size:0.7rem; text-transform:uppercase; font-weight:700; color:var(--text-muted); letter-spacing:0.04em; margin-bottom:0.25rem;">Transaction / Receipt Code</div>
+                ${receiptPill}
+              </div>
+              <div style="padding:0.75rem; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; gap:0.35rem;">
+                <div style="font-weight:700; color:var(--text-primary); font-size:0.875rem;"><i class="fa-solid fa-user" style="font-size:0.75rem; color:var(--text-muted); margin-right:0.35rem;"></i>${escapeHtml(o.customer_name)}</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);"><i class="fa-solid fa-phone" style="font-size:0.75rem; color:var(--gold); margin-right:0.35rem;"></i>${escapeHtml(o.customer_phone)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><i class="fa-solid fa-envelope" style="font-size:0.75rem; color:var(--text-muted); margin-right:0.35rem;"></i>${escapeHtml(o.customer_email)}</div>
+              </div>
+            </div>
+            <div class="admin-grid-card-footer" style="padding-top:0.75rem;">
+              <span style="font-size:0.72rem; color:var(--text-muted);" title="${o.created_at || ''}"><i class="fa-solid fa-calendar-days" style="margin-right:0.3rem;"></i>${formatDate(o.created_at)}</span>
+              <div class="actions-cell" style="display:flex; gap:0.4rem; align-items:center;">
+                ${actionBtns}
+                <button type="button" class="btn btn-xs btn-outline" onclick="event.stopPropagation(); openShopOrderModal(${o.id})" title="View full order details"><i class="fa-solid fa-eye"></i> Details</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function exportPaymentsCsv() {
+      const list = state.shopOrders || [];
+      if (!list.length) {
+        showToast('No payment records to export.', 'info');
+        return;
+      }
+      const headers = ['Order Ref', 'Date', 'Customer Name', 'Phone', 'Email', 'Payment Method', 'Amount (KES)', 'Payment Status', 'M-Pesa Receipt', 'Fulfilment Status'];
+      const rows = list.map(o => [
+        `"${(o.ref || '').replace(/"/g, '""')}"`,
+        `"${(o.created_at || '').replace(/"/g, '""')}"`,
+        `"${(o.customer_name || '').replace(/"/g, '""')}"`,
+        `"${(o.customer_phone || '').replace(/"/g, '""')}"`,
+        `"${(o.customer_email || '').replace(/"/g, '""')}"`,
+        `"${(o.payment_method || 'mpesa').toUpperCase()}"`,
+        Number(o.total || 0),
+        `"${(o.payment_status || 'pending').toUpperCase()}"`,
+        `"${(o.mpesa_receipt || '').replace(/"/g, '""')}"`,
+        `"${(o.status || 'Processing').replace(/"/g, '""')}"`
+      ]);
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `logictech-payments-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Payment ledger exported to CSV', 'success');
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Copied to clipboard: ' + text, 'info');
+        }).catch(() => {
+          showToast('Code: ' + text, 'info');
+        });
+      } else {
+        showToast('Code: ' + text, 'info');
+      }
+    }
+    // ══════════════════════════════════════════════════════════════════════
+</script>
   <!-- ---- MODAL: SHOP ORDER DETAILS (Overlay placed before </body>) ---- -->
   <div id="shopOrderModal" class="modal-overlay hidden" hidden onclick="if(event.target===this)closeModal('shopOrderModal')">
     <div class="modal-content" style="max-width:680px;">
