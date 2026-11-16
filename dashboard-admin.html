@@ -2403,6 +2403,10 @@
                   </div>
                 </div>
 
+                <div id="smtpHintBox" class="hidden" style="background:rgba(201,164,92,0.08); border:1px solid rgba(201,164,92,0.3); border-radius:10px; padding:1rem 1.25rem; font-size:0.835rem; color:#f1f5f9; line-height:1.6;">
+                  <!-- Dynamic resolution instructions -->
+                </div>
+
                 <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                   <button type="button" class="btn btn-sm btn-primary" id="testSmtpBtn" onclick="testSmtpConnection()" style="display:inline-flex; align-items:center; gap:0.5rem; font-weight:700;">
                     <i class="fa-solid fa-paper-plane"></i> Send Test Email
@@ -5749,18 +5753,35 @@ https://logictech.co.ke`;
         if (portVal && data.port) portVal.textContent = `${data.port} (${data.port == 465 ? 'SSL Encrypted' : 'TLS'})`;
         if (userVal && data.user) userVal.textContent = data.user;
 
+        const hintBox = document.getElementById('smtpHintBox');
+
         if (data.connected) {
           badge.textContent = 'Operational';
           badge.style.background = 'rgba(16, 185, 129, 0.15)';
           badge.style.color = '#10b981';
           verifyVal.innerHTML = '<i class="fa-solid fa-circle-check"></i> Connected & Ready';
           verifyVal.style.color = '#10b981';
+          if (hintBox) hintBox.classList.add('hidden');
         } else {
           badge.textContent = data.configured ? 'Auth Pending' : 'Not Configured';
           badge.style.background = 'rgba(239, 68, 68, 0.15)';
           badge.style.color = '#f87171';
           verifyVal.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${data.error || 'Password or SMTP unreachable'}`;
           verifyVal.style.color = '#f87171';
+          if (hintBox && data.hint) {
+            hintBox.classList.remove('hidden');
+            hintBox.innerHTML = `
+              <div style="font-weight:700; color:var(--gold-light); display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+                <i class="fa-solid fa-key"></i> How to resolve:
+              </div>
+              <div>${data.hint}</div>
+              <div style="margin-top:0.6rem; font-size:0.775rem; color:#94a3b8;">
+                <strong>cPanel Quick Path:</strong> Log in to cPanel &rarr; <em>Email Accounts</em> &rarr; Find <code>${data.user || 'info@logictech.co.ke'}</code> &rarr; Click <em>Manage</em> &rarr; Set or copy password &rarr; Save in GitHub Secrets (<code>ENV_SMTP_PASSWORD</code>) or <code>backend/.env</code>.
+              </div>
+            `;
+          } else if (hintBox) {
+            hintBox.classList.add('hidden');
+          }
         }
       } catch (err) {
         badge.textContent = 'Offline';

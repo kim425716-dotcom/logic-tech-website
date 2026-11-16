@@ -21,7 +21,7 @@ const router = express.Router();
 const { db } = require('../config/database');
 const { fail, stringField, validateFaq } = require('../utils/validation');
 const { requireAdmin } = require('../middleware/auth');
-const { mailer, smtpConfigured, verifySmtp, sendBrandedEmail, defaultFrom } = require('../utils/mailer');
+const { mailer, smtpConfigured, effectiveHost, verifySmtp, sendBrandedEmail, defaultFrom } = require('../utils/mailer');
 
 // All admin routes require authenticated admin
 router.use(requireAdmin);
@@ -56,7 +56,8 @@ router.get('/email/status', async (_req, res) => {
     configured: smtpConfigured,
     connected: verification.ok,
     error: verification.error || null,
-    host: process.env.SMTP_HOST || 'mail.logictech.co.ke',
+    hint: verification.hint || null,
+    host: effectiveHost,
     port: Number(process.env.SMTP_PORT || 465),
     user: process.env.SMTP_USER || null,
     from: defaultFrom,

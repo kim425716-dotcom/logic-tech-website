@@ -4,15 +4,22 @@
  */
 const nodemailer = require('nodemailer');
 
+const rawHost = (process.env.SMTP_HOST || '').trim();
+// On cPanel with SSL (port 465), connecting to 'localhost' causes virtual email account auth failure (Exim 535).
+// Virtual mailboxes (e.g. info@logictech.co.ke) require the domain mail server (mail.logictech.co.ke).
+const effectiveHost = (!rawHost || rawHost === 'localhost' || rawHost === '127.0.0.1')
+  ? 'mail.logictech.co.ke'
+  : rawHost;
+
 const smtpConfigured = Boolean(
-  process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD
+  (process.env.SMTP_HOST || effectiveHost) && process.env.SMTP_USER && process.env.SMTP_PASSWORD
 );
 
 const defaultFrom = process.env.SMTP_FROM || `Logic Tech <${process.env.SMTP_USER || 'info@logictech.co.ke'}>`;
 
 const mailer = smtpConfigured
   ? nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'mail.logictech.co.ke',
+      host: effectiveHost,
       port: Number(process.env.SMTP_PORT || 465),
       secure: Number(process.env.SMTP_PORT || 465) === 465,
       auth: {
@@ -35,9 +42,14 @@ async function verifySmtp() {
   }
   try {
     await mailer.verify();
-    return { ok: true, message: `Connected to ${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465} as ${process.env.SMTP_USER}` };
+    return { ok: true, message: `Connected to ${effectiveHost}:${process.env.SMTP_PORT || 465} as ${process.env.SMTP_USER}` };
   } catch (err) {
-    return { ok: false, error: err.message };
+    let hint = null;
+    const msg = String(err.message || '');
+    if (msg.includes('535') || msg.includes('Incorrect authentication data')) {
+      hint = 'Authentication failed (535): The mailbox password for ' + (process.env.SMTP_USER || 'info@logictech.co.ke') + ' is incorrect. Please update the password in cPanel > Email Accounts (or copy your existing password), then set it in GitHub Secrets as ENV_SMTP_PASSWORD (or in backend/.env).';
+    }
+    return { ok: false, error: msg, hint };
   }
 }
 
@@ -239,6 +251,7 @@ async function sendAdminOrderNotification(order) {
 module.exports = {
   mailer,
   smtpConfigured,
+  effectiveHost,
   verifySmtp,
   sendBrandedEmail,
   sendOrderConfirmationEmail,
